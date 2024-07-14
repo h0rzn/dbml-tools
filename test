@@ -1,0 +1,3 @@
+Table myTable {
+	col type
+}

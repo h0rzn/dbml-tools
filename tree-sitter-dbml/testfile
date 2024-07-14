@@ -1,0 +1,8 @@
+Table a {
+	colA typeA [null]
+	col_B type-B
+}
+
+Table b {
+	col1 type1
+}
