@@ -1,9 +1,9 @@
-Table myTable {
-	col type
+Table tabB {
+	colB type
 }
 
 Table tabA {
-	colA typeA
+	colA type
 }
 
 Ref: tabA.colA - tabB.colB

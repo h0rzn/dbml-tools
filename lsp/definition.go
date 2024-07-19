@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/tliron/glsp"
@@ -8,25 +9,38 @@ import (
 )
 
 func (s *Server) TextDocumentDefinition(context *glsp.Context, params *protocol.DefinitionParams) (any, error) {
-	fmt.Printf("[DEFINITION]")
+	fmt.Printf("[DEFINITION]\n")
+
+	resultLocation := protocol.Location{
+		URI: params.TextDocument.URI,
+	}
 
 	line, offset, err := s.document.LocateTable(params.Position.Line, params.Position.Character)
 	if err != nil {
-		fmt.Println("definition err", err)
+		if errors.Is(err, ErrDefinitionMissingDestination) {
+			resultLocation.Range = protocol.Range{
+				Start: protocol.Position{
+					Line:      params.Position.Line,
+					Character: params.Position.Character,
+				},
+				End: protocol.Position{
+					Line:      params.Position.Line,
+					Character: params.Position.Character,
+				},
+			}
+			return resultLocation, nil
+		}
+		fmt.Println("unhandled definition err", err)
 		return nil, err
 	}
-	resultLocation := protocol.Location{
-		URI: params.TextDocument.URI,
-		Range: protocol.Range{
-			Start: protocol.Position{
-				Line:      line,
-				Character: offset,
-			},
-			End: protocol.Position{
-				Line:      line,
-				Character: offset,
-			},
-		},
+
+	resultPosition := protocol.Position{
+		Line:      line,
+		Character: offset,
+	}
+	resultLocation.Range = protocol.Range{
+		Start: resultPosition,
+		End:   resultPosition,
 	}
 	return resultLocation, nil
 }

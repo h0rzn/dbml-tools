@@ -3,12 +3,15 @@ package lsp
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
 	sitter "github.com/smacker/go-tree-sitter"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
+
+var ErrDefinitionMissingDestination = errors.New("failed to find match")
 
 type Document struct {
 	tree         *sitter.Tree
@@ -89,9 +92,10 @@ func (d *Document) Contents(startByte uint32, endByte uint32) string {
 	return string(d.fileContents[startByte:endByte])
 }
 
-func (d *Document) ContentsByPosition(line uint32, column uint32) {
+func (d *Document) ContentsByPosition(line uint32, column uint32) (string, error) {
 	offset := d.OffsetByPosition(line, column)
-	// fmt.Println("<<Offset:", line, column, " -> ", offset, "::", string(d.fileContents[offset:]))
+	fmt.Printf("**src: position {%d:%d} to offset %d/%d\n", line, column, offset, len(d.fileContents))
+	fmt.Printf("   -> sample: %q\n", string(d.fileContents[offset:offset+10]))
 
 	treeCursor := sitter.NewTreeCursor(d.tree.RootNode())
 	var lastNode *sitter.Node
@@ -100,15 +104,13 @@ func (d *Document) ContentsByPosition(line uint32, column uint32) {
 		if nodeIndex == -1 {
 			if lastNode != nil {
 				value := string(d.fileContents[lastNode.Range().StartByte:lastNode.Range().EndByte])
-				fmt.Printf("### result %q ###\n", value)
-				return
+				fmt.Printf("**src result <%s>: %q ###\n", lastNode.Type(), value)
+				return value, nil
 			} else {
-				fmt.Println("could not find node")
-				return
+				return "", errors.New("failed to find value by line+column")
 			}
 		}
 
-		// fmt.Println("++ nodeIndex", nodeIndex)
 		node := treeCursor.CurrentNode()
 		lastNode = node
 	}
@@ -116,53 +118,36 @@ func (d *Document) ContentsByPosition(line uint32, column uint32) {
 
 // Function to convert line and column to byte offset
 func (d *Document) OffsetByPosition(line uint32, column uint32) int {
-	fmt.Println("positionToOffset", line, column)
-	lines := bytes.Split(d.fileContents, []byte("\n"))
-	fmt.Println("lines", len(lines))
+	lines := bytes.SplitAfter(d.fileContents, []byte("\n"))
 	byteOffset := 0
-
-	// Sum the byte lengths of all lines before the target line
-	// for i := 0; i < line-1; i++ {
-	// 	fmt.Println("+", i)
-	// 	byteOffset += len(lines[i]) + 1 // +1 for the newline character
-	// }
-	// for i := 0; i < len(source); i++ {
-	// 	fmt.Printf("[%q:%02d]\n", string(source[i:i+1]), i)
-	// }
 
 	for lineIndex, lineSlice := range lines {
 		for charIndex, char := range lineSlice {
 			_ = charIndex
-			fmt.Printf("charOff %02d | line %02d | %s\n", charIndex, lineIndex, string(char))
+			_ = char
+			// fmt.Printf("charOff %02d | line %02d | %s\n", charIndex, lineIndex, string(char))
 
-			if uint32(lineIndex) == line && uint32(charIndex) == column {
-				fmt.Println("++ match")
-				return byteOffset
+			if uint32(lineIndex) == line {
+				return byteOffset + int(column)
 			}
 			byteOffset += 1
 		}
 	}
 
-	fmt.Println("byte offset", byteOffset)
-
-	//
-	// // Add the byte length of the target column in the target line
-	// byteOffset += len(lines[line-1][:column])
-
 	return byteOffset
 }
 
 func (d *Document) LocateTable(line uint32, offset uint32) (outLine uint32, outOffset uint32, err error) {
-	d.ContentsByPosition(line, offset)
-	// srcValue := d.getValue(line, offset)
-	// if srcValue == "" {
-	// 	return 0, 0, errors.New("failed to get source value")
-	// }
-	srcValue := "tabA"
+	fmt.Println("-- Locate Table --")
+	srcValue, err := d.ContentsByPosition(line, offset)
+	if err != nil {
+		return 0, 0, err
+	}
 	srcPoint := sitter.Point{
 		Row:    line,
 		Column: offset,
 	}
+	fmt.Printf("++ found source item %q @ %+v\n", srcValue, srcPoint)
 
 	query := `(table_definition
 		    (table_name
@@ -182,40 +167,9 @@ func (d *Document) LocateTable(line uint32, offset uint32) (outLine uint32, outO
 		}
 	}
 
-	return 0, 0, nil
+	fmt.Printf("!! failed to find match for %q", srcValue)
+	return 0, 0, ErrDefinitionMissingDestination
 }
-
-/*
-func (d *Document) FindTableDefinition(line uint32, offset uint32) (outLine uint32, outOffset uint32, err error) {
-	fmt.Println("++ FindTableDefinition", line, offset)
-	query := `(table_definition
-		    (table_name
-		      (identifier) @table_name_value))
-		`
-
-	cursor, err := d.queryWithCursor(query)
-	if err != nil {
-		return 0, 0, err
-	}
-
-	for {
-		match, exists := cursor.NextMatch()
-		if !exists {
-			break
-		}
-
-		for _, capture := range match.Captures {
-			node := capture.Node
-			if node.Content(d.fileContents) == "ta" {
-				startPoint := node.StartPoint()
-				return startPoint.Row, startPoint.Column, nil
-			}
-		}
-	}
-
-	return 0, 0, errors.New("failed to find table definition")
-}
-*/
 
 func (d *Document) getValue(line uint32, offset uint32) string {
 	fmt.Println("++ GetValue", line, offset)

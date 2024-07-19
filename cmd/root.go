@@ -38,7 +38,7 @@ var devCmd = &cobra.Command{
 			fmt.Println(err)
 		}
 
-		document.ContentsByPosition(1, 6)
+		document.ContentsByPosition(0, 6)
 	},
 }
 
