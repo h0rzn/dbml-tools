@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	sitter "github.com/smacker/go-tree-sitter"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -40,25 +41,6 @@ func (d *Document) Init() error {
 	return err
 }
 
-/*
-func (d *Document) load() error {
-	file, err := os.Open(d.uri)
-	if err != nil {
-		return err
-	}
-	fmt.Println("++ opened file")
-	d.file = file
-
-	contents, err := io.ReadAll(file)
-	if err != nil {
-		return err
-	}
-	fmt.Println("++ read contents", len(contents))
-	d.fileContents = contents
-	return nil
-}
-*/
-
 func (d *Document) parse() error {
 	tree, err := d.parser.ParseCtx(context.Background(), nil, d.fileContents)
 	if err != nil {
@@ -66,6 +48,40 @@ func (d *Document) parse() error {
 	}
 	d.tree = tree
 	return nil
+}
+
+func (d *Document) PrintAST() {
+	d.printTree(d.tree.RootNode(), 0)
+
+}
+
+func (d *Document) printTree(node *sitter.Node, indentLevel int) {
+	fmt.Printf("%s%s\n", strings.Repeat("  ", indentLevel), node.String())
+	for i := 0; i < int(node.ChildCount()); i++ {
+		child := node.Child(i)
+		d.printTree(child, indentLevel+1)
+	}
+}
+
+func (d *Document) Query(query string) ([]any, error) {
+	results := make([]any, 0)
+	cursor, err := d.queryWithCursor(query)
+	if err != nil {
+		return results, err
+	}
+
+	for {
+		match, exists := cursor.NextMatch()
+		if !exists {
+			return results, nil
+		}
+		fmt.Printf("%+v\n", match)
+		for _, capture := range match.Captures {
+			val := d.fileContents[capture.Node.StartByte():capture.Node.EndByte()]
+			fmt.Printf("\t %+v\n:: %q\n", capture, val)
+		}
+
+	}
 }
 
 func (d *Document) FindTableDefinition(line uint32, offset uint32) (outLine uint32, outOffset uint32, err error) {
@@ -178,7 +194,7 @@ func (d *Document) getValue(line uint32, offset uint32) string {
 }
 
 func (d *Document) queryWithCursor(rawQuery string) (*sitter.QueryCursor, error) {
-	fmt.Println("queryWithCursor", d.language != nil)
+	fmt.Println("queryWithCursor")
 	query, err := sitter.NewQuery([]byte(rawQuery), d.language)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create query: %q", string(rawQuery))

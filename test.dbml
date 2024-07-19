@@ -2,4 +2,8 @@ Table myTable {
 	col type
 }
 
+Table myTable2 {
+	colA typeA
+}
+
 Ref: tabA.colA - tabB.colB

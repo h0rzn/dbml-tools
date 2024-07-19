@@ -4,4 +4,4 @@ echo > dev.log
 
 # go build
 
-./dbml-lsp-ts | tee dev.log
+./dbml-lsp-ts lsp | tee dev.log
