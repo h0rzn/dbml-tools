@@ -77,5 +77,10 @@ func (s *Server) TextDocumentDidOpen(context *glsp.Context, params *protocol.Did
 
 	// TODO: handle existing document
 	document := NewDocument(s.language, params.TextDocument)
-	return document.Init()
+	err := document.Init()
+	if err != nil {
+		fmt.Println(err)
+	}
+	s.document = document
+	return err
 }

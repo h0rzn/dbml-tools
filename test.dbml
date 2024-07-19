@@ -2,7 +2,7 @@ Table myTable {
 	col type
 }
 
-Table myTable2 {
+Table tabA {
 	colA typeA
 }
 

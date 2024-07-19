@@ -77,11 +77,13 @@ var queryCmd = &cobra.Command{
 			fmt.Println(err)
 		}
 
-		results, err := document.Query(query)
+		nodes, err := document.Query(query)
 		if err != nil {
 			fmt.Println(err)
 		}
-		_ = results
+		for _, node := range nodes {
+			fmt.Println(node.String(), document.Contents(node.StartByte(), node.EndByte()))
+		}
 
 	},
 }

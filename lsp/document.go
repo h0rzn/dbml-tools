@@ -1,8 +1,8 @@
 package lsp
 
 import (
+	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -32,27 +32,26 @@ func (d *Document) Init() error {
 	d.parser = parser
 
 	d.fileContents = []byte(d.item.Text)
-
-	err := d.parse()
+	tree, err := d.parse(d.fileContents)
 	if err != nil {
 		fmt.Println("!! Init: parse err:", err.Error())
 		return err
 	}
+	d.tree = tree
+
 	return err
 }
 
-func (d *Document) parse() error {
-	tree, err := d.parser.ParseCtx(context.Background(), nil, d.fileContents)
+func (d *Document) parse(fileContents []byte) (*sitter.Tree, error) {
+	tree, err := d.parser.ParseCtx(context.Background(), nil, fileContents)
 	if err != nil {
-		return err
+		return tree, err
 	}
-	d.tree = tree
-	return nil
+	return tree, nil
 }
 
 func (d *Document) PrintAST() {
 	d.printTree(d.tree.RootNode(), 0)
-
 }
 
 func (d *Document) printTree(node *sitter.Node, indentLevel int) {
@@ -63,8 +62,8 @@ func (d *Document) printTree(node *sitter.Node, indentLevel int) {
 	}
 }
 
-func (d *Document) Query(query string) ([]any, error) {
-	results := make([]any, 0)
+func (d *Document) Query(query string) ([]*sitter.Node, error) {
+	results := make([]*sitter.Node, 0)
 	cursor, err := d.queryWithCursor(query)
 	if err != nil {
 		return results, err
@@ -75,15 +74,118 @@ func (d *Document) Query(query string) ([]any, error) {
 		if !exists {
 			return results, nil
 		}
-		fmt.Printf("%+v\n", match)
+		// fmt.Printf("match: %+v\n", match)
 		for _, capture := range match.Captures {
-			val := d.fileContents[capture.Node.StartByte():capture.Node.EndByte()]
-			fmt.Printf("\t %+v\n:: %q\n", capture, val)
+			// val := d.fileContents[capture.Node.StartByte():capture.Node.EndByte()]
+			// fmt.Printf("\t %+v\n:: %q\n", capture, val)
+			results = append(results, capture.Node)
 		}
 
 	}
 }
 
+func (d *Document) Contents(startByte uint32, endByte uint32) string {
+	// TODO: handle out of bounds
+	return string(d.fileContents[startByte:endByte])
+}
+
+func (d *Document) ContentsByPosition(line uint32, column uint32) {
+	offset := d.OffsetByPosition(line, column)
+	// fmt.Println("<<Offset:", line, column, " -> ", offset, "::", string(d.fileContents[offset:]))
+
+	treeCursor := sitter.NewTreeCursor(d.tree.RootNode())
+	var lastNode *sitter.Node
+	for {
+		nodeIndex := treeCursor.GoToFirstChildForByte(uint32(offset))
+		if nodeIndex == -1 {
+			if lastNode != nil {
+				value := string(d.fileContents[lastNode.Range().StartByte:lastNode.Range().EndByte])
+				fmt.Printf("### result %q ###\n", value)
+				return
+			} else {
+				fmt.Println("could not find node")
+				return
+			}
+		}
+
+		// fmt.Println("++ nodeIndex", nodeIndex)
+		node := treeCursor.CurrentNode()
+		lastNode = node
+	}
+}
+
+// Function to convert line and column to byte offset
+func (d *Document) OffsetByPosition(line uint32, column uint32) int {
+	fmt.Println("positionToOffset", line, column)
+	lines := bytes.Split(d.fileContents, []byte("\n"))
+	fmt.Println("lines", len(lines))
+	byteOffset := 0
+
+	// Sum the byte lengths of all lines before the target line
+	// for i := 0; i < line-1; i++ {
+	// 	fmt.Println("+", i)
+	// 	byteOffset += len(lines[i]) + 1 // +1 for the newline character
+	// }
+	// for i := 0; i < len(source); i++ {
+	// 	fmt.Printf("[%q:%02d]\n", string(source[i:i+1]), i)
+	// }
+
+	for lineIndex, lineSlice := range lines {
+		for charIndex, char := range lineSlice {
+			_ = charIndex
+			fmt.Printf("charOff %02d | line %02d | %s\n", charIndex, lineIndex, string(char))
+
+			if uint32(lineIndex) == line && uint32(charIndex) == column {
+				fmt.Println("++ match")
+				return byteOffset
+			}
+			byteOffset += 1
+		}
+	}
+
+	fmt.Println("byte offset", byteOffset)
+
+	//
+	// // Add the byte length of the target column in the target line
+	// byteOffset += len(lines[line-1][:column])
+
+	return byteOffset
+}
+
+func (d *Document) LocateTable(line uint32, offset uint32) (outLine uint32, outOffset uint32, err error) {
+	d.ContentsByPosition(line, offset)
+	// srcValue := d.getValue(line, offset)
+	// if srcValue == "" {
+	// 	return 0, 0, errors.New("failed to get source value")
+	// }
+	srcValue := "tabA"
+	srcPoint := sitter.Point{
+		Row:    line,
+		Column: offset,
+	}
+
+	query := `(table_definition
+		    (table_name
+		      (identifier) @table_name_value))
+		`
+
+	nodes, err := d.Query(query)
+	if err != nil {
+		return 0, 0, err
+	}
+	for _, node := range nodes {
+		nodeValue := d.Contents(node.StartByte(), node.EndByte())
+		nodePoint := node.StartPoint()
+		if nodeValue == srcValue && nodePoint != srcPoint {
+			fmt.Println("match", nodeValue, nodePoint, node.StartByte(), "is", srcValue, srcPoint)
+			return node.StartPoint().Row, node.StartPoint().Column, nil
+		}
+	}
+
+	return 0, 0, nil
+}
+
+/*
 func (d *Document) FindTableDefinition(line uint32, offset uint32) (outLine uint32, outOffset uint32, err error) {
 	fmt.Println("++ FindTableDefinition", line, offset)
 	query := `(table_definition
@@ -112,56 +214,8 @@ func (d *Document) FindTableDefinition(line uint32, offset uint32) (outLine uint
 	}
 
 	return 0, 0, errors.New("failed to find table definition")
-
-	// sourceNameValue := []byte(d.getValue(line, offset))
-
-	// sourceNameValueString := d.getValue(line, offset)
-	//
-	// query := `(table_definition
-	// 	    (table_name
-	// 	      (identifier) @table_name_value))
-	// `
-	// cursor, err := d.queryWithCursor(query)
-	// if err != nil {
-	// 	return 0, 0, err
-	// }
-	// defer cursor.Close()
-	//
-	// for {
-	// 	match, exists := cursor.NextMatch()
-	// 	if !exists {
-	// 		return 0, 0, errors.New("failed to find table definition")
-	// 	}
-	//
-	// 	for _, capture := range match.Captures {
-	// 		node := capture.Node
-	// 		if node.Content(d.fileContents) == sourceNameValueString {
-	// 			startPoint := node.StartPoint()
-	// 			return startPoint.Row, startPoint.Column, nil
-	// 		}
-	// 	}
-	// }
-
-	// -------
-
-	//
-	// root := d.tree.RootNode()
-	// childCount := root.ChildCount()
-	// for i := 0; i < int(childCount); i++ {
-	// 	if root.Type() != "table_definition" {
-	// 		continue
-	// 	}
-	//
-	// 	nameNode := root.ChildByFieldName("table_name")
-	// 	nameNodeValue := d.fileContents[nameNode.StartByte():nameNode.EndByte()]
-	// 	if string(nameNodeValue) == string(sourceNameValue) {
-	// 		startPoint := nameNode.StartPoint()
-	// 		return startPoint.Row, startPoint.Column, nil
-	// 	}
-	// }
-	//
-	// return 0, 0, errors.New("failed to find table definition")
 }
+*/
 
 func (d *Document) getValue(line uint32, offset uint32) string {
 	fmt.Println("++ GetValue", line, offset)
@@ -185,6 +239,7 @@ func (d *Document) getValue(line uint32, offset uint32) string {
 	for _, capture := range match.Captures {
 		node := capture.Node
 		startPoint := node.StartPoint()
+		fmt.Printf("# cur node {%d:%d} inp {%d:%d}\n", startPoint.Row, startPoint.Column, line, offset)
 		if startPoint.Row == line && startPoint.Column == offset {
 			return node.Content(d.fileContents)
 		}
@@ -194,7 +249,6 @@ func (d *Document) getValue(line uint32, offset uint32) string {
 }
 
 func (d *Document) queryWithCursor(rawQuery string) (*sitter.QueryCursor, error) {
-	fmt.Println("queryWithCursor")
 	query, err := sitter.NewQuery([]byte(rawQuery), d.language)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create query: %q", string(rawQuery))
