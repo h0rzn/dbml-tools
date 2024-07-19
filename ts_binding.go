@@ -10,8 +10,16 @@ extern TSLanguage *tree_sitter_dbml();
 */
 import "C"
 
-import "unsafe"
+import (
+	"unsafe"
 
-func Language() unsafe.Pointer {
+	sitter "github.com/smacker/go-tree-sitter"
+)
+
+func ts_language() unsafe.Pointer {
 	return unsafe.Pointer(C.tree_sitter_dbml())
+}
+
+func GetLanguage() *sitter.Language {
+	return sitter.NewLanguage(ts_language())
 }

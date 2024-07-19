@@ -1,0 +1,6 @@
+[INITIALIZE] file:///Users/theo/go/src/github.com/h0rzn/dbml-lsp-ts
+Content-Length: 189
+
+{"id":1,"result":{"capabilities":{"textDocumentSync":{"openClose":true},"completionProvider":{},"definitionProvider":true},"serverInfo":{"name":"dbml-lsp","version":"0.1"}},"jsonrpc":"2.0"}[INITIALIZED]
+[DID_OPEN] file:///Users/theo/go/src/github.com/h0rzn/dbml-lsp-ts/test.dbml &{0x100224498}
+[DEFINITION]++ FindTableDefinition 4 5

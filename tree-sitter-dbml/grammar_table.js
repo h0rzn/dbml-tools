@@ -36,7 +36,7 @@ module.exports = {
       'not null',
       'unique',
       'increment'
-    )
+    ),
 
     // TODO: add keyed constraints: default: xxx, note: 'xxx'
 

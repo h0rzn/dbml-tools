@@ -1,15 +1,10 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"io"
-	"os"
-
-	// tree_sitter_dbml "github.com/h0rzn/dbml-lsp-ts/parser"
-	sitter "github.com/smacker/go-tree-sitter"
+	"github.com/h0rzn/dbml-lsp-ts/lsp"
 )
 
+/*
 func getContent() []byte {
 	file, err := os.Open("./test")
 	if err != nil {
@@ -33,27 +28,33 @@ func findTableDefinition(node *sitter.Node, tableName string, sourceCode []byte)
 		}
 	}
 	return 0, false
-
 }
+*/
 
 func main() {
-	parser := sitter.NewParser()
-	unsafeLanguage := Language()
-	language := sitter.NewLanguage(unsafeLanguage)
-	parser.SetLanguage(language)
-
-	sourceCode := getContent()
-	tree, err := parser.ParseCtx(context.Background(), nil, sourceCode)
-	if err != nil {
-		panic(err)
+	// parser := sitter.NewParser()
+	// parser.SetLanguage(GetLanguage())
+	// l := &lsp.Language{Parser: parser}
+	//
+	// sourceCode := getContent()
+	// tree, err := parser.ParseCtx(context.Background(), nil, sourceCode)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Printf("%+v\n", tree)
+	//
+	// root := tree.RootNode()
+	// fmt.Println(root)
+	//
+	// tdef := root.Child(0)
+	// tname := tdef.Child(1)
+	// tnameValue := sourceCode[tname.StartByte():tname.EndByte()]
+	// fmt.Println("tname value", string(tnameValue))
+	language := GetLanguage()
+	if language == nil {
+		panic("failed to get language")
 	}
-	fmt.Printf("%+v\n", tree)
-
-	root := tree.RootNode()
-	fmt.Println(root)
-
-	tdef := root.Child(0)
-	tname := tdef.Child(1)
-	tnameValue := sourceCode[tname.StartByte():tname.EndByte()]
-	fmt.Println("tname value", string(tnameValue))
+	server := lsp.NewServer(language)
+	server.Init()
+	server.Run()
 }

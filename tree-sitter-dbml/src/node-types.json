@@ -56,6 +56,71 @@
     }
   },
   {
+    "type": "relationship_definition_short",
+    "named": true,
+    "fields": {
+      "relationship_name": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": ":",
+            "named": false
+          },
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "relationship_definition_side",
+          "named": true
+        },
+        {
+          "type": "relationship_symbol",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "relationship_definition_side",
+    "named": true,
+    "fields": {
+      "relationship_column_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "relationship_table_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "relationship_symbol",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "source_file",
     "named": true,
     "fields": {},
@@ -63,6 +128,10 @@
       "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "relationship_definition_short",
+          "named": true
+        },
         {
           "type": "table_definition",
           "named": true
@@ -103,6 +172,34 @@
         }
       ]
     }
+  },
+  {
+    "type": "-",
+    "named": false
+  },
+  {
+    "type": ".",
+    "named": false
+  },
+  {
+    "type": ":",
+    "named": false
+  },
+  {
+    "type": "<",
+    "named": false
+  },
+  {
+    "type": "<>",
+    "named": false
+  },
+  {
+    "type": ">",
+    "named": false
+  },
+  {
+    "type": "Ref",
+    "named": false
   },
   {
     "type": "Table",

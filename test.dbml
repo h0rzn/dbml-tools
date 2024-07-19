@@ -1,0 +1,5 @@
+Table myTable {
+	col type
+}
+
+Ref: tabA.colA - tabB.colB
