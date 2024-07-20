@@ -8,18 +8,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "dbml-lsp-ts",
-	Short: "A dbml language server based on tree-sitter based on tree-sitter",
-	Long:  "",
-}
-
-var devCmd = &cobra.Command{
-	Use:   "dev cmd",
-	Short: "",
+var validateCmd = &cobra.Command{
+	Use:   "validate",
+	Short: "Validate a file directly",
 	Long:  "",
 	Run: func(cmd *cobra.Command, args []string) {
-		path := "./test.dbml"
+		if len(args) == 0 {
+			fmt.Println("Error: no input file")
+			return
+		}
+		if len(args) > 1 {
+			fmt.Printf("Warning: only parsing first input file %q\n", args[0])
+		}
+		path := args[0]
+		fmt.Println("++ parsing:", path)
 
 		language := language.GetLanguage()
 		if language == nil {
@@ -38,19 +40,6 @@ var devCmd = &cobra.Command{
 			fmt.Println(err)
 		}
 
-		document.ContentsByPosition(0, 6)
+		document.PrintAST()
 	},
-}
-
-func Execute() error {
-	return rootCmd.Execute()
-}
-
-func init() {
-	rootCmd.AddCommand(lspCmd)
-	rootCmd.AddCommand(parseCmd)
-	rootCmd.AddCommand(queryCmd)
-	rootCmd.AddCommand(validateCmd)
-
-	rootCmd.AddCommand(devCmd)
 }
