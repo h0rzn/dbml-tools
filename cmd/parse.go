@@ -36,7 +36,6 @@ var queryCmd = &cobra.Command{
 	Short: "Query a file directly",
 	Long:  "",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("querying")
 		if len(args) != 2 {
 			fmt.Println("Error: provide file and query")
 			return
@@ -54,8 +53,13 @@ var queryCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err)
 		}
-		for _, node := range nodes {
-			fmt.Println(node.String(), document.Contents(node.StartByte(), node.EndByte()))
+		fmt.Printf("Found %d matches\n\n", len(nodes))
+
+		for nodeIndex, node := range nodes {
+			// nodeRange := node.Range().StartByte
+			fmt.Printf("[%02d]\n", nodeIndex)
+			fmt.Printf("Expression:\n\t%q\n", node.String())
+			fmt.Printf("Result:\n\t%q\n", document.Contents(node.StartByte(), node.EndByte()))
 		}
 
 	},

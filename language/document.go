@@ -84,7 +84,7 @@ func (d *Document) Query(query string) ([]*sitter.Node, error) {
 		if !exists {
 			return results, nil
 		}
-		// fmt.Printf("match: %+v\n", match)
+		// fmt.Printf("match: %+v\n", match.Captures[0].Node.)
 		for _, capture := range match.Captures {
 			// val := d.fileContents[capture.Node.StartByte():capture.Node.EndByte()]
 			// fmt.Printf("\t %+v\n:: %q\n", capture, val)
