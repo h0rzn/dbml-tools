@@ -1,10 +1,4 @@
-Table tabB {
-	colB type aaa nn
-	a	b
+Table user {
+	name text a
+	col text b
 }
-
-Table tabA {
-	colA type
-}
-
-Ref: tabA.colA - tabB.colB

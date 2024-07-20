@@ -12,6 +12,7 @@ import (
 )
 
 var ErrDefinitionMissingDestination = errors.New("failed to find match")
+var ErrOutOfBoundsFileContents = errors.New("input access parameters are out of bounds for file contents")
 
 type Document struct {
 	tree         *sitter.Tree
@@ -19,6 +20,7 @@ type Document struct {
 	language     *sitter.Language
 	item         protocol.TextDocumentItem
 	fileContents []byte
+	tabWidth     int
 }
 
 func NewDocument(item protocol.TextDocumentItem) *Document {
@@ -84,24 +86,36 @@ func (d *Document) Query(query string) ([]*sitter.Node, error) {
 		if !exists {
 			return results, nil
 		}
-		// fmt.Printf("match: %+v\n", match.Captures[0].Node.)
 		for _, capture := range match.Captures {
-			// val := d.fileContents[capture.Node.StartByte():capture.Node.EndByte()]
-			// fmt.Printf("\t %+v\n:: %q\n", capture, val)
 			results = append(results, capture.Node)
 		}
 
 	}
 }
 
-func (d *Document) Contents(startByte uint32, endByte uint32) string {
-	// TODO: handle out of bounds
-	return string(d.fileContents[startByte:endByte])
+func (d *Document) Contents(startByte uint32, endByte uint32) (string, error) {
+	if int(endByte) > len(d.fileContents) {
+		return "", ErrOutOfBoundsFileContents
+	}
+	return string(d.fileContents[startByte:endByte]), nil
 }
 
-func (d *Document) ContentsLine(startByte uint32, endByte uint32) string {
-	// TODO: handle out of bounds
-	return string(d.fileContents[startByte:endByte])
+func (d *Document) ContentsLine(startByte uint32, endByte uint32) (string, error) {
+	if int(endByte) > len(d.fileContents) {
+		return "", ErrOutOfBoundsFileContents
+	}
+
+	contentsAfterStart := d.fileContents[startByte:]
+
+	var builder strings.Builder
+	for _, contentsByte := range contentsAfterStart {
+		if contentsByte == '\n' {
+			break
+		}
+		builder.WriteByte(contentsByte)
+	}
+
+	return builder.String(), nil
 }
 
 func (d *Document) ContentsByPosition(line uint32, column uint32) (string, error) {
@@ -171,7 +185,10 @@ func (d *Document) LocateTable(line uint32, offset uint32) (outLine uint32, outO
 		return 0, 0, err
 	}
 	for _, node := range nodes {
-		nodeValue := d.Contents(node.StartByte(), node.EndByte())
+		nodeValue, err := d.Contents(node.StartByte(), node.EndByte())
+		if err != nil {
+			return 0, 0, err
+		}
 		nodePoint := node.StartPoint()
 		if nodeValue == srcValue && nodePoint != srcPoint {
 			fmt.Println("match", nodeValue, nodePoint, node.StartByte(), "is", srcValue, srcPoint)

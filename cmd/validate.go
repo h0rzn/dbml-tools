@@ -25,6 +25,5 @@ var validateCmd = &cobra.Command{
 			return
 		}
 		language.ValidateDocument(document)
-
 	},
 }
