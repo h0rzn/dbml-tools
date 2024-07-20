@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/h0rzn/dbml-lsp-ts/language"
-	"github.com/h0rzn/dbml-lsp-ts/lsp"
 	"github.com/spf13/cobra"
 )
 
@@ -21,18 +20,13 @@ var devCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		path := "./test.dbml"
 
-		language := language.GetLanguage()
-		if language == nil {
-			fmt.Println("Error: failed to get language")
-		}
-
 		documentItem, err := createDocumentItem(path)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		document := lsp.NewDocument(language, documentItem)
+		document := language.NewDocument(documentItem)
 		err = document.Init()
 		if err != nil {
 			fmt.Println(err)

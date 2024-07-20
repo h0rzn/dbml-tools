@@ -3,6 +3,7 @@ package lsp
 import (
 	"fmt"
 
+	"github.com/h0rzn/dbml-lsp-ts/language"
 	sitter "github.com/smacker/go-tree-sitter"
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -17,7 +18,7 @@ var (
 type Server struct {
 	language  *sitter.Language
 	lspServer *server.Server
-	document  *Document
+	document  *language.Document
 }
 
 func NewServer(language *sitter.Language) *Server {
@@ -76,7 +77,7 @@ func (s *Server) TextDocumentDidOpen(context *glsp.Context, params *protocol.Did
 	fmt.Println("[DID_OPEN]", params.TextDocument.URI, s.language)
 
 	// TODO: handle existing document
-	document := NewDocument(s.language, params.TextDocument)
+	document := language.NewDocument(params.TextDocument)
 	err := document.Init()
 	if err != nil {
 		fmt.Println(err)

@@ -2,23 +2,14 @@
 Content-Length: 189
 
 {"id":1,"result":{"capabilities":{"textDocumentSync":{"openClose":true},"completionProvider":{},"definitionProvider":true},"serverInfo":{"name":"dbml-lsp","version":"0.1"}},"jsonrpc":"2.0"}[INITIALIZED]
-[DID_OPEN] file:///Users/theo/go/src/github.com/h0rzn/dbml-lsp-ts/test.dbml &{0x104e785d0}
+[DID_OPEN] file:///Users/theo/go/src/github.com/h0rzn/dbml-lsp-ts/test.dbml &{0x104d9c5d0}
 [DEFINITION]
 -- Locate Table --
-**src: position {8:6} to offset 60/81
-   -> sample: "abA.colA -"
+**src: position {8:5} to offset 59/81
+   -> sample: "tabA.colA "
 **src result <identifier>: "tabA" ###
-++ found source item "tabA" @ {Row:8 Column:6}
-match tabA {4 6} 33 is tabA {8 6}
+++ found source item "tabA" @ {Row:8 Column:5}
+match tabA {4 6} 33 is tabA {8 5}
 Content-Length: 182
 
-{"id":2,"result":{"uri":"file:///Users/theo/go/src/github.com/h0rzn/dbml-lsp-ts/test.dbml","range":{"start":{"line":4,"character":6},"end":{"line":4,"character":6}}},"jsonrpc":"2.0"}[DEFINITION]
--- Locate Table --
-**src: position {8:17} to offset 71/81
-   -> sample: "tabB.colB\n"
-**src result <identifier>: "tabB" ###
-++ found source item "tabB" @ {Row:8 Column:17}
-match tabB {0 6} 6 is tabB {8 17}
-Content-Length: 182
-
-{"id":3,"result":{"uri":"file:///Users/theo/go/src/github.com/h0rzn/dbml-lsp-ts/test.dbml","range":{"start":{"line":0,"character":6},"end":{"line":0,"character":6}}},"jsonrpc":"2.0"}
+{"id":2,"result":{"uri":"file:///Users/theo/go/src/github.com/h0rzn/dbml-lsp-ts/test.dbml","range":{"start":{"line":4,"character":6},"end":{"line":4,"character":6}}},"jsonrpc":"2.0"}

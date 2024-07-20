@@ -1,4 +1,4 @@
-package lsp
+package language
 
 import (
 	"bytes"
@@ -21,15 +21,18 @@ type Document struct {
 	fileContents []byte
 }
 
-func NewDocument(language *sitter.Language, item protocol.TextDocumentItem) *Document {
+func NewDocument(item protocol.TextDocumentItem) *Document {
 	return &Document{
-		language:     language,
+		language:     GetLanguage(),
 		item:         item,
 		fileContents: make([]byte, 0),
 	}
 }
 
 func (d *Document) Init() error {
+	if d.language == nil {
+		return errors.New("failed to get language")
+	}
 	parser := sitter.NewParser()
 	parser.SetLanguage(d.language)
 	d.parser = parser

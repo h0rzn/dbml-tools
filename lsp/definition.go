@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/h0rzn/dbml-lsp-ts/language"
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -17,7 +18,7 @@ func (s *Server) TextDocumentDefinition(context *glsp.Context, params *protocol.
 
 	line, offset, err := s.document.LocateTable(params.Position.Line, params.Position.Character)
 	if err != nil {
-		if errors.Is(err, ErrDefinitionMissingDestination) {
+		if errors.Is(err, language.ErrDefinitionMissingDestination) {
 			resultLocation.Range = protocol.Range{
 				Start: protocol.Position{
 					Line:      params.Position.Line,

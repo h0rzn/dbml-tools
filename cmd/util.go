@@ -1,27 +1,20 @@
 package cmd
 
 import (
-	"errors"
 	"io"
 	"os"
 
 	"github.com/h0rzn/dbml-lsp-ts/language"
-	"github.com/h0rzn/dbml-lsp-ts/lsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-func documentFromArg(pathArg string) (*lsp.Document, error) {
-	language := language.GetLanguage()
-	if language == nil {
-		return nil, errors.New("failed to get language")
-	}
-
+func documentFromArg(pathArg string) (*language.Document, error) {
 	documentItem, err := createDocumentItem(pathArg)
 	if err != nil {
 		return nil, err
 	}
 
-	document := lsp.NewDocument(language, documentItem)
+	document := language.NewDocument(documentItem)
 	err = document.Init()
 	if err != nil {
 		return nil, err
