@@ -1,5 +1,6 @@
 Table tabB {
-	colB type
+	colB type aaa nn
+	a	b
 }
 
 Table tabA {

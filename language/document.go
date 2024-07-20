@@ -56,6 +56,10 @@ func (d *Document) parse(fileContents []byte) (*sitter.Tree, error) {
 	return tree, nil
 }
 
+func (d *Document) TreeCursor() *sitter.TreeCursor {
+	return sitter.NewTreeCursor(d.tree.RootNode())
+}
+
 func (d *Document) PrintAST() {
 	d.printTree(d.tree.RootNode(), 0)
 }
@@ -91,6 +95,11 @@ func (d *Document) Query(query string) ([]*sitter.Node, error) {
 }
 
 func (d *Document) Contents(startByte uint32, endByte uint32) string {
+	// TODO: handle out of bounds
+	return string(d.fileContents[startByte:endByte])
+}
+
+func (d *Document) ContentsLine(startByte uint32, endByte uint32) string {
 	// TODO: handle out of bounds
 	return string(d.fileContents[startByte:endByte])
 }

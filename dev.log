@@ -2,14 +2,27 @@
 Content-Length: 189
 
 {"id":1,"result":{"capabilities":{"textDocumentSync":{"openClose":true},"completionProvider":{},"definitionProvider":true},"serverInfo":{"name":"dbml-lsp","version":"0.1"}},"jsonrpc":"2.0"}[INITIALIZED]
-[DID_OPEN] file:///Users/theo/go/src/github.com/h0rzn/dbml-lsp-ts/test.dbml &{0x104d9c5d0}
-[DEFINITION]
--- Locate Table --
-**src: position {8:5} to offset 59/81
-   -> sample: "tabA.colA "
-**src result <identifier>: "tabA" ###
-++ found source item "tabA" @ {Row:8 Column:5}
-match tabA {4 6} 33 is tabA {8 5}
-Content-Length: 182
+[DID_OPEN] file:///Users/theo/go/src/github.com/h0rzn/dbml-lsp-ts/test.dbml &{0x1049985d0}
+completion triggered
+Content-Length: 93
 
-{"id":2,"result":{"uri":"file:///Users/theo/go/src/github.com/h0rzn/dbml-lsp-ts/test.dbml","range":{"start":{"line":4,"character":6},"end":{"line":4,"character":6}}},"jsonrpc":"2.0"}
+{"id":2,"result":[{"label":"label","detail":"detail","insertText":"insert"}],"jsonrpc":"2.0"}completion triggered
+Content-Length: 93
+
+{"id":3,"result":[{"label":"label","detail":"detail","insertText":"insert"}],"jsonrpc":"2.0"}completion triggered
+Content-Length: 93
+
+{"id":4,"result":[{"label":"label","detail":"detail","insertText":"insert"}],"jsonrpc":"2.0"}completion triggered
+Content-Length: 93
+
+{"id":5,"result":[{"label":"label","detail":"detail","insertText":"insert"}],"jsonrpc":"2.0"}completion triggered
+Content-Length: 93
+
+{"id":6,"result"[DID_OPEN] file:///Users/theo/go/src/github.com/h0rzn/dbml-lsp-ts/test.dbml &{0x104d9c5d0}
+ggered
+Content-Length: 93
+
+{"id":7,"result":[{"label":"label","detail":"detail","insertText":"insert"}],"jsonrpc":"2.0"}[SHUTDOWN]
+Content-Length: 38
+
+{"id":8,"result":null,"jsonrpc":"2.0"}
