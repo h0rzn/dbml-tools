@@ -16,7 +16,7 @@ func (s *Server) TextDocumentDefinition(context *glsp.Context, params *protocol.
 		URI: params.TextDocument.URI,
 	}
 
-	line, offset, err := s.document.LocateTable(params.Position.Line, params.Position.Character)
+	line, offset, err := language.LocateTable(s.document, params.Position.Line, params.Position.Character)
 	if err != nil {
 		if errors.Is(err, language.ErrDefinitionMissingDestination) {
 			resultLocation.Range = protocol.Range{

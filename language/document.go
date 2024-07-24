@@ -76,25 +76,6 @@ func (d *Document) printTree(node *sitter.Node, indentLevel int, errorsOnly bool
 	}
 }
 
-func (d *Document) Query(query string) ([]*sitter.Node, error) {
-	results := make([]*sitter.Node, 0)
-	cursor, err := d.queryWithCursor(query)
-	if err != nil {
-		return results, err
-	}
-
-	for {
-		match, exists := cursor.NextMatch()
-		if !exists {
-			return results, nil
-		}
-		for _, capture := range match.Captures {
-			results = append(results, capture.Node)
-		}
-
-	}
-}
-
 func (d *Document) Contents(startByte uint32, endByte uint32) (string, error) {
 	if int(endByte) > len(d.fileContents) {
 		return "", ErrOutOfBoundsFileContents
@@ -163,82 +144,4 @@ func (d *Document) OffsetByPosition(line uint32, column uint32) int {
 	}
 
 	return byteOffset
-}
-
-func (d *Document) LocateTable(line uint32, offset uint32) (outLine uint32, outOffset uint32, err error) {
-	fmt.Println("-- Locate Table --")
-	srcValue, err := d.ContentsByPosition(line, offset)
-	if err != nil {
-		return 0, 0, err
-	}
-	srcPoint := sitter.Point{
-		Row:    line,
-		Column: offset,
-	}
-	fmt.Printf("++ found source item %q @ %+v\n", srcValue, srcPoint)
-
-	query := `(table_definition
-		    (table_name
-		      (identifier) @table_name_value))
-		`
-
-	nodes, err := d.Query(query)
-	if err != nil {
-		return 0, 0, err
-	}
-	for _, node := range nodes {
-		nodeValue, err := d.Contents(node.StartByte(), node.EndByte())
-		if err != nil {
-			return 0, 0, err
-		}
-		nodePoint := node.StartPoint()
-		if nodeValue == srcValue && nodePoint != srcPoint {
-			fmt.Println("match", nodeValue, nodePoint, node.StartByte(), "is", srcValue, srcPoint)
-			return node.StartPoint().Row, node.StartPoint().Column, nil
-		}
-	}
-
-	fmt.Printf("!! failed to find match for %q", srcValue)
-	return 0, 0, ErrDefinitionMissingDestination
-}
-
-func (d *Document) getValue(line uint32, offset uint32) string {
-	fmt.Println("++ GetValue", line, offset)
-	rawQuery := `
-		(_ ) @node
-	`
-	query, err := sitter.NewQuery([]byte(rawQuery), d.language)
-	if err != nil {
-		return ""
-	}
-	cursor := sitter.NewQueryCursor()
-	defer cursor.Close()
-	cursor.Exec(query, d.tree.RootNode())
-
-	match, exists := cursor.NextMatch()
-	fmt.Println("++ GetValue: nextMatch:", match, exists)
-	if !exists {
-		return ""
-	}
-	// match = cursor.FilterPredicates(match, d.fileContents)
-	for _, capture := range match.Captures {
-		node := capture.Node
-		startPoint := node.StartPoint()
-		fmt.Printf("# cur node {%d:%d} inp {%d:%d}\n", startPoint.Row, startPoint.Column, line, offset)
-		if startPoint.Row == line && startPoint.Column == offset {
-			return node.Content(d.fileContents)
-		}
-	}
-
-	return ""
-}
-
-func (d *Document) queryWithCursor(rawQuery string) (*sitter.QueryCursor, error) {
-	query, err := sitter.NewQuery([]byte(rawQuery), d.language)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create query: %q", string(rawQuery))
-	}
-	cursor := sitter.NewQueryCursor()
-	cursor.Exec(query, d.tree.RootNode())
-	return cursor, nil
 }
