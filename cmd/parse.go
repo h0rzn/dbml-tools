@@ -6,6 +6,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var ErrorsOnly bool
+
 var parseCmd = &cobra.Command{
 	Use:   "parse",
 	Short: "Parse a file directly",
@@ -27,7 +29,11 @@ var parseCmd = &cobra.Command{
 			return
 		}
 
-		document.PrintAST()
+		flags := cmd.Flags()
+		errorOnlyFlag := flags.Lookup("errorOnly")
+		errorsOnly := errorOnlyFlag.Changed
+
+		document.PrintAST(errorsOnly)
 	},
 }
 

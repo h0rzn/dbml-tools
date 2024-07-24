@@ -62,15 +62,17 @@ func (d *Document) TreeCursor() *sitter.TreeCursor {
 	return sitter.NewTreeCursor(d.tree.RootNode())
 }
 
-func (d *Document) PrintAST() {
-	d.printTree(d.tree.RootNode(), 0)
+func (d *Document) PrintAST(errorsOnly bool) {
+	d.printTree(d.tree.RootNode(), 0, errorsOnly)
 }
 
-func (d *Document) printTree(node *sitter.Node, indentLevel int) {
-	fmt.Printf("%s%s\n", strings.Repeat("  ", indentLevel), node.String())
+func (d *Document) printTree(node *sitter.Node, indentLevel int, errorsOnly bool) {
+	if !errorsOnly || node.IsError() {
+		fmt.Printf("%s%s (%d:%d)\n", strings.Repeat("  ", indentLevel), node.String(), node.StartPoint().Row, node.StartPoint().Column)
+	}
 	for i := 0; i < int(node.ChildCount()); i++ {
 		child := node.Child(i)
-		d.printTree(child, indentLevel+1)
+		d.printTree(child, indentLevel+1, errorsOnly)
 	}
 }
 

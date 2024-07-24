@@ -42,7 +42,10 @@ func Execute() error {
 
 func init() {
 	rootCmd.AddCommand(lspCmd)
+
+	parseCmd.Flags().BoolVarP(&ErrorsOnly, "errorOnly", "e", false, "Only show errors as output")
 	rootCmd.AddCommand(parseCmd)
+
 	rootCmd.AddCommand(queryCmd)
 	rootCmd.AddCommand(validateCmd)
 
