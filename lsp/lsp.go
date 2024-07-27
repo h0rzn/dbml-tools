@@ -36,6 +36,7 @@ func (s *Server) Init() {
 		TextDocumentCompletion: TestCompletion,
 		TextDocumentDefinition: s.TextDocumentDefinition,
 		TextDocumentDidOpen:    s.TextDocumentDidOpen,
+		TextDocumentHover:      s.TextDocumentHover,
 	}
 	s.lspServer = server.NewServer(&handler, "dbml-lsp-ts", false)
 }

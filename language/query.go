@@ -67,6 +67,17 @@ func queryWithCursor(document *Document, rawQuery string) (*sitter.QueryCursor, 
 	return cursor, nil
 }
 
+type LocateResult struct {
+	Start LocatePosition
+	End   LocatePosition
+}
+
+type LocatePosition struct {
+	Row    uint32
+	Column uint32
+	Offset uint32
+}
+
 func Locate(document *Document, line uint32, offset uint32) (outLine uint32, outOffset uint32, err error) {
 	result, err := document.NodeAt(line, offset)
 	if err != nil {
@@ -75,15 +86,23 @@ func Locate(document *Document, line uint32, offset uint32) (outLine uint32, out
 
 	switch result.Node.Type() {
 	case "column_name":
-		return locateColumn(document, result)
+		result, err := locateColumn(document, result)
+		if err != nil {
+			return 0, 0, err
+		}
+		return result.Start.Row, result.Start.Column, nil
 	case "table_name":
-		return locateTable(document, result)
+		result, err := locateTable(document, result)
+		if err != nil {
+			return 0, 0, err
+		}
+		return result.Start.Row, result.Start.Column, nil
 	default:
 		return 0, 0, errors.New("Locate: unsupported node type")
 	}
 }
 
-func locateTable(document *Document, result *NodeAtResult) (outLine uint32, outOffset uint32, err error) {
+func locateTable(document *Document, result *NodeAtResult) (*LocateResult, error) {
 	if result.Parent.Type() == "relationship_definition_side" {
 		// source: relationship
 		// destination: table
@@ -94,19 +113,31 @@ func locateTable(document *Document, result *NodeAtResult) (outLine uint32, outO
 		// column
 		dstTableNode, err := tableByName(document, resultParentValue)
 		if err != nil {
-			return 0, 0, err
+			return nil, err
 		}
 
 		fmt.Printf("dst node: %+v\n", dstTableNode)
-		dstStartPoint := dstTableNode.Range().StartPoint
-		return dstStartPoint.Row, dstStartPoint.Column, nil
 
+		locateResult := &LocateResult{
+			Start: LocatePosition{
+				Row:    dstTableNode.StartPoint().Row,
+				Column: dstTableNode.StartPoint().Row,
+				Offset: dstTableNode.StartByte(),
+			},
+			End: LocatePosition{
+				Row:    dstTableNode.EndPoint().Row,
+				Column: dstTableNode.EndPoint().Row,
+				Offset: dstTableNode.EndByte(),
+			},
+		}
+
+		return locateResult, nil
 	}
 
-	return 0, 0, errors.New("locateTable: unsupported parent type")
+	return nil, errors.New("locateTable: unsupported parent type")
 }
 
-func locateColumn(document *Document, result *NodeAtResult) (outLine uint32, outOffset uint32, err error) {
+func locateColumn(document *Document, result *NodeAtResult) (*LocateResult, error) {
 	if result.Parent.Type() == "relationship_definition_side" {
 		// source: relationship
 		// destination: column in table
@@ -118,15 +149,27 @@ func locateColumn(document *Document, result *NodeAtResult) (outLine uint32, out
 		resultNodeValue := result.Node.Content(document.fileContents)
 		dstTableNode, err := columnByValues(document, resultParentValue, resultNodeValue)
 		if err != nil {
-			return 0, 0, err
+			return nil, err
 		}
 
-		dstStartPoint := dstTableNode.Range().StartPoint
+		// dstStartPoint := dstTableNode.Range().StartPoint
+		locateResult := &LocateResult{
+			Start: LocatePosition{
+				Row:    dstTableNode.StartPoint().Row,
+				Column: dstTableNode.StartPoint().Row,
+				Offset: dstTableNode.StartByte(),
+			},
+			End: LocatePosition{
+				Row:    dstTableNode.EndPoint().Row,
+				Column: dstTableNode.EndPoint().Row,
+				Offset: dstTableNode.EndByte(),
+			},
+		}
 
-		return dstStartPoint.Row, dstStartPoint.Column, nil
+		return locateResult, nil
 	}
 
-	return 0, 0, errors.New("locateTable: unsupported parent type")
+	return nil, errors.New("locateTable: unsupported parent type")
 }
 
 func columnByValues(document *Document, tableName string, columnName string) (*sitter.Node, error) {

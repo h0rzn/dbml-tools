@@ -156,8 +156,8 @@ func (d *Document) OffsetByPosition(line uint32, column uint32) (int, error) {
 
 type NodeAtResult struct {
 	Node       *sitter.Node
-	ParentType string
 	Parent     *sitter.Node
+	ParentType string
 	NodeIndex  int64
 }
 
