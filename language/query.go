@@ -85,13 +85,13 @@ func Locate(document *Document, line uint32, offset uint32) (outLine uint32, out
 	}
 
 	switch result.Node.Type() {
-	case "column_name":
+	case TSVColumnName:
 		result, err := locateColumn(document, result)
 		if err != nil {
 			return 0, 0, err
 		}
 		return result.Start.Row, result.Start.Column, nil
-	case "table_name":
+	case TSVTableName:
 		result, err := locateTable(document, result)
 		if err != nil {
 			return 0, 0, err
@@ -103,7 +103,7 @@ func Locate(document *Document, line uint32, offset uint32) (outLine uint32, out
 }
 
 func locateTable(document *Document, result *NodeAtResult) (*LocateResult, error) {
-	if result.Parent.Type() == "relationship_definition_side" {
+	if result.Parent.Type() == TSDRelationshipSide {
 		// source: relationship
 		// destination: table
 
@@ -138,7 +138,7 @@ func locateTable(document *Document, result *NodeAtResult) (*LocateResult, error
 }
 
 func locateColumn(document *Document, result *NodeAtResult) (*LocateResult, error) {
-	if result.Parent.Type() == "relationship_definition_side" {
+	if result.Parent.Type() == TSDRelationshipSide {
 		// source: relationship
 		// destination: column in table
 
@@ -183,7 +183,7 @@ func columnByValues(document *Document, tableName string, columnName string) (*s
 	}
 
 	for _, tableNode := range nodes {
-		tableNameNode := tableNode.ChildByFieldName("table_name")
+		tableNameNode := tableNode.ChildByFieldName(TSVTableName)
 		if tableNameNode == nil {
 			continue
 		}
@@ -194,11 +194,11 @@ func columnByValues(document *Document, tableName string, columnName string) (*s
 			var i uint32
 			for i = 0; i < childCount; i++ {
 				child := tableNode.Child(int(i))
-				if child.Type() != "column_definition" {
+				if child.Type() != TSDColumn {
 					continue
 				}
 
-				columnNameNode := child.ChildByFieldName("col_name")
+				columnNameNode := child.ChildByFieldName(TSVColumnNameValue)
 				if columnNameNode == nil {
 					continue
 				}
@@ -227,7 +227,7 @@ func tableByName(document *Document, tableName string) (*sitter.Node, error) {
 	}
 
 	for _, tableNode := range nodes {
-		tableNameNode := tableNode.ChildByFieldName("table_name")
+		tableNameNode := tableNode.ChildByFieldName(TSVTableName)
 		if tableNameNode == nil {
 			continue
 		}

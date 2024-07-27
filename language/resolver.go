@@ -15,7 +15,7 @@ func ResolveAt(document *Document, line uint32, column uint32) (ResolveResult, e
 	}
 
 	switch src.Node.Type() {
-	case "column_name":
+	case TSVColumnName:
 		result, err := locateColumn(document, src)
 		if err != nil {
 			return resolveResult, err
@@ -24,7 +24,7 @@ func ResolveAt(document *Document, line uint32, column uint32) (ResolveResult, e
 		content, _ := document.ContentsRange(result.Start.Offset, result.End.Offset)
 		resolveResult.Content = string(content)
 
-	case "table_name":
+	case TSVTableName:
 		result, err := locateTable(document, src)
 		if err != nil {
 			return resolveResult, err
