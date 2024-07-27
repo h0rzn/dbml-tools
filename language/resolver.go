@@ -20,7 +20,8 @@ func ResolveAt(document *Document, line uint32, column uint32) (ResolveResult, e
 		if err != nil {
 			return resolveResult, err
 		}
-		content := document.fileContents[result.Start.Offset:result.End.Offset]
+
+		content, _ := document.ContentsRange(result.Start.Offset, result.End.Offset)
 		resolveResult.Content = string(content)
 
 	case "table_name":
@@ -28,11 +29,11 @@ func ResolveAt(document *Document, line uint32, column uint32) (ResolveResult, e
 		if err != nil {
 			return resolveResult, err
 		}
-		content := document.fileContents[result.Start.Offset:result.End.Offset]
+
+		content, _ := document.ContentsRange(result.Start.Offset, result.End.Offset)
 		resolveResult.Content = string(content)
 
 	default:
-		// return 0, 0, errors.New("Locate: unsupported node type")
 		return ResolveResult{Content: "", Resolved: false}, nil
 	}
 

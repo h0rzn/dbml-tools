@@ -32,14 +32,12 @@ var devCmd = &cobra.Command{
 			fmt.Println(err)
 		}
 
-		line, offset, err := language.Locate(document, 5, 11)
-		// line, offset, err := language.Locate(document, 5, 6)
-		// line, offset, err := language.Locate(document, 0, 7)
+		result, err := language.ResolveAt(document, 5, 11)
 		if err != nil {
 			fmt.Println("Error: ", err.Error())
 			return
 		}
-		fmt.Println(line, offset)
+		_ = result
 	},
 }
 

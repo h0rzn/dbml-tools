@@ -14,7 +14,7 @@ func ValidateDocument(document *Document) {
 }
 
 func printWithErrors(document *Document, errNodes []*sitter.Node) {
-	contents := document.fileContents
+	contents := document.Contents()
 	var errNodeRanges []sitter.Range
 	for _, errNode := range errNodes {
 		errNodeRanges = append(errNodeRanges, errNode.Range())

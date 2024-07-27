@@ -50,7 +50,7 @@ func getValue(document *Document, line uint32, offset uint32) string {
 		startPoint := node.StartPoint()
 		fmt.Printf("# cur node {%d:%d} inp {%d:%d}\n", startPoint.Row, startPoint.Column, line, offset)
 		if startPoint.Row == line && startPoint.Column == offset {
-			return node.Content(document.fileContents)
+			return node.Content(document.Contents())
 		}
 	}
 
@@ -109,7 +109,7 @@ func locateTable(document *Document, result *NodeAtResult) (*LocateResult, error
 
 		// find destination node by table and column name
 		resultParentNode := result.Parent.Child(0)
-		resultParentValue := resultParentNode.Content(document.fileContents)
+		resultParentValue := resultParentNode.Content(document.Contents())
 		// column
 		dstTableNode, err := tableByName(document, resultParentValue)
 		if err != nil {
@@ -144,9 +144,9 @@ func locateColumn(document *Document, result *NodeAtResult) (*LocateResult, erro
 
 		// find destination node by table and column name
 		resultParentNode := result.Parent.Child(0)
-		resultParentValue := resultParentNode.Content(document.fileContents)
+		resultParentValue := resultParentNode.Content(document.Contents())
 		// column
-		resultNodeValue := result.Node.Content(document.fileContents)
+		resultNodeValue := result.Node.Content(document.Contents())
 		dstTableNode, err := columnByValues(document, resultParentValue, resultNodeValue)
 		if err != nil {
 			return nil, err
@@ -188,7 +188,7 @@ func columnByValues(document *Document, tableName string, columnName string) (*s
 			continue
 		}
 		// compare table names
-		if tableNameNode.Content(document.fileContents) == tableName {
+		if tableNameNode.Content(document.Contents()) == tableName {
 			childCount := tableNode.ChildCount()
 			fmt.Println("+ children:", childCount)
 			var i uint32
@@ -202,7 +202,7 @@ func columnByValues(document *Document, tableName string, columnName string) (*s
 				if columnNameNode == nil {
 					continue
 				}
-				dstColumnName := columnNameNode.Content(document.fileContents)
+				dstColumnName := columnNameNode.Content(document.Contents())
 
 				fmt.Println("\t column def child", child.Type(), dstColumnName)
 				if dstColumnName == columnName {
@@ -232,7 +232,7 @@ func tableByName(document *Document, tableName string) (*sitter.Node, error) {
 			continue
 		}
 		// compare table names
-		if tableNameNode.Content(document.fileContents) == tableName {
+		if tableNameNode.Content(document.Contents()) == tableName {
 			return tableNode, nil
 		}
 	}

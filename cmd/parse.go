@@ -67,10 +67,7 @@ var queryCmd = &cobra.Command{
 			// nodeRange := node.Range().StartByte
 			fmt.Printf("[%02d]\n", nodeIndex)
 			fmt.Printf("Expression:\n\t%q\n", node.String())
-			contents, err := document.Contents(node.StartByte(), node.EndByte())
-			if err != nil {
-				contents = "[Unkown contents due to error]"
-			}
+			contents, _ := document.ContentsRange(node.StartByte(), node.EndByte())
 			fmt.Printf("Result:\n\t%q\n", contents)
 		}
 

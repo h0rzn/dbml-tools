@@ -50,7 +50,21 @@ func (d *Document) Init() error {
 	return err
 }
 
-func (d *Document) FileContents() []byte {
+// Get Contents in Range
+// returns empty slice if out of bounds
+func (d *Document) ContentsRange(startByte uint32, endByte uint32) (contents []byte, truncated bool) {
+	if len(d.fileContents) == 0 {
+		return make([]byte, 0), false
+	}
+	if int(endByte) >= len(d.fileContents) {
+		endByte = uint32(len(d.fileContents) - 1)
+		truncated = true
+	}
+
+	return d.fileContents[startByte:endByte], truncated
+}
+
+func (d *Document) Contents() []byte {
 	return d.fileContents
 }
 
@@ -80,12 +94,12 @@ func (d *Document) printTree(node *sitter.Node, indentLevel int, errorsOnly bool
 	}
 }
 
-func (d *Document) Contents(startByte uint32, endByte uint32) (string, error) {
-	if int(endByte) > len(d.fileContents) {
-		return "", ErrOutOfBoundsFileContents
-	}
-	return string(d.fileContents[startByte:endByte]), nil
-}
+// func (d *Document) Contents(startByte uint32, endByte uint32) (string, error) {
+// 	if int(endByte) > len(d.fileContents) {
+// 		return "", ErrOutOfBoundsFileContents
+// 	}
+// 	return string(d.fileContents[startByte:endByte]), nil
+// }
 
 func (d *Document) ContentsLine(startByte uint32, endByte uint32) (string, error) {
 	if int(endByte) > len(d.fileContents) {
