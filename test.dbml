@@ -1,4 +1,10 @@
 Table user {
-	name text a
-	col text b
+	name text123123
+	col text
+}
+
+Ref: user.col - user.col
+
+Table product {
+	id int
 }

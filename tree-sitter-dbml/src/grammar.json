@@ -33,8 +33,12 @@
           "name": "_space"
         },
         {
-          "type": "SYMBOL",
-          "name": "table_name"
+          "type": "FIELD",
+          "name": "table_name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "table_name"
+          }
         },
         {
           "type": "SYMBOL",
@@ -49,10 +53,14 @@
           "name": "_newline"
         },
         {
-          "type": "REPEAT",
+          "type": "FIELD",
+          "name": "column",
           "content": {
-            "type": "SYMBOL",
-            "name": "column_definition"
+            "type": "REPEAT",
+            "content": {
+              "type": "SYMBOL",
+              "name": "column_definition"
+            }
           }
         },
         {
@@ -62,8 +70,12 @@
       ]
     },
     "table_name": {
-      "type": "SYMBOL",
-      "name": "identifier"
+      "type": "FIELD",
+      "name": "table_name",
+      "content": {
+        "type": "SYMBOL",
+        "name": "_hidden_identifier"
+      }
     },
     "column_definition": {
       "type": "SEQ",
@@ -212,24 +224,16 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "FIELD",
-          "name": "relationship_table_name",
-          "content": {
-            "type": "SYMBOL",
-            "name": "identifier"
-          }
+          "type": "SYMBOL",
+          "name": "table_name"
         },
         {
-          "type": "STRING",
-          "value": "."
+          "type": "SYMBOL",
+          "name": "_dot"
         },
         {
-          "type": "FIELD",
-          "name": "relationship_column_name",
-          "content": {
-            "type": "SYMBOL",
-            "name": "identifier"
-          }
+          "type": "SYMBOL",
+          "name": "column_name"
         }
       ]
     },
@@ -254,6 +258,18 @@
         }
       ]
     },
+    "column_name": {
+      "type": "FIELD",
+      "name": "column_name",
+      "content": {
+        "type": "SYMBOL",
+        "name": "_hidden_identifier"
+      }
+    },
+    "_hidden_identifier": {
+      "type": "PATTERN",
+      "value": "[a-zA-Z0-9_-]+"
+    },
     "identifier": {
       "type": "PATTERN",
       "value": "[a-zA-Z0-9_-]+"
@@ -265,6 +281,10 @@
     "_space": {
       "type": "STRING",
       "value": " "
+    },
+    "_dot": {
+      "type": "STRING",
+      "value": "."
     }
   },
   "extras": [

@@ -1,6 +1,7 @@
 package language
 
 import (
+	"errors"
 	"fmt"
 
 	sitter "github.com/smacker/go-tree-sitter"
@@ -66,39 +67,131 @@ func queryWithCursor(document *Document, rawQuery string) (*sitter.QueryCursor, 
 	return cursor, nil
 }
 
-func LocateTable(document *Document, line uint32, offset uint32) (outLine uint32, outOffset uint32, err error) {
-	fmt.Println("-- Locate Table --")
-	srcValue, err := document.ContentsByPosition(line, offset)
+func Locate(document *Document, line uint32, offset uint32) (outLine uint32, outOffset uint32, err error) {
+	result, err := document.NodeAt(line, offset)
 	if err != nil {
 		return 0, 0, err
 	}
-	srcPoint := sitter.Point{
-		Row:    line,
-		Column: offset,
-	}
-	fmt.Printf("++ found source item %q @ %+v\n", srcValue, srcPoint)
 
-	query := `(table_definition
-		    (table_name
-		      (identifier) @table_name_value))
-		`
-
-	nodes, err := Query(document, query)
-	if err != nil {
-		return 0, 0, err
+	switch result.Node.Type() {
+	case "column_name":
+		return locateColumn(document, result)
+	case "table_name":
+		return locateTable(document, result)
+	default:
+		return 0, 0, errors.New("Locate: unsupported node type")
 	}
-	for _, node := range nodes {
-		nodeValue, err := document.Contents(node.StartByte(), node.EndByte())
+}
+
+func locateTable(document *Document, result *NodeAtResult) (outLine uint32, outOffset uint32, err error) {
+	if result.Parent.Type() == "relationship_definition_side" {
+		// source: relationship
+		// destination: table
+
+		// find destination node by table and column name
+		resultParentNode := result.Parent.Child(0)
+		resultParentValue := resultParentNode.Content(document.fileContents)
+		// column
+		dstTableNode, err := tableByName(document, resultParentValue)
 		if err != nil {
 			return 0, 0, err
 		}
-		nodePoint := node.StartPoint()
-		if nodeValue == srcValue && nodePoint != srcPoint {
-			fmt.Println("match", nodeValue, nodePoint, node.StartByte(), "is", srcValue, srcPoint)
-			return node.StartPoint().Row, node.StartPoint().Column, nil
-		}
+
+		fmt.Printf("dst node: %+v\n", dstTableNode)
+		dstStartPoint := dstTableNode.Range().StartPoint
+		return dstStartPoint.Row, dstStartPoint.Column, nil
+
 	}
 
-	fmt.Printf("!! failed to find match for %q", srcValue)
-	return 0, 0, ErrDefinitionMissingDestination
+	return 0, 0, errors.New("locateTable: unsupported parent type")
+}
+
+func locateColumn(document *Document, result *NodeAtResult) (outLine uint32, outOffset uint32, err error) {
+	if result.Parent.Type() == "relationship_definition_side" {
+		// source: relationship
+		// destination: column in table
+
+		// find destination node by table and column name
+		resultParentNode := result.Parent.Child(0)
+		resultParentValue := resultParentNode.Content(document.fileContents)
+		// column
+		resultNodeValue := result.Node.Content(document.fileContents)
+		dstTableNode, err := columnByValues(document, resultParentValue, resultNodeValue)
+		if err != nil {
+			return 0, 0, err
+		}
+
+		dstStartPoint := dstTableNode.Range().StartPoint
+
+		return dstStartPoint.Row, dstStartPoint.Column, nil
+	}
+
+	return 0, 0, errors.New("locateTable: unsupported parent type")
+}
+
+func columnByValues(document *Document, tableName string, columnName string) (*sitter.Node, error) {
+	fmt.Printf("columnByValues: %q %q\n", tableName, columnName)
+	query := `
+		(table_definition) @table
+	`
+	nodes, err := Query(document, query)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, tableNode := range nodes {
+		tableNameNode := tableNode.ChildByFieldName("table_name")
+		if tableNameNode == nil {
+			continue
+		}
+		// compare table names
+		if tableNameNode.Content(document.fileContents) == tableName {
+			childCount := tableNode.ChildCount()
+			fmt.Println("+ children:", childCount)
+			var i uint32
+			for i = 0; i < childCount; i++ {
+				child := tableNode.Child(int(i))
+				if child.Type() != "column_definition" {
+					continue
+				}
+
+				columnNameNode := child.ChildByFieldName("col_name")
+				if columnNameNode == nil {
+					continue
+				}
+				dstColumnName := columnNameNode.Content(document.fileContents)
+
+				fmt.Println("\t column def child", child.Type(), dstColumnName)
+				if dstColumnName == columnName {
+					return child, nil
+				}
+			}
+
+			return nil, ErrDefinitionMissingDestination
+		}
+	}
+	return nil, ErrDefinitionMissingDestination
+}
+
+func tableByName(document *Document, tableName string) (*sitter.Node, error) {
+	fmt.Printf("tableByName: %q\n", tableName)
+	query := `
+		(table_definition) @table
+	`
+	nodes, err := Query(document, query)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, tableNode := range nodes {
+		tableNameNode := tableNode.ChildByFieldName("table_name")
+		if tableNameNode == nil {
+			continue
+		}
+		// compare table names
+		if tableNameNode.Content(document.fileContents) == tableName {
+			return tableNode, nil
+		}
+	}
+	return nil, ErrDefinitionMissingDestination
 }

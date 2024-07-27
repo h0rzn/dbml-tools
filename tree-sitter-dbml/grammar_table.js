@@ -2,11 +2,11 @@ module.exports = {
     table_definition: $ => seq(
       'Table',
       $._space,
-      $.table_name,
+      field('table_name', $.table_name),
       $._space,
       '{',
       $._newline,
-      repeat($.column_definition),
+      field('column', repeat($.column_definition)),
       '}'
     ),
 

@@ -50,6 +50,10 @@ func (d *Document) Init() error {
 	return err
 }
 
+func (d *Document) FileContents() []byte {
+	return d.fileContents
+}
+
 func (d *Document) parse(fileContents []byte) (*sitter.Tree, error) {
 	tree, err := d.parser.ParseCtx(context.Background(), nil, fileContents)
 	if err != nil {
@@ -102,7 +106,11 @@ func (d *Document) ContentsLine(startByte uint32, endByte uint32) (string, error
 }
 
 func (d *Document) ContentsByPosition(line uint32, column uint32) (string, error) {
-	offset := d.OffsetByPosition(line, column)
+	offset, err := d.OffsetByPosition(line, column)
+	if err != nil {
+		return "", err
+	}
+
 	fmt.Printf("**src: position {%d:%d} to offset %d/%d\n", line, column, offset, len(d.fileContents))
 	fmt.Printf("   -> sample: %q\n", string(d.fileContents[offset:offset+10]))
 
@@ -126,7 +134,7 @@ func (d *Document) ContentsByPosition(line uint32, column uint32) (string, error
 }
 
 // Function to convert line and column to byte offset
-func (d *Document) OffsetByPosition(line uint32, column uint32) int {
+func (d *Document) OffsetByPosition(line uint32, column uint32) (int, error) {
 	lines := bytes.SplitAfter(d.fileContents, []byte("\n"))
 	byteOffset := 0
 
@@ -137,11 +145,55 @@ func (d *Document) OffsetByPosition(line uint32, column uint32) int {
 			// fmt.Printf("charOff %02d | line %02d | %s\n", charIndex, lineIndex, string(char))
 
 			if uint32(lineIndex) == line {
-				return byteOffset + int(column)
+				return byteOffset + int(column), nil
 			}
 			byteOffset += 1
 		}
 	}
 
-	return byteOffset
+	return byteOffset, fmt.Errorf("failed to find node @ %d:%d", line, column)
+}
+
+type NodeAtResult struct {
+	Node       *sitter.Node
+	ParentType string
+	Parent     *sitter.Node
+	NodeIndex  int64
+}
+
+func (d *Document) NodeAt(line uint32, column uint32) (result *NodeAtResult, err error) {
+	nodeStartOffset, err := d.OffsetByPosition(line, column)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("nodeStartOffset", nodeStartOffset)
+
+	treeCursor := sitter.NewTreeCursor(d.tree.RootNode())
+	nodeIndex := treeCursor.GoToFirstChildForByte(uint32(nodeStartOffset))
+	if nodeIndex == -1 {
+		return nil, errors.New("failed to find node in tree")
+	}
+	node := treeCursor.CurrentNode()
+
+	result = &NodeAtResult{}
+	result.ParentType = node.Type()
+	result.Parent = node
+
+	var lastNode *sitter.Node
+	var childNodeIndex int64
+	for {
+		currentNodeIndex := treeCursor.GoToFirstChildForByte(uint32(nodeStartOffset))
+		if currentNodeIndex == -1 {
+			result.Node = lastNode
+			break
+		}
+		node = treeCursor.CurrentNode()
+		childNodeIndex = currentNodeIndex
+		fmt.Println("+1", node.Type())
+	}
+	result.Node = node
+	result.Parent = node.Parent()
+	result.NodeIndex = childNodeIndex
+
+	return result, nil
 }

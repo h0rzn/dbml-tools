@@ -32,7 +32,14 @@ var devCmd = &cobra.Command{
 			fmt.Println(err)
 		}
 
-		document.ContentsByPosition(0, 6)
+		line, offset, err := language.Locate(document, 5, 11)
+		// line, offset, err := language.Locate(document, 5, 6)
+		// line, offset, err := language.Locate(document, 0, 7)
+		if err != nil {
+			fmt.Println("Error: ", err.Error())
+			return
+		}
+		fmt.Println(line, offset)
 	},
 }
 

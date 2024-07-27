@@ -1,46 +1,4 @@
 module.exports = {
-    // table_definition: $ => seq(
-    //   'Table',
-    //   $._space,
-    //   $.table_name,
-    //   $._space,
-    //   '{',
-    //   $._newline,
-    //   repeat($.column_definition),
-    //   '}'
-    // ),
-    //
-    // table_name: $ => $.identifier,
-    //
-    // column_definition: $ => seq(
-    //   field('col_name', $.identifier),
-    //   $._space,
-    //   field('col_type', $.identifier),
-    //   choice(
-    //     $._newline,
-    //     $.column_settings
-    //   )
-    // ),
-    //
-    // column_settings: $ => seq(
-    //   '[',
-    //   $.column_constraint,
-    //   ']',
-    //   $._newline
-    // ),
-    //
-    // column_constraint: $ => choice(
-    //   'primary key',
-    //   'pk',
-    //   'null',
-    //   'not null',
-    //   'unique',
-    //   'increment'
-    // ),
-    //
-    // // TODO: add keyed constraints: default: xxx, note: 'xxx'
-
-
     relationship_definition_short: $ => seq(
       'Ref',
       choice(
@@ -55,9 +13,9 @@ module.exports = {
     ),
 
     relationship_definition_side: $ => seq(
-      field('relationship_table_name', $.identifier),
-      '.',
-      field('relationship_column_name', $.identifier)
+      $.table_name,
+      $._dot,
+      $.column_name,
     ),
 
 
@@ -66,7 +24,11 @@ module.exports = {
       '<',
       '>',
       '<>'
-    )
+    ),
 
 
+    column_name: $ => field('column_name', $._hidden_identifier),
+    table_name: $ => field('table_name', $._hidden_identifier),
+
+    _hidden_identifier: $ => /[a-zA-Z0-9_-]+/
 };
