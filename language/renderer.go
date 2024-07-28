@@ -8,6 +8,7 @@ import (
 var colorReset = "\033[0m"
 var colorRed = "\033[31m"
 var colorYellow = "\033[33m"
+var colorBGGrey = "\033[100m"
 
 type Renderer struct {
 	document *Document

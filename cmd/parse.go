@@ -3,10 +3,12 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/h0rzn/dbml-lsp-ts/language"
 	"github.com/spf13/cobra"
 )
 
 var ErrorsOnly bool
+var RawOutput bool
 
 var parseCmd = &cobra.Command{
 	Use:   "parse",
@@ -29,11 +31,14 @@ var parseCmd = &cobra.Command{
 			return
 		}
 
-		flags := cmd.Flags()
-		errorOnlyFlag := flags.Lookup("errorOnly")
-		errorsOnly := errorOnlyFlag.Changed
+		errorOnly, _ := cmd.Flags().GetBool("errorOnly")
+		rawOutput, _ := cmd.Flags().GetBool("raw")
+		printOpts := language.PrintTreeOpts{
+			ErrorsOnly: errorOnly,
+			Raw:        rawOutput,
+		}
 
-		document.PrintAST(errorsOnly)
+		language.PrintTree(document.RootNode(), printOpts)
 	},
 }
 

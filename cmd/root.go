@@ -49,6 +49,7 @@ func init() {
 	rootCmd.AddCommand(lspCmd)
 
 	parseCmd.Flags().BoolVarP(&ErrorsOnly, "errorOnly", "e", false, "Only show errors as output")
+	parseCmd.Flags().BoolVarP(&RawOutput, "raw", "r", false, "Raw output")
 	rootCmd.AddCommand(parseCmd)
 
 	rootCmd.AddCommand(queryCmd)
