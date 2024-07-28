@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/h0rzn/dbml-lsp-ts/language"
@@ -19,11 +20,13 @@ type Server struct {
 	language  *sitter.Language
 	lspServer *server.Server
 	document  *language.Document
+	state     *State
 }
 
 func NewServer(language *sitter.Language) *Server {
 	return &Server{
 		language: language,
+		state:    NewState(),
 	}
 }
 
@@ -36,6 +39,8 @@ func (s *Server) Init() {
 		TextDocumentCompletion: TestCompletion,
 		TextDocumentDefinition: s.TextDocumentDefinition,
 		TextDocumentDidOpen:    s.TextDocumentDidOpen,
+		TextDocumentDidChange:  s.TextDocumentDidChange,
+		TextDocumentDidSave:    s.TextDocumentDidSave,
 		TextDocumentHover:      s.TextDocumentHover,
 	}
 	s.lspServer = server.NewServer(&handler, "dbml-lsp-ts", false)
@@ -84,5 +89,34 @@ func (s *Server) TextDocumentDidOpen(context *glsp.Context, params *protocol.Did
 		fmt.Println(err)
 	}
 	s.document = document
+	return err
+}
+
+func (s *Server) TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeTextDocumentParams) error {
+	fmt.Println("\n [DID_CHANGE]")
+
+	changeList := params.ContentChanges
+	var changes []protocol.TextDocumentContentChangeEvent
+	for _, change := range changeList {
+		fmt.Printf("\t change: %+v\n", change)
+		switch v := change.(type) {
+		case protocol.TextDocumentContentChangeEvent:
+			changes = append(changes, v)
+		case protocol.TextDocumentContentChangeEventWhole:
+			return errors.New("DidChange: whole change not implemented")
+		default:
+			return errors.New("DidChange: unsupported content change format")
+		}
+	}
+
+	s.state.PushChange(changes...)
+
+	return nil
+}
+
+func (s *Server) TextDocumentDidSave(context *glsp.Context, params *protocol.DidSaveTextDocumentParams) error {
+	fmt.Println("[DID_SAVE]")
+	documentChanges := s.state.Changes()
+	err := s.document.ApplyChanges(documentChanges)
 	return err
 }

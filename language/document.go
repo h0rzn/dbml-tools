@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 
 	sitter "github.com/smacker/go-tree-sitter"
@@ -21,6 +22,12 @@ type Document struct {
 	item         protocol.TextDocumentItem
 	fileContents []byte
 	tabWidth     int
+}
+
+type DocumentChange struct {
+	Text       []byte
+	StartPoint sitter.Point
+	EndPoint   sitter.Point
 }
 
 func NewDocument(item protocol.TextDocumentItem) *Document {
@@ -50,8 +57,59 @@ func (d *Document) Init() error {
 	return err
 }
 
-// Get Contents in Range
-// returns empty slice if out of bounds
+func (d *Document) ApplyChanges(changes []DocumentChange) error {
+	fmt.Println("Document Update: change count:", len(changes))
+
+	// NOTE: just reparse the whole document for now
+	// should use sitter.EditInput
+	path := d.item.URI
+	path, _ = strings.CutPrefix(path, "file://")
+	fmt.Println("uri", path)
+	newContents, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	tree, err := d.parser.ParseCtx(context.Background(), nil, newContents)
+	if err != nil {
+		return err
+	}
+
+	d.fileContents = newContents
+	d.tree = tree
+
+	return nil
+}
+
+func (d *Document) createTreeInput(changes []DocumentChange) (sitter.EditInput, error) {
+	// TODO: return if list is empty
+
+	firstChange := changes[0]
+	startPoint := firstChange.StartPoint
+	newEndPoint := firstChange.EndPoint
+
+	oldEndPoint, err := d.calculateOldEndpoint(startPoint)
+	if err != nil {
+		return sitter.EditInput{}, nil
+	}
+
+	edit := sitter.EditInput{
+		// TODO: Indexes!
+		StartPoint:  startPoint,
+		OldEndPoint: oldEndPoint,
+		NewEndPoint: newEndPoint,
+	}
+
+	return edit, nil
+}
+
+func (d *Document) calculateOldEndpoint(startPoint sitter.Point) (sitter.Point, error) {
+	oldEndpoint := startPoint
+	oldTextLength := 0
+	_ = oldTextLength
+
+	return oldEndpoint, nil
+}
+
 func (d *Document) ContentsRange(startByte uint32, endByte uint32) (contents []byte, truncated bool) {
 	if len(d.fileContents) == 0 {
 		return make([]byte, 0), false
