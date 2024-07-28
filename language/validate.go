@@ -9,7 +9,7 @@ import (
 
 func ValidateDocument(document *Document) {
 	var errNodes []*sitter.Node
-	errNodes = findErrorNodes(document.tree.RootNode(), errNodes)
+	errNodes = findErrorNodes(document.RootNode(), errNodes)
 	printWithErrors(document, errNodes)
 }
 

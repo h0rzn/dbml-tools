@@ -7,66 +7,6 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
-func Query(document *Document, query string) ([]*sitter.Node, error) {
-	results := make([]*sitter.Node, 0)
-	cursor, err := queryWithCursor(document, query)
-	if err != nil {
-		return results, err
-	}
-
-	for {
-		match, exists := cursor.NextMatch()
-		if !exists {
-			return results, nil
-		}
-		for _, capture := range match.Captures {
-			results = append(results, capture.Node)
-		}
-
-	}
-}
-
-func getValue(document *Document, line uint32, offset uint32) string {
-	fmt.Println("++ GetValue", line, offset)
-	rawQuery := `
-		(_ ) @node
-	`
-	query, err := sitter.NewQuery([]byte(rawQuery), document.language)
-	if err != nil {
-		return ""
-	}
-	cursor := sitter.NewQueryCursor()
-	defer cursor.Close()
-	cursor.Exec(query, document.tree.RootNode())
-
-	match, exists := cursor.NextMatch()
-	fmt.Println("++ GetValue: nextMatch:", match, exists)
-	if !exists {
-		return ""
-	}
-	// match = cursor.FilterPredicates(match, d.fileContents)
-	for _, capture := range match.Captures {
-		node := capture.Node
-		startPoint := node.StartPoint()
-		fmt.Printf("# cur node {%d:%d} inp {%d:%d}\n", startPoint.Row, startPoint.Column, line, offset)
-		if startPoint.Row == line && startPoint.Column == offset {
-			return node.Content(document.Contents())
-		}
-	}
-
-	return ""
-}
-
-func queryWithCursor(document *Document, rawQuery string) (*sitter.QueryCursor, error) {
-	query, err := sitter.NewQuery([]byte(rawQuery), document.language)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create query: %q", string(rawQuery))
-	}
-	cursor := sitter.NewQueryCursor()
-	cursor.Exec(query, document.tree.RootNode())
-	return cursor, nil
-}
-
 type LocateResult struct {
 	Start LocatePosition
 	End   LocatePosition
@@ -177,7 +117,7 @@ func columnByValues(document *Document, tableName string, columnName string) (*s
 	query := `
 		(table_definition) @table
 	`
-	nodes, err := Query(document, query)
+	nodes, err := document.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -221,7 +161,7 @@ func tableByName(document *Document, tableName string) (*sitter.Node, error) {
 	query := `
 		(table_definition) @table
 	`
-	nodes, err := Query(document, query)
+	nodes, err := document.Query(query)
 	if err != nil {
 		return nil, err
 	}

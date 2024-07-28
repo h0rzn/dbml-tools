@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/h0rzn/dbml-lsp-ts/language"
 	"github.com/spf13/cobra"
 )
 
@@ -56,8 +55,7 @@ var queryCmd = &cobra.Command{
 			return
 		}
 
-		// nodes, err := document.Query(query)
-		nodes, err := language.Query(document, query)
+		nodes, err := document.Query(query)
 		if err != nil {
 			fmt.Println(err)
 		}
