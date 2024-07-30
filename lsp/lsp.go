@@ -32,16 +32,17 @@ func NewServer(language *sitter.Language) *Server {
 
 func (s *Server) Init() {
 	handler = protocol.Handler{
-		Initialize:             s.initialize,
-		Initialized:            s.initialized,
-		Shutdown:               s.shutdown,
-		SetTrace:               s.setTrace,
-		TextDocumentCompletion: TestCompletion,
-		TextDocumentDefinition: s.TextDocumentDefinition,
-		TextDocumentDidOpen:    s.TextDocumentDidOpen,
-		TextDocumentDidChange:  s.TextDocumentDidChange,
-		TextDocumentDidSave:    s.TextDocumentDidSave,
-		TextDocumentHover:      s.TextDocumentHover,
+		Initialize:                 s.initialize,
+		Initialized:                s.initialized,
+		Shutdown:                   s.shutdown,
+		SetTrace:                   s.setTrace,
+		TextDocumentCompletion:     TestCompletion,
+		TextDocumentDefinition:     s.TextDocumentDefinition,
+		TextDocumentDidOpen:        s.TextDocumentDidOpen,
+		TextDocumentDidChange:      s.TextDocumentDidChange,
+		TextDocumentDidSave:        s.TextDocumentDidSave,
+		TextDocumentHover:          s.TextDocumentHover,
+		TextDocumentDocumentSymbol: s.TextDocumentDocumentSymbol,
 	}
 	s.lspServer = server.NewServer(&handler, "dbml-lsp-ts", false)
 }

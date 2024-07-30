@@ -2,7 +2,7 @@ module.exports = {
     relationship_definition_short: $ => seq(
       'Ref',
       choice(
-        field('relationship_name', seq($.identifier, ':')),
+        seq(field('relationship_name', $.identifier), ':'),
         ':'
       ),
       $._space,

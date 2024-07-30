@@ -64,6 +64,14 @@ func (d *Document) Init() error {
 	return err
 }
 
+func (d *Document) parse(fileContents []byte) (*sitter.Tree, error) {
+	tree, err := d.parser.ParseCtx(context.Background(), nil, fileContents)
+	if err != nil {
+		return tree, err
+	}
+	return tree, nil
+}
+
 func (d *Document) ApplyChanges(changes []DocumentChange) error {
 	fmt.Println("Document Update: change count:", len(changes))
 
@@ -134,6 +142,10 @@ func (d *Document) Tree() chan *sitter.Tree {
 	return out
 }
 
+func (d *Document) TreeCursor() *sitter.TreeCursor {
+	return sitter.NewTreeCursor(d.RootNode())
+}
+
 func (d *Document) RootNode() *sitter.Node {
 	tree := <-d.Tree()
 	return tree.RootNode()
@@ -153,32 +165,6 @@ func (d *Document) ContentsRange(startByte uint32, endByte uint32) (contents []b
 
 func (d *Document) Contents() []byte {
 	return d.fileContents
-}
-
-func (d *Document) parse(fileContents []byte) (*sitter.Tree, error) {
-	tree, err := d.parser.ParseCtx(context.Background(), nil, fileContents)
-	if err != nil {
-		return tree, err
-	}
-	return tree, nil
-}
-
-func (d *Document) TreeCursor() *sitter.TreeCursor {
-	return sitter.NewTreeCursor(d.RootNode())
-}
-
-func (d *Document) PrintAST(errorsOnly bool) {
-	d.printTree(d.RootNode(), 0, errorsOnly)
-}
-
-func (d *Document) printTree(node *sitter.Node, indentLevel int, errorsOnly bool) {
-	if !errorsOnly || node.IsError() {
-		fmt.Printf("%s%s (%d:%d)\n", strings.Repeat("  ", indentLevel), node.String(), node.StartPoint().Row, node.StartPoint().Column)
-	}
-	for i := 0; i < int(node.ChildCount()); i++ {
-		child := node.Child(i)
-		d.printTree(child, indentLevel+1, errorsOnly)
-	}
 }
 
 func (d *Document) ContentsLine(startByte uint32, endByte uint32) (string, error) {
