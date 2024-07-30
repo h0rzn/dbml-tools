@@ -25,3 +25,17 @@ Flags:
 
 Use "dbml-lsp-ts [command] --help" for more information about a command.
 ```
+
+## Parser Coverage
+Internal parser is using tree-sitter and currently only supports few language features.
+
+## LSP Coverage
+`textDocument/definition`  
+- Works for tables and columns, but only from a top-level short `Ref`
+
+`textDocument/hover`  
+- Works for tables and columns, but is poorly formatted  
+
+`textDocument/documentSymbol`  
+- Table, column and top level short `Ref` names  
+
