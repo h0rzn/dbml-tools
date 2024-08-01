@@ -349,6 +349,47 @@
         {
           "type": "SYMBOL",
           "name": "relationship_definition_side"
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "["
+            },
+            {
+              "type": "SYMBOL",
+              "name": "relationship_setting_definition"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": ","
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "relationship_setting_definition"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "STRING",
+              "value": "]"
+            }
+          ]
         }
       ]
     },
@@ -457,6 +498,65 @@
         {
           "type": "SYMBOL",
           "name": "column_name"
+        }
+      ]
+    },
+    "relationship_setting_definition": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "relationship_event"
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_space"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "relationship_action"
+        }
+      ]
+    },
+    "relationship_event": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "delete"
+        },
+        {
+          "type": "STRING",
+          "value": "update"
+        }
+      ]
+    },
+    "relationship_action": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "cascade"
+        },
+        {
+          "type": "STRING",
+          "value": "restrict"
+        },
+        {
+          "type": "STRING",
+          "value": "set null"
+        },
+        {
+          "type": "STRING",
+          "value": "set default"
+        },
+        {
+          "type": "STRING",
+          "value": "no action"
         }
       ]
     },

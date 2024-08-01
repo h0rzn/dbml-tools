@@ -13,6 +13,17 @@ module.exports = {
       $._space,
       $.relationship_symbol,
       $.relationship_definition_side,
+      seq(
+        '[',
+        $.relationship_setting_definition,
+        optional(
+          repeat(
+            seq(',', $.relationship_setting_definition)
+          )
+        ),
+        ']'
+
+      )
     ),
 
     relationship_definition_inline: $ => seq(
@@ -47,6 +58,25 @@ module.exports = {
       $.column_name,
     ),
 
+    relationship_setting_definition: $ => seq(
+      $.relationship_event,
+      ':',
+      $._space,
+      $.relationship_action
+    ),
+
+    relationship_event: $ => choice(
+      'delete',
+      'update'
+    ),
+
+    relationship_action: $ => choice(
+      'cascade',
+      'restrict',
+      'set null',
+      'set default',
+      'no action'
+    ),
 
     relationship_symbol: $ => choice(
       '-',
