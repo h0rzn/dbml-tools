@@ -1,6 +1,6 @@
 module.exports = {
     table_definition: $ => seq(
-      'Table',
+      $.Table,
       $._space,
       field('table_name', $.table_name),
       $._space,
@@ -40,4 +40,8 @@ module.exports = {
 
     // TODO: add keyed constraints: default: xxx, note: 'xxx'
 
+    //
+    // Keywords
+    //
+    Table: $ => token('Table'),
 };

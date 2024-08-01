@@ -104,6 +104,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "Project",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -171,6 +181,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "Ref",
+          "named": true
+        },
         {
           "type": "relationship_definition_side",
           "named": true
@@ -253,6 +267,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "Table",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -290,15 +314,15 @@
   },
   {
     "type": "Project",
-    "named": false
+    "named": true
   },
   {
     "type": "Ref",
-    "named": false
+    "named": true
   },
   {
     "type": "Table",
-    "named": false
+    "named": true
   },
   {
     "type": "[",

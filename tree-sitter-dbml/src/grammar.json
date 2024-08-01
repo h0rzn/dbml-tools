@@ -29,8 +29,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "Project"
+          "type": "SYMBOL",
+          "name": "Project"
         },
         {
           "type": "SYMBOL",
@@ -123,29 +123,19 @@
         }
       ]
     },
-    "enquoted_identifier": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "'"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "identifier"
-        },
-        {
-          "type": "STRING",
-          "value": "'"
-        }
-      ]
+    "Project": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "Project"
+      }
     },
     "table_definition": {
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "Table"
+          "type": "SYMBOL",
+          "name": "Table"
         },
         {
           "type": "SYMBOL",
@@ -284,12 +274,19 @@
         }
       ]
     },
+    "Table": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "Table"
+      }
+    },
     "relationship_definition_short": {
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "Ref"
+          "type": "SYMBOL",
+          "name": "Ref"
         },
         {
           "type": "CHOICE",
@@ -385,9 +382,12 @@
         "name": "_hidden_identifier"
       }
     },
-    "_hidden_identifier": {
-      "type": "PATTERN",
-      "value": "[a-zA-Z0-9_-]+"
+    "Ref": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "Ref"
+      }
     },
     "identifier": {
       "type": "PATTERN",
@@ -404,6 +404,27 @@
     "_dot": {
       "type": "STRING",
       "value": "."
+    },
+    "enquoted_identifier": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "'"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "STRING",
+          "value": "'"
+        }
+      ]
+    },
+    "_hidden_identifier": {
+      "type": "PATTERN",
+      "value": "[a-zA-Z0-9_-]+"
     }
   },
   "extras": [

@@ -1,6 +1,6 @@
 module.exports = {
     relationship_definition_short: $ => seq(
-      'Ref',
+      $.Ref,
       choice(
         seq(field('relationship_name', $.identifier), ':'),
         ':'
@@ -30,5 +30,5 @@ module.exports = {
     column_name: $ => field('column_name', $._hidden_identifier),
     table_name: $ => field('table_name', $._hidden_identifier),
 
-    _hidden_identifier: $ => /[a-zA-Z0-9_-]+/
+    Ref: $ => token('Ref')
 };

@@ -3,7 +3,6 @@ const project = require("./grammar_project");
 const table = require("./grammar_table");
 const relationship = require("./grammar_relationship");
 
-
 module.exports = grammar({
   name: "dbml",
 
@@ -20,5 +19,7 @@ module.exports = grammar({
     ...table,
     ...relationship,
     ...shared,
-	}
+
+
+	},
 });

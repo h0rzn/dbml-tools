@@ -16,49 +16,49 @@
 #define PRODUCTION_ID_COUNT 10
 
 enum ts_symbol_identifiers {
-  anon_sym_Project = 1,
-  anon_sym_LBRACE = 2,
-  anon_sym_RBRACE = 3,
-  anon_sym_COLON = 4,
-  anon_sym_database_type = 5,
-  anon_sym_Note = 6,
-  anon_sym_SQUOTE = 7,
-  anon_sym_Table = 8,
-  anon_sym_LBRACK = 9,
-  anon_sym_RBRACK = 10,
-  anon_sym_primarykey = 11,
-  anon_sym_pk = 12,
-  anon_sym_null = 13,
-  anon_sym_notnull = 14,
-  anon_sym_unique = 15,
-  anon_sym_increment = 16,
-  anon_sym_Ref = 17,
-  anon_sym_DASH = 18,
-  anon_sym_LT = 19,
-  anon_sym_GT = 20,
-  anon_sym_LT_GT = 21,
-  aux_sym__hidden_identifier_token1 = 22,
-  sym__newline = 23,
-  sym__space = 24,
-  sym__dot = 25,
+  anon_sym_LBRACE = 1,
+  anon_sym_RBRACE = 2,
+  anon_sym_COLON = 3,
+  anon_sym_database_type = 4,
+  anon_sym_Note = 5,
+  sym_Project = 6,
+  anon_sym_LBRACK = 7,
+  anon_sym_RBRACK = 8,
+  anon_sym_primarykey = 9,
+  anon_sym_pk = 10,
+  anon_sym_null = 11,
+  anon_sym_notnull = 12,
+  anon_sym_unique = 13,
+  anon_sym_increment = 14,
+  sym_Table = 15,
+  anon_sym_DASH = 16,
+  anon_sym_LT = 17,
+  anon_sym_GT = 18,
+  anon_sym_LT_GT = 19,
+  sym_Ref = 20,
+  aux_sym_identifier_token1 = 21,
+  sym__newline = 22,
+  sym__space = 23,
+  sym__dot = 24,
+  anon_sym_SQUOTE = 25,
   sym_source_file = 26,
   sym__definition = 27,
   sym_project_definition = 28,
   sym_project_name = 29,
   sym_project_property_definition = 30,
   sym_project_property_key = 31,
-  sym_enquoted_identifier = 32,
-  sym_table_definition = 33,
-  sym_table_name = 34,
-  sym_column_definition = 35,
-  sym_column_settings = 36,
-  sym_column_constraint = 37,
-  sym_relationship_definition_short = 38,
-  sym_relationship_definition_side = 39,
-  sym_relationship_symbol = 40,
-  sym_column_name = 41,
-  sym__hidden_identifier = 42,
-  sym_identifier = 43,
+  sym_table_definition = 32,
+  sym_table_name = 33,
+  sym_column_definition = 34,
+  sym_column_settings = 35,
+  sym_column_constraint = 36,
+  sym_relationship_definition_short = 37,
+  sym_relationship_definition_side = 38,
+  sym_relationship_symbol = 39,
+  sym_column_name = 40,
+  sym_identifier = 41,
+  sym_enquoted_identifier = 42,
+  sym__hidden_identifier = 43,
   aux_sym_source_file_repeat1 = 44,
   aux_sym_project_definition_repeat1 = 45,
   aux_sym_table_definition_repeat1 = 46,
@@ -66,14 +66,12 @@ enum ts_symbol_identifiers {
 
 static const char * const ts_symbol_names[] = {
   [ts_builtin_sym_end] = "end",
-  [anon_sym_Project] = "Project",
   [anon_sym_LBRACE] = "{",
   [anon_sym_RBRACE] = "}",
   [anon_sym_COLON] = ":",
   [anon_sym_database_type] = "database_type",
   [anon_sym_Note] = "Note",
-  [anon_sym_SQUOTE] = "'",
-  [anon_sym_Table] = "Table",
+  [sym_Project] = "Project",
   [anon_sym_LBRACK] = "[",
   [anon_sym_RBRACK] = "]",
   [anon_sym_primarykey] = "primary key",
@@ -82,22 +80,23 @@ static const char * const ts_symbol_names[] = {
   [anon_sym_notnull] = "not null",
   [anon_sym_unique] = "unique",
   [anon_sym_increment] = "increment",
-  [anon_sym_Ref] = "Ref",
+  [sym_Table] = "Table",
   [anon_sym_DASH] = "-",
   [anon_sym_LT] = "<",
   [anon_sym_GT] = ">",
   [anon_sym_LT_GT] = "<>",
-  [aux_sym__hidden_identifier_token1] = "_hidden_identifier_token1",
+  [sym_Ref] = "Ref",
+  [aux_sym_identifier_token1] = "identifier_token1",
   [sym__newline] = "_newline",
   [sym__space] = "_space",
   [sym__dot] = "_dot",
+  [anon_sym_SQUOTE] = "'",
   [sym_source_file] = "source_file",
   [sym__definition] = "_definition",
   [sym_project_definition] = "project_definition",
   [sym_project_name] = "project_name",
   [sym_project_property_definition] = "project_property_definition",
   [sym_project_property_key] = "project_property_key",
-  [sym_enquoted_identifier] = "enquoted_identifier",
   [sym_table_definition] = "table_definition",
   [sym_table_name] = "table_name",
   [sym_column_definition] = "column_definition",
@@ -107,8 +106,9 @@ static const char * const ts_symbol_names[] = {
   [sym_relationship_definition_side] = "relationship_definition_side",
   [sym_relationship_symbol] = "relationship_symbol",
   [sym_column_name] = "column_name",
-  [sym__hidden_identifier] = "_hidden_identifier",
   [sym_identifier] = "identifier",
+  [sym_enquoted_identifier] = "enquoted_identifier",
+  [sym__hidden_identifier] = "_hidden_identifier",
   [aux_sym_source_file_repeat1] = "source_file_repeat1",
   [aux_sym_project_definition_repeat1] = "project_definition_repeat1",
   [aux_sym_table_definition_repeat1] = "table_definition_repeat1",
@@ -116,14 +116,12 @@ static const char * const ts_symbol_names[] = {
 
 static const TSSymbol ts_symbol_map[] = {
   [ts_builtin_sym_end] = ts_builtin_sym_end,
-  [anon_sym_Project] = anon_sym_Project,
   [anon_sym_LBRACE] = anon_sym_LBRACE,
   [anon_sym_RBRACE] = anon_sym_RBRACE,
   [anon_sym_COLON] = anon_sym_COLON,
   [anon_sym_database_type] = anon_sym_database_type,
   [anon_sym_Note] = anon_sym_Note,
-  [anon_sym_SQUOTE] = anon_sym_SQUOTE,
-  [anon_sym_Table] = anon_sym_Table,
+  [sym_Project] = sym_Project,
   [anon_sym_LBRACK] = anon_sym_LBRACK,
   [anon_sym_RBRACK] = anon_sym_RBRACK,
   [anon_sym_primarykey] = anon_sym_primarykey,
@@ -132,22 +130,23 @@ static const TSSymbol ts_symbol_map[] = {
   [anon_sym_notnull] = anon_sym_notnull,
   [anon_sym_unique] = anon_sym_unique,
   [anon_sym_increment] = anon_sym_increment,
-  [anon_sym_Ref] = anon_sym_Ref,
+  [sym_Table] = sym_Table,
   [anon_sym_DASH] = anon_sym_DASH,
   [anon_sym_LT] = anon_sym_LT,
   [anon_sym_GT] = anon_sym_GT,
   [anon_sym_LT_GT] = anon_sym_LT_GT,
-  [aux_sym__hidden_identifier_token1] = aux_sym__hidden_identifier_token1,
+  [sym_Ref] = sym_Ref,
+  [aux_sym_identifier_token1] = aux_sym_identifier_token1,
   [sym__newline] = sym__newline,
   [sym__space] = sym__space,
   [sym__dot] = sym__dot,
+  [anon_sym_SQUOTE] = anon_sym_SQUOTE,
   [sym_source_file] = sym_source_file,
   [sym__definition] = sym__definition,
   [sym_project_definition] = sym_project_definition,
   [sym_project_name] = sym_project_name,
   [sym_project_property_definition] = sym_project_property_definition,
   [sym_project_property_key] = sym_project_property_key,
-  [sym_enquoted_identifier] = sym_enquoted_identifier,
   [sym_table_definition] = sym_table_definition,
   [sym_table_name] = sym_table_name,
   [sym_column_definition] = sym_column_definition,
@@ -157,8 +156,9 @@ static const TSSymbol ts_symbol_map[] = {
   [sym_relationship_definition_side] = sym_relationship_definition_side,
   [sym_relationship_symbol] = sym_relationship_symbol,
   [sym_column_name] = sym_column_name,
-  [sym__hidden_identifier] = sym__hidden_identifier,
   [sym_identifier] = sym_identifier,
+  [sym_enquoted_identifier] = sym_enquoted_identifier,
+  [sym__hidden_identifier] = sym__hidden_identifier,
   [aux_sym_source_file_repeat1] = aux_sym_source_file_repeat1,
   [aux_sym_project_definition_repeat1] = aux_sym_project_definition_repeat1,
   [aux_sym_table_definition_repeat1] = aux_sym_table_definition_repeat1,
@@ -168,10 +168,6 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
   [ts_builtin_sym_end] = {
     .visible = false,
     .named = true,
-  },
-  [anon_sym_Project] = {
-    .visible = true,
-    .named = false,
   },
   [anon_sym_LBRACE] = {
     .visible = true,
@@ -193,13 +189,9 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = true,
     .named = false,
   },
-  [anon_sym_SQUOTE] = {
+  [sym_Project] = {
     .visible = true,
-    .named = false,
-  },
-  [anon_sym_Table] = {
-    .visible = true,
-    .named = false,
+    .named = true,
   },
   [anon_sym_LBRACK] = {
     .visible = true,
@@ -233,9 +225,9 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = true,
     .named = false,
   },
-  [anon_sym_Ref] = {
+  [sym_Table] = {
     .visible = true,
-    .named = false,
+    .named = true,
   },
   [anon_sym_DASH] = {
     .visible = true,
@@ -253,7 +245,11 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = true,
     .named = false,
   },
-  [aux_sym__hidden_identifier_token1] = {
+  [sym_Ref] = {
+    .visible = true,
+    .named = true,
+  },
+  [aux_sym_identifier_token1] = {
     .visible = false,
     .named = false,
   },
@@ -268,6 +264,10 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
   [sym__dot] = {
     .visible = false,
     .named = true,
+  },
+  [anon_sym_SQUOTE] = {
+    .visible = true,
+    .named = false,
   },
   [sym_source_file] = {
     .visible = true,
@@ -290,10 +290,6 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .named = true,
   },
   [sym_project_property_key] = {
-    .visible = true,
-    .named = true,
-  },
-  [sym_enquoted_identifier] = {
     .visible = true,
     .named = true,
   },
@@ -333,12 +329,16 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = true,
     .named = true,
   },
-  [sym__hidden_identifier] = {
-    .visible = false,
-    .named = true,
-  },
   [sym_identifier] = {
     .visible = true,
+    .named = true,
+  },
+  [sym_enquoted_identifier] = {
+    .visible = true,
+    .named = true,
+  },
+  [sym__hidden_identifier] = {
+    .visible = false,
     .named = true,
   },
   [aux_sym_source_file_repeat1] = {
@@ -509,32 +509,32 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
     case 0:
       if (eof) ADVANCE(63);
       ADVANCE_MAP(
-        '\'', 70,
-        '-', 81,
-        '.', 88,
-        ':', 67,
-        '<', 82,
-        '>', 83,
+        '\'', 88,
+        '-', 79,
+        '.', 87,
+        ':', 66,
+        '<', 80,
+        '>', 81,
         'N', 43,
         'P', 49,
         'R', 16,
         'T', 7,
-        '[', 72,
-        ']', 73,
+        '[', 70,
+        ']', 71,
         'd', 9,
         'i', 39,
         'n', 45,
         'p', 30,
         'u', 40,
-        '{', 65,
-        '}', 66,
+        '{', 64,
+        '}', 65,
       );
       if (('\t' <= lookahead && lookahead <= '\r') ||
           lookahead == ' ') SKIP(0);
       END_STATE();
     case 1:
-      if (lookahead == '\n') ADVANCE(86);
-      if (lookahead == '[') ADVANCE(72);
+      if (lookahead == '\n') ADVANCE(85);
+      if (lookahead == '[') ADVANCE(70);
       if (('\t' <= lookahead && lookahead <= '\r') ||
           lookahead == ' ') SKIP(1);
       END_STATE();
@@ -542,22 +542,22 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == ' ') ADVANCE(31);
       END_STATE();
     case 3:
-      if (lookahead == ' ') ADVANCE(87);
+      if (lookahead == ' ') ADVANCE(86);
       if (('\t' <= lookahead && lookahead <= '\r')) SKIP(3);
       END_STATE();
     case 4:
       if (lookahead == ' ') ADVANCE(41);
       END_STATE();
     case 5:
-      if (lookahead == ':') ADVANCE(67);
-      if (lookahead == '}') ADVANCE(66);
+      if (lookahead == ':') ADVANCE(66);
+      if (lookahead == '}') ADVANCE(65);
       if (('\t' <= lookahead && lookahead <= '\r') ||
           lookahead == ' ') SKIP(5);
       if (lookahead == '-' ||
           ('0' <= lookahead && lookahead <= '9') ||
           ('A' <= lookahead && lookahead <= 'Z') ||
           lookahead == '_' ||
-          ('a' <= lookahead && lookahead <= 'z')) ADVANCE(85);
+          ('a' <= lookahead && lookahead <= 'z')) ADVANCE(84);
       END_STATE();
     case 6:
       if (lookahead == '_') ADVANCE(56);
@@ -593,19 +593,19 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'e') ADVANCE(26);
       END_STATE();
     case 17:
-      if (lookahead == 'e') ADVANCE(69);
+      if (lookahead == 'e') ADVANCE(68);
       END_STATE();
     case 18:
-      if (lookahead == 'e') ADVANCE(71);
+      if (lookahead == 'e') ADVANCE(78);
       END_STATE();
     case 19:
-      if (lookahead == 'e') ADVANCE(78);
+      if (lookahead == 'e') ADVANCE(76);
       END_STATE();
     case 20:
       if (lookahead == 'e') ADVANCE(6);
       END_STATE();
     case 21:
-      if (lookahead == 'e') ADVANCE(68);
+      if (lookahead == 'e') ADVANCE(67);
       END_STATE();
     case 22:
       if (lookahead == 'e') ADVANCE(15);
@@ -620,7 +620,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'e') ADVANCE(42);
       END_STATE();
     case 26:
-      if (lookahead == 'f') ADVANCE(80);
+      if (lookahead == 'f') ADVANCE(83);
       END_STATE();
     case 27:
       if (lookahead == 'i') ADVANCE(37);
@@ -632,17 +632,17 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'j') ADVANCE(22);
       END_STATE();
     case 30:
-      if (lookahead == 'k') ADVANCE(75);
+      if (lookahead == 'k') ADVANCE(73);
       if (lookahead == 'r') ADVANCE(27);
       END_STATE();
     case 31:
       if (lookahead == 'k') ADVANCE(24);
       END_STATE();
     case 32:
-      if (lookahead == 'l') ADVANCE(76);
+      if (lookahead == 'l') ADVANCE(74);
       END_STATE();
     case 33:
-      if (lookahead == 'l') ADVANCE(77);
+      if (lookahead == 'l') ADVANCE(75);
       END_STATE();
     case 34:
       if (lookahead == 'l') ADVANCE(32);
@@ -703,10 +703,10 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == 't') ADVANCE(4);
       END_STATE();
     case 53:
-      if (lookahead == 't') ADVANCE(64);
+      if (lookahead == 't') ADVANCE(69);
       END_STATE();
     case 54:
-      if (lookahead == 't') ADVANCE(79);
+      if (lookahead == 't') ADVANCE(77);
       END_STATE();
     case 55:
       if (lookahead == 't') ADVANCE(17);
@@ -727,7 +727,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == 'y') ADVANCE(46);
       END_STATE();
     case 61:
-      if (lookahead == 'y') ADVANCE(74);
+      if (lookahead == 'y') ADVANCE(72);
       END_STATE();
     case 62:
       if (lookahead == 'y') ADVANCE(2);
@@ -736,87 +736,87 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       ACCEPT_TOKEN(ts_builtin_sym_end);
       END_STATE();
     case 64:
-      ACCEPT_TOKEN(anon_sym_Project);
-      END_STATE();
-    case 65:
       ACCEPT_TOKEN(anon_sym_LBRACE);
       END_STATE();
-    case 66:
+    case 65:
       ACCEPT_TOKEN(anon_sym_RBRACE);
       END_STATE();
-    case 67:
+    case 66:
       ACCEPT_TOKEN(anon_sym_COLON);
       END_STATE();
-    case 68:
+    case 67:
       ACCEPT_TOKEN(anon_sym_database_type);
       END_STATE();
-    case 69:
+    case 68:
       ACCEPT_TOKEN(anon_sym_Note);
       END_STATE();
+    case 69:
+      ACCEPT_TOKEN(sym_Project);
+      END_STATE();
     case 70:
-      ACCEPT_TOKEN(anon_sym_SQUOTE);
-      END_STATE();
-    case 71:
-      ACCEPT_TOKEN(anon_sym_Table);
-      END_STATE();
-    case 72:
       ACCEPT_TOKEN(anon_sym_LBRACK);
       END_STATE();
-    case 73:
+    case 71:
       ACCEPT_TOKEN(anon_sym_RBRACK);
       END_STATE();
-    case 74:
+    case 72:
       ACCEPT_TOKEN(anon_sym_primarykey);
       END_STATE();
-    case 75:
+    case 73:
       ACCEPT_TOKEN(anon_sym_pk);
       END_STATE();
-    case 76:
+    case 74:
       ACCEPT_TOKEN(anon_sym_null);
       END_STATE();
-    case 77:
+    case 75:
       ACCEPT_TOKEN(anon_sym_notnull);
       END_STATE();
-    case 78:
+    case 76:
       ACCEPT_TOKEN(anon_sym_unique);
       END_STATE();
-    case 79:
+    case 77:
       ACCEPT_TOKEN(anon_sym_increment);
       END_STATE();
-    case 80:
-      ACCEPT_TOKEN(anon_sym_Ref);
+    case 78:
+      ACCEPT_TOKEN(sym_Table);
       END_STATE();
-    case 81:
+    case 79:
       ACCEPT_TOKEN(anon_sym_DASH);
       END_STATE();
-    case 82:
+    case 80:
       ACCEPT_TOKEN(anon_sym_LT);
-      if (lookahead == '>') ADVANCE(84);
+      if (lookahead == '>') ADVANCE(82);
       END_STATE();
-    case 83:
+    case 81:
       ACCEPT_TOKEN(anon_sym_GT);
       END_STATE();
-    case 84:
+    case 82:
       ACCEPT_TOKEN(anon_sym_LT_GT);
       END_STATE();
-    case 85:
-      ACCEPT_TOKEN(aux_sym__hidden_identifier_token1);
+    case 83:
+      ACCEPT_TOKEN(sym_Ref);
+      END_STATE();
+    case 84:
+      ACCEPT_TOKEN(aux_sym_identifier_token1);
       if (lookahead == '-' ||
           ('0' <= lookahead && lookahead <= '9') ||
           ('A' <= lookahead && lookahead <= 'Z') ||
           lookahead == '_' ||
-          ('a' <= lookahead && lookahead <= 'z')) ADVANCE(85);
+          ('a' <= lookahead && lookahead <= 'z')) ADVANCE(84);
+      END_STATE();
+    case 85:
+      ACCEPT_TOKEN(sym__newline);
+      if (lookahead == '\n') ADVANCE(85);
       END_STATE();
     case 86:
-      ACCEPT_TOKEN(sym__newline);
-      if (lookahead == '\n') ADVANCE(86);
+      ACCEPT_TOKEN(sym__space);
+      if (lookahead == ' ') ADVANCE(86);
       END_STATE();
     case 87:
-      ACCEPT_TOKEN(sym__space);
-      if (lookahead == ' ') ADVANCE(87);
+      ACCEPT_TOKEN(sym__dot);
       END_STATE();
     case 88:
-      ACCEPT_TOKEN(sym__dot);
+      ACCEPT_TOKEN(anon_sym_SQUOTE);
       END_STATE();
     default:
       return false;
@@ -901,14 +901,12 @@ static const TSLexMode ts_lex_modes[STATE_COUNT] = {
 static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
   [0] = {
     [ts_builtin_sym_end] = ACTIONS(1),
-    [anon_sym_Project] = ACTIONS(1),
     [anon_sym_LBRACE] = ACTIONS(1),
     [anon_sym_RBRACE] = ACTIONS(1),
     [anon_sym_COLON] = ACTIONS(1),
     [anon_sym_database_type] = ACTIONS(1),
     [anon_sym_Note] = ACTIONS(1),
-    [anon_sym_SQUOTE] = ACTIONS(1),
-    [anon_sym_Table] = ACTIONS(1),
+    [sym_Project] = ACTIONS(1),
     [anon_sym_LBRACK] = ACTIONS(1),
     [anon_sym_RBRACK] = ACTIONS(1),
     [anon_sym_primarykey] = ACTIONS(1),
@@ -917,12 +915,14 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [anon_sym_notnull] = ACTIONS(1),
     [anon_sym_unique] = ACTIONS(1),
     [anon_sym_increment] = ACTIONS(1),
-    [anon_sym_Ref] = ACTIONS(1),
+    [sym_Table] = ACTIONS(1),
     [anon_sym_DASH] = ACTIONS(1),
     [anon_sym_LT] = ACTIONS(1),
     [anon_sym_GT] = ACTIONS(1),
     [anon_sym_LT_GT] = ACTIONS(1),
+    [sym_Ref] = ACTIONS(1),
     [sym__dot] = ACTIONS(1),
+    [anon_sym_SQUOTE] = ACTIONS(1),
   },
   [1] = {
     [sym_source_file] = STATE(68),
@@ -932,20 +932,20 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_relationship_definition_short] = STATE(2),
     [aux_sym_source_file_repeat1] = STATE(2),
     [ts_builtin_sym_end] = ACTIONS(3),
-    [anon_sym_Project] = ACTIONS(5),
-    [anon_sym_Table] = ACTIONS(7),
-    [anon_sym_Ref] = ACTIONS(9),
+    [sym_Project] = ACTIONS(5),
+    [sym_Table] = ACTIONS(7),
+    [sym_Ref] = ACTIONS(9),
   },
 };
 
 static const uint16_t ts_small_parse_table[] = {
   [0] = 5,
     ACTIONS(5), 1,
-      anon_sym_Project,
+      sym_Project,
     ACTIONS(7), 1,
-      anon_sym_Table,
+      sym_Table,
     ACTIONS(9), 1,
-      anon_sym_Ref,
+      sym_Ref,
     ACTIONS(11), 1,
       ts_builtin_sym_end,
     STATE(3), 5,
@@ -958,11 +958,11 @@ static const uint16_t ts_small_parse_table[] = {
     ACTIONS(13), 1,
       ts_builtin_sym_end,
     ACTIONS(15), 1,
-      anon_sym_Project,
+      sym_Project,
     ACTIONS(18), 1,
-      anon_sym_Table,
+      sym_Table,
     ACTIONS(21), 1,
-      anon_sym_Ref,
+      sym_Ref,
     STATE(3), 5,
       sym__definition,
       sym_project_definition,
@@ -1016,7 +1016,7 @@ static const uint16_t ts_small_parse_table[] = {
     ACTIONS(37), 1,
       anon_sym_RBRACE,
     ACTIONS(39), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(42), 1,
       sym_identifier,
     STATE(8), 2,
@@ -1035,7 +1035,7 @@ static const uint16_t ts_small_parse_table[] = {
     ACTIONS(46), 1,
       anon_sym_RBRACE,
     ACTIONS(48), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(42), 1,
       sym_identifier,
     STATE(12), 2,
@@ -1052,7 +1052,7 @@ static const uint16_t ts_small_parse_table[] = {
       anon_sym_LT_GT,
   [149] = 4,
     ACTIONS(48), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     ACTIONS(50), 1,
       anon_sym_RBRACE,
     STATE(42), 1,
@@ -1063,24 +1063,24 @@ static const uint16_t ts_small_parse_table[] = {
   [163] = 1,
     ACTIONS(52), 4,
       ts_builtin_sym_end,
-      anon_sym_Project,
-      anon_sym_Table,
-      anon_sym_Ref,
+      sym_Project,
+      sym_Table,
+      sym_Ref,
   [170] = 1,
     ACTIONS(54), 4,
       ts_builtin_sym_end,
-      anon_sym_Project,
-      anon_sym_Table,
-      anon_sym_Ref,
+      sym_Project,
+      sym_Table,
+      sym_Ref,
   [177] = 1,
     ACTIONS(56), 4,
       ts_builtin_sym_end,
-      anon_sym_Project,
-      anon_sym_Table,
-      anon_sym_Ref,
+      sym_Project,
+      sym_Table,
+      sym_Ref,
   [184] = 4,
     ACTIONS(58), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(44), 1,
       sym_relationship_definition_side,
     STATE(45), 1,
@@ -1090,18 +1090,18 @@ static const uint16_t ts_small_parse_table[] = {
   [197] = 1,
     ACTIONS(60), 4,
       ts_builtin_sym_end,
-      anon_sym_Project,
-      anon_sym_Table,
-      anon_sym_Ref,
+      sym_Project,
+      sym_Table,
+      sym_Ref,
   [204] = 1,
     ACTIONS(62), 4,
       ts_builtin_sym_end,
-      anon_sym_Project,
-      anon_sym_Table,
-      anon_sym_Ref,
+      sym_Project,
+      sym_Table,
+      sym_Ref,
   [211] = 4,
     ACTIONS(58), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(14), 1,
       sym_relationship_definition_side,
     STATE(66), 1,
@@ -1111,12 +1111,12 @@ static const uint16_t ts_small_parse_table[] = {
   [224] = 1,
     ACTIONS(64), 4,
       ts_builtin_sym_end,
-      anon_sym_Project,
-      anon_sym_Table,
-      anon_sym_Ref,
+      sym_Project,
+      sym_Table,
+      sym_Ref,
   [231] = 4,
     ACTIONS(58), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(45), 1,
       sym_table_name,
     STATE(56), 1,
@@ -1125,7 +1125,7 @@ static const uint16_t ts_small_parse_table[] = {
       sym__hidden_identifier,
   [244] = 4,
     ACTIONS(58), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(20), 1,
       sym_relationship_definition_side,
     STATE(66), 1,
@@ -1135,15 +1135,15 @@ static const uint16_t ts_small_parse_table[] = {
   [257] = 1,
     ACTIONS(66), 4,
       ts_builtin_sym_end,
-      anon_sym_Project,
-      anon_sym_Table,
-      anon_sym_Ref,
+      sym_Project,
+      sym_Table,
+      sym_Ref,
   [264] = 1,
     ACTIONS(68), 4,
       ts_builtin_sym_end,
-      anon_sym_Project,
-      anon_sym_Table,
-      anon_sym_Ref,
+      sym_Project,
+      sym_Table,
+      sym_Ref,
   [271] = 3,
     ACTIONS(70), 1,
       anon_sym_LBRACK,
@@ -1158,28 +1158,28 @@ static const uint16_t ts_small_parse_table[] = {
       anon_sym_Note,
   [287] = 3,
     ACTIONS(76), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(39), 1,
       sym_table_name,
     STATE(50), 1,
       sym__hidden_identifier,
   [297] = 3,
     ACTIONS(78), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(51), 1,
       sym_column_name,
     STATE(52), 1,
       sym__hidden_identifier,
   [307] = 3,
     ACTIONS(48), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(53), 1,
       sym_identifier,
     STATE(54), 1,
       sym_project_name,
   [317] = 3,
     ACTIONS(80), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(17), 1,
       sym__hidden_identifier,
     STATE(24), 1,
@@ -1188,17 +1188,17 @@ static const uint16_t ts_small_parse_table[] = {
     ACTIONS(82), 1,
       anon_sym_COLON,
     ACTIONS(84), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(40), 1,
       sym_identifier,
   [337] = 2,
     ACTIONS(84), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(58), 1,
       sym_identifier,
   [344] = 2,
     ACTIONS(86), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
     STATE(25), 1,
       sym_identifier,
   [351] = 2,
@@ -1209,7 +1209,7 @@ static const uint16_t ts_small_parse_table[] = {
   [358] = 1,
     ACTIONS(92), 2,
       anon_sym_RBRACE,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
   [363] = 1,
     ACTIONS(90), 2,
       anon_sym_COLON,
@@ -1217,7 +1217,7 @@ static const uint16_t ts_small_parse_table[] = {
   [368] = 1,
     ACTIONS(94), 2,
       anon_sym_RBRACE,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
   [373] = 2,
     ACTIONS(96), 1,
       anon_sym_SQUOTE,
@@ -1318,7 +1318,7 @@ static const uint16_t ts_small_parse_table[] = {
       sym__space,
   [504] = 1,
     ACTIONS(152), 1,
-      aux_sym__hidden_identifier_token1,
+      aux_sym_identifier_token1,
   [508] = 1,
     ACTIONS(154), 1,
       sym__dot,

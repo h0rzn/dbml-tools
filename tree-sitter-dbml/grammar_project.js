@@ -1,6 +1,6 @@
 module.exports = {
   project_definition: $ => seq(
-    'Project',
+    $.Project,
     $._space,
     field('project_name', $.project_name),
     $._space,
@@ -25,10 +25,9 @@ module.exports = {
     'Note'
   ),
 
-  enquoted_identifier: $ => seq(
-    '\'',
-    $.identifier,
-    '\'',
-  )
+  //
+  // Keywords
+  //
+  Project: $ => token('Project'),
 
 };
