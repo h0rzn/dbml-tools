@@ -9,9 +9,11 @@ import (
 
 type SymbolType int32
 
-var TableSymbol SymbolType = 23
-var ColumnSymbol SymbolType = 8
-var ShortRefSymbol SymbolType = 25
+const ProjectSymbol SymbolType = 23
+const ProjectPropertySymbol SymbolType = 8
+const TableSymbol SymbolType = 23
+const ColumnSymbol SymbolType = 8
+const ShortRefSymbol SymbolType = 25
 
 type Symbol struct {
 	Name  string
@@ -44,6 +46,24 @@ func collectSymbols(document *Document, node *sitter.Node, symbols []Symbol) []S
 		var name string
 		var symbolType SymbolType
 		switch child.Type() {
+		case TSDProject:
+			symbolType = TableSymbol
+			nameNode := child.ChildByFieldName(TSVProjectName)
+			if nameNode != nil {
+				name = nameNode.Content(document.Contents())
+			} else {
+				name = "<unkown project>"
+			}
+
+		case TSDProjectProperty:
+			symbolType = ProjectPropertySymbol
+			nameNode := child.ChildByFieldName(TSVProjectPropertyKey)
+			if nameNode != nil {
+				name = nameNode.Content(document.Contents())
+			} else {
+				name = "<unkown project>"
+			}
+
 		case TSDTable:
 			symbolType = TableSymbol
 			nameNode := child.ChildByFieldName(TSVTableName)

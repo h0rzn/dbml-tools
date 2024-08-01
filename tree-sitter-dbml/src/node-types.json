@@ -61,7 +61,94 @@
     }
   },
   {
+    "type": "enquoted_identifier",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "identifier",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "project_definition",
+    "named": true,
+    "fields": {
+      "project_name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "project_name",
+            "named": true
+          }
+        ]
+      },
+      "project_property": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "project_property_definition",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "project_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "project_property_definition",
+    "named": true,
+    "fields": {
+      "project_property_key": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "project_property_key",
+            "named": true
+          }
+        ]
+      },
+      "project_property_value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "enquoted_identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "project_property_key",
     "named": true,
     "fields": {}
   },
@@ -128,6 +215,10 @@
       "required": false,
       "types": [
         {
+          "type": "project_definition",
+          "named": true
+        },
+        {
           "type": "relationship_definition_short",
           "named": true
         },
@@ -170,6 +261,10 @@
     "fields": {}
   },
   {
+    "type": "'",
+    "named": false
+  },
+  {
     "type": "-",
     "named": false
   },
@@ -190,6 +285,14 @@
     "named": false
   },
   {
+    "type": "Note",
+    "named": false
+  },
+  {
+    "type": "Project",
+    "named": false
+  },
+  {
     "type": "Ref",
     "named": false
   },
@@ -203,6 +306,10 @@
   },
   {
     "type": "]",
+    "named": false
+  },
+  {
+    "type": "database_type",
     "named": false
   },
   {

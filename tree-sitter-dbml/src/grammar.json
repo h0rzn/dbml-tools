@@ -13,11 +13,130 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "project_definition"
+        },
+        {
+          "type": "SYMBOL",
           "name": "table_definition"
         },
         {
           "type": "SYMBOL",
           "name": "relationship_definition_short"
+        }
+      ]
+    },
+    "project_definition": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "Project"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_space"
+        },
+        {
+          "type": "FIELD",
+          "name": "project_name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "project_name"
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_space"
+        },
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_newline"
+        },
+        {
+          "type": "FIELD",
+          "name": "project_property",
+          "content": {
+            "type": "REPEAT",
+            "content": {
+              "type": "SYMBOL",
+              "name": "project_property_definition"
+            }
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "project_name": {
+      "type": "SYMBOL",
+      "name": "identifier"
+    },
+    "project_property_definition": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "project_property_key",
+          "content": {
+            "type": "SYMBOL",
+            "name": "project_property_key"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_space"
+        },
+        {
+          "type": "FIELD",
+          "name": "project_property_value",
+          "content": {
+            "type": "SYMBOL",
+            "name": "enquoted_identifier"
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_newline"
+        }
+      ]
+    },
+    "project_property_key": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "database_type"
+        },
+        {
+          "type": "STRING",
+          "value": "Note"
+        }
+      ]
+    },
+    "enquoted_identifier": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "'"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "STRING",
+          "value": "'"
         }
       ]
     },

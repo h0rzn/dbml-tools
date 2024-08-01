@@ -18,6 +18,7 @@ type LocatePosition struct {
 	Offset uint32
 }
 
+// TODO: support project location detection
 func Locate(document *Document, line uint32, offset uint32) (outLine uint32, outOffset uint32, err error) {
 	result, err := document.NodeAt(line, offset)
 	if err != nil {
