@@ -24,7 +24,10 @@ module.exports = {
 
     column_settings: $ => seq(
       '[',
-      $.column_constraint,
+      choice(
+        $.column_constraint,
+        $.relationship_definition_inline
+      ),
       ']',
       $._newline
     ),

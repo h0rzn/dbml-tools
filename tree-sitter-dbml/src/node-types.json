@@ -56,6 +56,10 @@
         {
           "type": "column_constraint",
           "named": true
+        },
+        {
+          "type": "relationship_definition_inline",
+          "named": true
         }
       ]
     }
@@ -161,6 +165,25 @@
     "type": "project_property_key",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "relationship_definition_inline",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "relationship_definition_side",
+          "named": true
+        },
+        {
+          "type": "relationship_symbol",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "relationship_definition_short",
@@ -354,6 +377,10 @@
   },
   {
     "type": "primary key",
+    "named": false
+  },
+  {
+    "type": "ref:",
     "named": false
   },
   {

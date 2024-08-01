@@ -232,8 +232,17 @@
           "value": "["
         },
         {
-          "type": "SYMBOL",
-          "name": "column_constraint"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "column_constraint"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "relationship_definition_inline"
+            }
+          ]
         },
         {
           "type": "STRING",
@@ -321,6 +330,27 @@
         {
           "type": "SYMBOL",
           "name": "relationship_definition_side"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_space"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "relationship_symbol"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "relationship_definition_side"
+        }
+      ]
+    },
+    "relationship_definition_inline": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "ref:"
         },
         {
           "type": "SYMBOL",

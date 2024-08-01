@@ -12,6 +12,13 @@ module.exports = {
       $.relationship_definition_side,
     ),
 
+    relationship_definition_inline: $ => seq(
+      'ref:',
+      $._space,
+      $.relationship_symbol,
+      $.relationship_definition_side,
+    ),
+
     relationship_definition_side: $ => seq(
       $.table_name,
       $._dot,
@@ -26,9 +33,8 @@ module.exports = {
       '<>'
     ),
 
-
     column_name: $ => field('column_name', $._hidden_identifier),
     table_name: $ => field('table_name', $._hidden_identifier),
 
-    Ref: $ => token('Ref')
+    Ref: $ => token('Ref'),
 };

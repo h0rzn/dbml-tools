@@ -57,21 +57,18 @@ func locateTable(document *Document, result *NodeAtResult) (*LocateResult, error
 			return nil, err
 		}
 
-		fmt.Printf("dst node: %+v\n", dstTableNode)
-
 		locateResult := &LocateResult{
 			Start: LocatePosition{
 				Row:    dstTableNode.StartPoint().Row,
-				Column: dstTableNode.StartPoint().Row,
+				Column: dstTableNode.StartPoint().Column,
 				Offset: dstTableNode.StartByte(),
 			},
 			End: LocatePosition{
 				Row:    dstTableNode.EndPoint().Row,
-				Column: dstTableNode.EndPoint().Row,
+				Column: dstTableNode.EndPoint().Column,
 				Offset: dstTableNode.EndByte(),
 			},
 		}
-
 		return locateResult, nil
 	}
 
@@ -97,12 +94,12 @@ func locateColumn(document *Document, result *NodeAtResult) (*LocateResult, erro
 		locateResult := &LocateResult{
 			Start: LocatePosition{
 				Row:    dstTableNode.StartPoint().Row,
-				Column: dstTableNode.StartPoint().Row,
+				Column: dstTableNode.StartPoint().Column,
 				Offset: dstTableNode.StartByte(),
 			},
 			End: LocatePosition{
 				Row:    dstTableNode.EndPoint().Row,
-				Column: dstTableNode.EndPoint().Row,
+				Column: dstTableNode.EndPoint().Column,
 				Offset: dstTableNode.EndByte(),
 			},
 		}
@@ -143,9 +140,8 @@ func columnByValues(document *Document, tableName string, columnName string) (*s
 				if columnNameNode == nil {
 					continue
 				}
-				dstColumnName := columnNameNode.Content(document.Contents())
 
-				fmt.Println("\t column def child", child.Type(), dstColumnName)
+				dstColumnName := columnNameNode.Content(document.Contents())
 				if dstColumnName == columnName {
 					return child, nil
 				}

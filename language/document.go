@@ -246,7 +246,6 @@ func (d *Document) NodeAt(line uint32, column uint32) (result *NodeAtResult, err
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("nodeStartOffset", nodeStartOffset)
 
 	treeCursor := sitter.NewTreeCursor(d.RootNode())
 	nodeIndex := treeCursor.GoToFirstChildForByte(uint32(nodeStartOffset))
@@ -269,7 +268,6 @@ func (d *Document) NodeAt(line uint32, column uint32) (result *NodeAtResult, err
 		}
 		node = treeCursor.CurrentNode()
 		childNodeIndex = currentNodeIndex
-		fmt.Println("+1", node.Type())
 	}
 	result.Node = node
 	result.Parent = node.Parent()
