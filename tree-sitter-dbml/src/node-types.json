@@ -186,6 +186,40 @@
     }
   },
   {
+    "type": "relationship_definition_long",
+    "named": true,
+    "fields": {
+      "relationship_name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "Ref",
+          "named": true
+        },
+        {
+          "type": "relationship_definition_side",
+          "named": true
+        },
+        {
+          "type": "relationship_symbol",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "relationship_definition_short",
     "named": true,
     "fields": {
@@ -253,6 +287,10 @@
       "types": [
         {
           "type": "project_definition",
+          "named": true
+        },
+        {
+          "type": "relationship_definition_long",
           "named": true
         },
         {

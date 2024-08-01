@@ -12,7 +12,8 @@ module.exports = grammar({
     _definition: $ => choice(
       $.project_definition,
       $.table_definition,
-      $.relationship_definition_short
+      $.relationship_definition_short,
+      $.relationship_definition_long
     ),
 
     ...project,
