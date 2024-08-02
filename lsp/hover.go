@@ -10,7 +10,7 @@ func (s *Server) TextDocumentHover(context *glsp.Context, params *protocol.Hover
 	line := params.Position.Line
 	column := params.Position.Character
 
-	result, err := language.ResolveAt(s.document, line, column)
+	result, err := language.ResolveContents(s.document, line, column)
 	if err != nil {
 		return nil, err
 	}
