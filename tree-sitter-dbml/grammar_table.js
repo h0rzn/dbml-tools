@@ -3,6 +3,13 @@ module.exports = {
       $.Table,
       $._space,
       field('table_name', $.table_name),
+
+      optional(seq(
+        $._space,
+        $.as,
+        field('table_alias_name', $.table_alias)
+      )),
+
       $._space,
       '{',
       $._newline,
@@ -43,8 +50,10 @@ module.exports = {
 
     // TODO: add keyed constraints: default: xxx, note: 'xxx'
 
+    table_alias: $ => field('table_alias', $._hidden_identifier),
     //
     // Keywords
     //
     Table: $ => token('Table'),
+    as: $ => token('as')
 };

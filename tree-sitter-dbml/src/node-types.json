@@ -338,6 +338,11 @@
     }
   },
   {
+    "type": "table_alias",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "table_definition",
     "named": true,
     "fields": {
@@ -347,6 +352,16 @@
         "types": [
           {
             "type": "column_definition",
+            "named": true
+          }
+        ]
+      },
+      "table_alias_name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "table_alias",
             "named": true
           }
         ]
@@ -363,11 +378,15 @@
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
           "type": "Table",
+          "named": true
+        },
+        {
+          "type": "as",
           "named": true
         }
       ]
@@ -429,6 +448,10 @@
   {
     "type": "]",
     "named": false
+  },
+  {
+    "type": "as",
+    "named": true
   },
   {
     "type": "cascade",
