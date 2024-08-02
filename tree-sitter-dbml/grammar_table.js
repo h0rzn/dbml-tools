@@ -22,7 +22,7 @@ module.exports = {
     column_definition: $ => seq(
       field('col_name', $.identifier),
       $._space,
-      field('col_type', $.identifier),
+      field('col_type', $.column_type),
       choice(
         $._newline,
         $.column_settings
@@ -30,14 +30,27 @@ module.exports = {
     ),
 
     column_settings: $ => seq(
-      '[',
-      choice(
-        $.column_constraint,
-        $.relationship_definition_inline
-      ),
-      ']',
-      $._newline
+      seq(
+        '[',
+        choice(
+          $.column_constraint,
+          $.relationship_definition_inline
+        ),
+        optional(
+          repeat(
+            seq(',',
+              choice(
+                $.column_constraint,
+                $.relationship_definition_inline
+              )
+            )
+          )
+        ),
+        ']'
+      )
     ),
+
+    column_type: $ => /[a-zA-Z0-9_\-()]+/,
 
     column_constraint: $ => choice(
       'primary key',

@@ -47,13 +47,13 @@ func (r *Renderer) Push(b byte) {
 	case '\n':
 		if r.marker.active && len(r.marker.message) > 0 {
 			// marker line
-			length := r.marker.markEndByte - r.marker.markStartByte
-			markerLine := r.createMarkerLine(r.lineOffset-1, length)
-			r.builder.WriteString(markerLine)
+			// length := r.marker.markEndByte - r.marker.markStartByte
+			// markerLine := r.createMarkerLine(r.lineOffset-1, length)
+			// r.builder.WriteString(markerLine)
 			// message line
 
-			message := colorYellow + "* " + r.marker.message + "\n" + colorReset
-			r.builder.WriteString(r.padIn(message, r.lineOffset-1))
+			// message := colorYellow + "* " + r.marker.message + "\n" + colorReset
+			// r.builder.WriteString(r.padIn(message, r.lineOffset-1))
 		}
 
 		r.lineOffset = 0
@@ -65,7 +65,7 @@ func (r *Renderer) Push(b byte) {
 		r.lineOffset += 1
 	}
 
-	fmt.Printf("[PUSH: %q] offset: %d | lineOffset: %d\n", string(b), r.offset, r.lineOffset)
+	// fmt.Printf("[PUSH: %q] offset: %d | lineOffset: %d\n", string(b), r.offset, r.lineOffset)
 }
 
 func (r *Renderer) PushSequence(sequence []byte) {

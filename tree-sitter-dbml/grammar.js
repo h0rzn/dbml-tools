@@ -13,8 +13,11 @@ module.exports = grammar({
       $.project_definition,
       $.table_definition,
       $.relationship_definition_short,
-      $.relationship_definition_long
+      $.relationship_definition_long,
+      $.comment
     ),
+
+    comment: $ => /\/\/[^\n]*/,
 
     ...project,
     ...table,

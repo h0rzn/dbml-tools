@@ -66,8 +66,8 @@ module.exports = {
     ),
 
     relationship_event: $ => choice(
-      'delete',
-      'update'
+      choice('delete', 'on_delete'),
+      choice('update', 'on_update')
     ),
 
     relationship_action: $ => choice(

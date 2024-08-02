@@ -20,61 +20,43 @@ func printWithErrors(document *Document, errNodes []*sitter.Node) {
 		errNodeRanges = append(errNodeRanges, errNode.Range())
 	}
 
-	renderer := NewRenderer(document)
-	// var lineOffset uint32
-	// var errOffset uint32
-	// var errLen uint32
-	// var errMessage string
-	// var isErrorLine bool
-	// var showErrorLine bool
-	for byteOffset, contentsByte := range contents {
-		// lineOffset += 1
-		// if contentsByte == '\n' {
-		// 	lineOffset = 0
-		// 	if isErrorLine && lineOffset == 0 {
-		// 		showErrorLine = true
-		// 		isErrorLine = false
-		// 	}
-		// }
-		// if contentsByte == '\t' {
-		// 	tabWidth := uint32(8 - (int(lineOffset) % 8))
-		// 	lineOffset += tabWidth
-		// }
+	fmt.Printf("found %d errors\n", len(errNodes))
 
+	renderer := NewRenderer(document)
+	// i := 0
+	for byteOffset, contentsByte := range contents {
+		// if i == 301 {
+		// 	fmt.Println()
+		// 	fmt.Println(renderer.String())
+		//
+		// 	return
+		// }
 		for nodeRangeIndex, nodeRange := range errNodeRanges {
 			if byteOffset == int(nodeRange.StartByte) {
-
 				errMessage := errNodes[nodeRangeIndex].String()
 				renderer.SetMarker(nodeRange.StartByte, nodeRange.EndByte, errMessage)
-
-				// renderer.SetColor(Red)
-
-				// isErrorLine = true
-				// errOffset = lineOffset
-				// errLen = nodeRange.EndByte - nodeRange.StartByte
-				// errMessage = errNodes[nodeRangeIndex].String()
 				break
 			}
-
-			// fix linewrap due to '\n'
-			// if byteOffset == int(nodeRange.EndByte)+1 && contents[byteOffset+1] == '\n' {
-			// 	renderer.ResetColor()
-			// 	// errOffset = 0
-			// 	break
-			// }
 		}
-		// builder.WriteByte(contentsByte)
 		renderer.Push(contentsByte)
-		// if showErrorLine {
-		// 	// errorLine := createErrorLine(errOffset, errLen, errMessage)
-		// 	errorLine := errMessage
-		// 	renderer.PushString(errorLine)
-		// 	showErrorLine = false
-		//
-		// }
+		// i++
 	}
 
 	fmt.Println(renderer.String())
+	// renderer := NewRenderer(document)
+	// for byteOffset, contentsByte := range contents {
+	// 	for nodeRangeIndex, nodeRange := range errNodeRanges {
+	// 		if byteOffset == int(nodeRange.StartByte) {
+	//
+	// 			errMessage := errNodes[nodeRangeIndex].String()
+	// 			renderer.SetMarker(nodeRange.StartByte, nodeRange.EndByte, errMessage)
+	// 			break
+	// 		}
+	// 	}
+	// 	renderer.Push(contentsByte)
+	// }
+	//
+	// fmt.Println(renderer.String())
 }
 
 func createErrorLine(offset uint32, len uint32, message string) string {

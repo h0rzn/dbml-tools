@@ -23,7 +23,7 @@
         "required": true,
         "types": [
           {
-            "type": "identifier",
+            "type": "column_type",
             "named": true
           }
         ]
@@ -50,7 +50,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
@@ -319,6 +319,10 @@
       "required": false,
       "types": [
         {
+          "type": "comment",
+          "named": true
+        },
+        {
           "type": "project_definition",
           "named": true
         },
@@ -458,6 +462,14 @@
     "named": false
   },
   {
+    "type": "column_type",
+    "named": true
+  },
+  {
+    "type": "comment",
+    "named": true
+  },
+  {
     "type": "database_type",
     "named": false
   },
@@ -479,6 +491,14 @@
   },
   {
     "type": "null",
+    "named": false
+  },
+  {
+    "type": "on_delete",
+    "named": false
+  },
+  {
+    "type": "on_update",
     "named": false
   },
   {

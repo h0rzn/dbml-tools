@@ -26,8 +26,16 @@
         {
           "type": "SYMBOL",
           "name": "relationship_definition_long"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "comment"
         }
       ]
+    },
+    "comment": {
+      "type": "PATTERN",
+      "value": "\\/\\/[^\\n]*"
     },
     "project_definition": {
       "type": "SEQ",
@@ -239,7 +247,7 @@
           "name": "col_type",
           "content": {
             "type": "SYMBOL",
-            "name": "identifier"
+            "name": "column_type"
           }
         },
         {
@@ -261,31 +269,69 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "["
-        },
-        {
-          "type": "CHOICE",
+          "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "column_constraint"
+              "type": "STRING",
+              "value": "["
             },
             {
-              "type": "SYMBOL",
-              "name": "relationship_definition_inline"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "column_constraint"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "relationship_definition_inline"
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": ","
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "column_constraint"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "relationship_definition_inline"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            },
+            {
+              "type": "STRING",
+              "value": "]"
             }
           ]
-        },
-        {
-          "type": "STRING",
-          "value": "]"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_newline"
         }
       ]
+    },
+    "column_type": {
+      "type": "PATTERN",
+      "value": "[a-zA-Z0-9_\\-()]+"
     },
     "column_constraint": {
       "type": "CHOICE",
@@ -570,12 +616,30 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "STRING",
-          "value": "delete"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "delete"
+            },
+            {
+              "type": "STRING",
+              "value": "on_delete"
+            }
+          ]
         },
         {
-          "type": "STRING",
-          "value": "update"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "update"
+            },
+            {
+              "type": "STRING",
+              "value": "on_update"
+            }
+          ]
         }
       ]
     },
