@@ -26,6 +26,7 @@ const TSVColumnNameValue string = "col_name"
 const TSDRelationshipShort string = "relationship_definition_short"
 const TSDRelationshipSide string = "relationship_definition_side"
 const TSVRelationshipName string = "relationship_name"
+const TSDRelationshipLong string = "relationship_definition_long"
 
 func isField(input string, target string) bool {
 	return input == string(target)

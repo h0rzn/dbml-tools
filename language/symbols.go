@@ -12,7 +12,9 @@ const ProjectSymbol SymbolType = 2
 const ProjectPropertySymbol SymbolType = 7
 const TableSymbol SymbolType = 23
 const ColumnSymbol SymbolType = 8
-const ShortRefSymbol SymbolType = 25
+
+// const ShortRefSymbol SymbolType = 25
+const RefSymbol SymbolType = 25
 
 type Symbol struct {
 	Name  string
@@ -63,18 +65,23 @@ func collectSymbols(document *Document, node *sitter.Node, symbols []Symbol) []S
 			nameNode = child.ChildByFieldName(TSVColumnNameValue)
 
 		case TSDRelationshipShort:
-			symbolType = ShortRefSymbol
+			symbolType = RefSymbol
+			nameNode = child.ChildByFieldName(TSVRelationshipName)
+
+		case TSDRelationshipLong:
+			symbolType = RefSymbol
 			nameNode = child.ChildByFieldName(TSVRelationshipName)
 
 		default:
 			continue
 		}
 
+		var name string
 		if nameNode == nil {
-			continue
+			name = "<unkown>"
+		} else {
+			name = nameNode.Content(document.Contents())
 		}
-
-		name := nameNode.Content(document.Contents())
 		symbol := Symbol{
 			Type:  symbolType,
 			Name:  name,
