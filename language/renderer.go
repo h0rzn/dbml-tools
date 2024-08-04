@@ -1,7 +1,6 @@
 package language
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -92,7 +91,7 @@ func (r *Renderer) SetMarker(startByte uint32, endByte uint32, message string) {
 	r.marker.markStartByte = startByte
 	r.marker.markEndByte = endByte
 	r.marker.message = message
-	fmt.Printf("SetMarker: %d - %d (%d) | msg %q\n", startByte, endByte, endByte-startByte, message)
+	// fmt.Printf("SetMarker: %d - %d (%d) | msg %q\n", startByte, endByte, endByte-startByte, message)
 }
 
 // func (r *Renderer) PushMarkerLine() {

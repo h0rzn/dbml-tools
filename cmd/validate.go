@@ -7,6 +7,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var Compact bool
+
 var validateCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate a file directly",
@@ -24,6 +26,8 @@ var validateCmd = &cobra.Command{
 			fmt.Printf("Error: %s\n", err.Error())
 			return
 		}
-		language.ValidateDocument(document)
+		compact, _ := cmd.Flags().GetBool("compact")
+
+		language.ValidateDocument(document, compact)
 	},
 }

@@ -32,12 +32,16 @@ var devCmd = &cobra.Command{
 			fmt.Println(err)
 		}
 
-		result, err := language.ResolveAt(document, 5, 11)
+		// l := uint32(22)
+		// o := uint32(16)
+		l := uint32(19)
+		o := uint32(17)
+
+		result, err := language.Resolve(document, l, o)
 		if err != nil {
-			fmt.Println("Error: ", err.Error())
-			return
+			panic(err)
 		}
-		_ = result
+		fmt.Printf("\n Resolve Result:\n%+v\n", result)
 	},
 }
 
@@ -53,6 +57,8 @@ func init() {
 	rootCmd.AddCommand(parseCmd)
 
 	rootCmd.AddCommand(queryCmd)
+
+	validateCmd.Flags().BoolVarP(&Compact, "compact", "c", false, "Compact output")
 	rootCmd.AddCommand(validateCmd)
 
 	rootCmd.AddCommand(devCmd)

@@ -43,3 +43,5 @@ var CBLUEBG2 = "\033[104m"
 var CVIOLETBG2 = "\033[105m"
 var CBEIGEBG2 = "\033[106m"
 var CWHITEBG2 = "\033[107m"
+
+var SERROR = "\033[48;5;88m\033[97m"

@@ -2,7 +2,6 @@ package language
 
 import (
 	"errors"
-	"fmt"
 
 	sitter "github.com/smacker/go-tree-sitter"
 )
@@ -154,9 +153,7 @@ func tableByName(document *Document, tableName string, includeAliases bool) (*si
 	for _, tableNode := range nodes {
 		if includeAliases {
 			if aliasNameNode := tableNode.ChildByFieldName("table_alias_name"); aliasNameNode != nil {
-
 				if aliasNameNode.Content(document.Contents()) == tableName {
-					fmt.Println("MATCH", tableNode)
 					return tableNode, nil
 				}
 			}
@@ -165,7 +162,6 @@ func tableByName(document *Document, tableName string, includeAliases bool) (*si
 		if tableNameNode := tableNode.ChildByFieldName(TSVTableName); tableNameNode != nil {
 			if tableNameNode.Content(document.Contents()) == tableName {
 
-				fmt.Println("MATCH 2", tableNode)
 				return tableNode, nil
 			}
 		}
