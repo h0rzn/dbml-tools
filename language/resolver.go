@@ -2,6 +2,7 @@ package language
 
 import (
 	"errors"
+	"fmt"
 
 	sitter "github.com/smacker/go-tree-sitter"
 )
@@ -30,7 +31,8 @@ func Resolve(document *Document, line uint32, offset uint32) (destinationNode *s
 		}
 		return result, nil
 	default:
-		return nil, errors.New("failed to resolve: unsupported node type")
+		fmt.Println("unsupported node type", result.Node.Type())
+		return nil, fmt.Errorf("failed to resolve: unsupported node type %q", result.Node.Type())
 	}
 }
 
@@ -43,25 +45,14 @@ type ResolvedContents struct {
 func ResolveContents(document *Document, line uint32, column uint32) (ResolvedContents, error) {
 	var resolveResult ResolvedContents
 
-	src, err := document.NodeAt(line, column)
+	result, err := Resolve(document, line, column)
 	if err != nil {
 		return resolveResult, err
 	}
 
-	result, err := Resolve(document, src.Node.StartPoint().Row, src.Node.StartPoint().Row)
-	if err != nil {
-		return resolveResult, err
-	}
-
-	resultNodeType := result.Type()
-	if resultNodeType == TSVColumnName || resultNodeType == TSVTableName {
-		content, _ := document.ContentsRange(result.StartByte(), result.EndByte())
-		resolveResult.Content = string(content)
-
-		return resolveResult, nil
-	}
-
-	resolveResult.Resolved = false
+	content, _ := document.ContentsRange(result.StartByte(), result.EndByte())
+	resolveResult.Content = string(content)
+	resolveResult.Resolved = true
 
 	return resolveResult, nil
 }
@@ -97,7 +88,7 @@ func resolveColumn(document *Document, result *NodeAtResult) (*sitter.Node, erro
 		return dstTableNode, nil
 	}
 
-	return nil, errors.New("locateTable: unsupported parent type")
+	return nil, errors.New("locateColumn: unsupported parent type")
 }
 
 func columnByValues(document *Document, tableName string, columnName string) (*sitter.Node, error) {
