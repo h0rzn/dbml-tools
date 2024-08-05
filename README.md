@@ -31,11 +31,12 @@ Internal parser is using tree-sitter and currently only supports few language fe
 
 ## LSP Coverage
 `textDocument/definition`  
-- Works for tables and columns, but only from a top-level short `Ref`
+- Supported: tables, table aliases, columns, relationship definitions
+- Index definitions are not implemented
 
 `textDocument/hover`  
-- Works for tables and columns, but is poorly formatted  
+- Works for tables, table aliases and columns, but is poorly formatted  
 
-`textDocument/documentSymbol`  
-- Table, column and top level short `Ref` names  
+`textDocument/documentSymbol`
+- Table, column and references
 
