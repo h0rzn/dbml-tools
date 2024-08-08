@@ -13,7 +13,6 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-var ErrDefinitionMissingDestination = errors.New("failed to find match")
 var ErrOutOfBoundsFileContents = errors.New("input access parameters are out of bounds for file contents")
 
 type Document struct {
@@ -40,6 +39,8 @@ func NewDocument(item protocol.TextDocumentItem) *Document {
 	}
 }
 
+// Init initializes the document by setting upd
+// and running the parser on the source code.
 func (d *Document) Init() error {
 	d.parsing = true
 	defer func() {
@@ -64,6 +65,8 @@ func (d *Document) Init() error {
 	return err
 }
 
+// parse parses fileContents with sitter.ParseCtx and returns
+// *sitter.Tree and error.
 func (d *Document) parse(fileContents []byte) (*sitter.Tree, error) {
 	tree, err := d.parser.ParseCtx(context.Background(), nil, fileContents)
 	if err != nil {
@@ -125,6 +128,8 @@ func (d *Document) calculateOldEndpoint(startPoint sitter.Point) (sitter.Point, 
 	return oldEndpoint, nil
 }
 
+// Tree fetches the current *sitter.Tree for the document.
+// If document is currently parsed the parse result is awaited.
 func (d *Document) Tree() chan *sitter.Tree {
 	out := make(chan *sitter.Tree, 1)
 
@@ -142,15 +147,21 @@ func (d *Document) Tree() chan *sitter.Tree {
 	return out
 }
 
+// TreeCursor creates and returns a *sitter.TreeCursor
+// based on root node.
 func (d *Document) TreeCursor() *sitter.TreeCursor {
 	return sitter.NewTreeCursor(d.RootNode())
 }
 
+// RootNode fetches RootNode for current document.
 func (d *Document) RootNode() *sitter.Node {
 	tree := <-d.Tree()
 	return tree.RootNode()
 }
 
+// ContentsRange returns file contents in bytes for [startByte:endByte].
+// If endByte overflows contents length, truncated is true and only bytes
+// until end are returned.
 func (d *Document) ContentsRange(startByte uint32, endByte uint32) (contents []byte, truncated bool) {
 	if len(d.fileContents) == 0 {
 		return make([]byte, 0), false
@@ -163,84 +174,41 @@ func (d *Document) ContentsRange(startByte uint32, endByte uint32) (contents []b
 	return d.fileContents[startByte:endByte], truncated
 }
 
+// Contents fetches file contents.
 func (d *Document) Contents() []byte {
 	return d.fileContents
 }
 
-func (d *Document) ContentsLine(startByte uint32, endByte uint32) (string, error) {
-	if int(endByte) > len(d.fileContents) {
-		return "", ErrOutOfBoundsFileContents
-	}
-
-	contentsAfterStart := d.fileContents[startByte:]
-
-	var builder strings.Builder
-	for _, contentsByte := range contentsAfterStart {
-		if contentsByte == '\n' {
-			break
-		}
-		builder.WriteByte(contentsByte)
-	}
-
-	return builder.String(), nil
-}
-
-func (d *Document) ContentsByPosition(line uint32, column uint32) (string, error) {
-	offset, err := d.OffsetByPosition(line, column)
-	if err != nil {
-		return "", err
-	}
-
-	fmt.Printf("**src: position {%d:%d} to offset %d/%d\n", line, column, offset, len(d.fileContents))
-	fmt.Printf("   -> sample: %q\n", string(d.fileContents[offset:offset+10]))
-
-	treeCursor := sitter.NewTreeCursor(d.RootNode())
-	var lastNode *sitter.Node
-	for {
-		nodeIndex := treeCursor.GoToFirstChildForByte(uint32(offset))
-		if nodeIndex == -1 {
-			if lastNode != nil {
-				value := string(d.fileContents[lastNode.Range().StartByte:lastNode.Range().EndByte])
-				fmt.Printf("**src result <%s>: %q ###\n", lastNode.Type(), value)
-				return value, nil
-			} else {
-				return "", errors.New("failed to find value by line+column")
-			}
-		}
-
-		node := treeCursor.CurrentNode()
-		lastNode = node
-	}
-}
-
-// Function to convert line and column to byte offset
+// OffsetByPosition converts line and column to byte offset.
+// Returns byte offset and error if no byte offset could be found.
 func (d *Document) OffsetByPosition(line uint32, column uint32) (int, error) {
 	lines := bytes.SplitAfter(d.fileContents, []byte("\n"))
 	byteOffset := 0
 
-	for lineIndex, lineSlice := range lines {
-		for charIndex, char := range lineSlice {
-			_ = charIndex
-			_ = char
-			// fmt.Printf("charOff %02d | line %02d | %s\n", charIndex, lineIndex, string(char))
-
-			if uint32(lineIndex) == line {
-				return byteOffset + int(column), nil
-			}
-			byteOffset += 1
+	for lineIndex := range lines {
+		if uint32(lineIndex) == line {
+			return byteOffset + int(column), nil
 		}
+		byteOffset += 1
 	}
 
 	return byteOffset, fmt.Errorf("failed to find node @ %d:%d", line, column)
 }
 
 type NodeAtResult struct {
-	Node       *sitter.Node
-	Parent     *sitter.Node
+	// Node is the direct result node
+	Node *sitter.Node
+	// Parent is parent of Node
+	Parent *sitter.Node
+	// Node type of Parent
 	ParentType string
-	NodeIndex  int64
+	// Index of Parents children that
+	// represents Node
+	NodeIndex int64
 }
 
+// NodeAt finds a node in document tree based on line and column.
+// Returns node and additional parent information in NodeAtResult and error.
 func (d *Document) NodeAt(line uint32, column uint32) (result *NodeAtResult, err error) {
 	nodeStartOffset, err := d.OffsetByPosition(line, column)
 	if err != nil {
@@ -276,6 +244,8 @@ func (d *Document) NodeAt(line uint32, column uint32) (result *NodeAtResult, err
 	return result, nil
 }
 
+// Query is a utility function to query nodes based on a query.
+// Returns result nodes []*sitter.Node and error.
 func (d *Document) Query(query string) ([]*sitter.Node, error) {
 	results := make([]*sitter.Node, 0)
 	cursor, err := d.queryWithCursor(query)
@@ -292,36 +262,11 @@ func (d *Document) Query(query string) ([]*sitter.Node, error) {
 		for _, capture := range match.Captures {
 			results = append(results, capture.Node)
 		}
-
 	}
 }
 
-func (d *Document) getValue(line uint32, offset uint32) string {
-	rawQuery := `
-		(_ ) @node
-	`
-	cursor, err := d.queryWithCursor(rawQuery)
-	if err != nil {
-		return ""
-	}
-	defer cursor.Close()
-
-	match, exists := cursor.NextMatch()
-	if !exists {
-		return ""
-	}
-	// match = cursor.FilterPredicates(match, d.fileContents)
-	for _, capture := range match.Captures {
-		node := capture.Node
-		startPoint := node.StartPoint()
-		if startPoint.Row == line && startPoint.Column == offset {
-			return node.Content(d.Contents())
-		}
-	}
-
-	return ""
-}
-
+// queryWithCursor creates a new *sitter.QueryCursor from a query string.
+// Returns query cursor and error
 func (d *Document) queryWithCursor(rawQuery string) (*sitter.QueryCursor, error) {
 	query, err := sitter.NewQuery([]byte(rawQuery), d.language)
 	if err != nil {

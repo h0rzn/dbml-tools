@@ -7,9 +7,16 @@ import (
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
+var ErrDefinitionMissingDestination = errors.New("failed to find match")
+var ErrResolveUnsupportedNoteType = errors.New("failed to resolve: unsupported node type")
+
 const tableLocateIncludeAliases = true
 
 // TODO: support project location detection
+
+// Resolve resolves a node by line and offset for a given document.
+// Depending on the node at the given position either a table or a column is resolved.
+// Returns the destinationNode and error.
 func Resolve(document *Document, line uint32, offset uint32) (destinationNode *sitter.Node, err error) {
 	result, err := document.NodeAt(line, offset)
 	if err != nil {
@@ -32,16 +39,21 @@ func Resolve(document *Document, line uint32, offset uint32) (destinationNode *s
 		return result, nil
 	default:
 		fmt.Println("unsupported node type", result.Node.Type())
-		return nil, fmt.Errorf("failed to resolve: unsupported node type %q", result.Node.Type())
+		return nil, ErrResolveUnsupportedNoteType
 	}
 }
 
 type ResolvedContents struct {
+	// Content is the resolved
+	// source code as string
 	Content string
-	// If content could be resolved
+	// Resolved states
+	// if content could be resolved
 	Resolved bool
 }
 
+// ResolveContents uses Resolve to resolve a node, but returns the contents instead of node.
+// Returns ResolveContents and error.
 func ResolveContents(document *Document, line uint32, column uint32) (ResolvedContents, error) {
 	var resolveResult ResolvedContents
 
@@ -57,6 +69,9 @@ func ResolveContents(document *Document, line uint32, column uint32) (ResolvedCo
 	return resolveResult, nil
 }
 
+// resolveTable resolves a table based on NodeAtResult for a document.
+// If param includeAliases is true table aliases will also be considered.
+// Returns resolved table node and error.
 func resolveTable(document *Document, result *NodeAtResult, includeAliases bool) (*sitter.Node, error) {
 	if result.Parent.Type() == TSDRelationshipSide {
 		// find destination node by table and column name
@@ -73,6 +88,8 @@ func resolveTable(document *Document, result *NodeAtResult, includeAliases bool)
 	return nil, errors.New("locateTable: unsupported parent type")
 }
 
+// resolveColumn resolves a column based on NodeAtResult for a document.
+// Returns resolved column node and error.
 func resolveColumn(document *Document, result *NodeAtResult) (*sitter.Node, error) {
 	if result.Parent.Type() == TSDRelationshipSide {
 		// find destination node by table and column name
@@ -91,6 +108,9 @@ func resolveColumn(document *Document, result *NodeAtResult) (*sitter.Node, erro
 	return nil, errors.New("locateColumn: unsupported parent type")
 }
 
+// columnByValues finds a column node by table name and column name, by matching
+// these strings node values.
+// Returns column node and error.
 func columnByValues(document *Document, tableName string, columnName string) (*sitter.Node, error) {
 	query := `
 		(table_definition) @table
@@ -132,6 +152,8 @@ func columnByValues(document *Document, tableName string, columnName string) (*s
 	return nil, ErrDefinitionMissingDestination
 }
 
+// tableByName finds a tableNode by table name.
+// If includeAliases is true table aliases will also be considered.
 func tableByName(document *Document, tableName string, includeAliases bool) (*sitter.Node, error) {
 	query := `
 		(table_definition) @table

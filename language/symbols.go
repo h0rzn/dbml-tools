@@ -1,8 +1,6 @@
 package language
 
 import (
-	"errors"
-
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
@@ -12,8 +10,6 @@ const ProjectSymbol SymbolType = 2
 const ProjectPropertySymbol SymbolType = 7
 const TableSymbol SymbolType = 23
 const ColumnSymbol SymbolType = 8
-
-// const ShortRefSymbol SymbolType = 25
 const RefSymbol SymbolType = 25
 
 type Symbol struct {
@@ -22,8 +18,10 @@ type Symbol struct {
 	Type  SymbolType
 }
 
-// NOTE: Ad-Hoc symbol retrieval
-// this sould be cached
+// Symbols collects all symbols for a document.
+// Top-level node (source_file) is ignored.
+// Returns list of symbols or empty list if no children are
+// found and error.
 func Symbols(document *Document) ([]Symbol, error) {
 	var symbols []Symbol
 
@@ -32,7 +30,7 @@ func Symbols(document *Document) ([]Symbol, error) {
 
 	hasChild := cursor.GoToFirstChild()
 	if !hasChild {
-		return symbols, errors.New("root node has no children")
+		return symbols, nil
 	}
 
 	symbols = collectSymbols(document, document.RootNode(), symbols)
@@ -40,6 +38,8 @@ func Symbols(document *Document) ([]Symbol, error) {
 	return symbols, nil
 }
 
+// collectSymbols recursively collects relevant nodes starting from initially passed node.
+// Returns a list of these nodes converted to symbols.
 func collectSymbols(document *Document, node *sitter.Node, symbols []Symbol) []Symbol {
 	for i := 0; i < int(node.ChildCount()); i++ {
 		child := node.Child(i)
