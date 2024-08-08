@@ -13,16 +13,17 @@ module.exports = {
       $._space,
       $.relationship_symbol,
       $.relationship_definition_side,
-      seq(
-        '[',
-        $.relationship_setting_definition,
-        optional(
-          repeat(
-            seq(',', $.relationship_setting_definition)
-          )
-        ),
-        ']'
-
+      optional(
+        seq(
+          '[',
+          $.relationship_setting_definition,
+          optional(
+            repeat(
+              seq(',', $.relationship_setting_definition)
+            )
+          ),
+          ']'
+        )
       )
     ),
 
