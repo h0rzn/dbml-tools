@@ -309,6 +309,10 @@
                           },
                           {
                             "type": "SYMBOL",
+                            "name": "column_setting_default"
+                          },
+                          {
+                            "type": "SYMBOL",
                             "name": "relationship_definition_inline"
                           }
                         ]
@@ -332,6 +336,64 @@
     "column_type": {
       "type": "PATTERN",
       "value": "[a-zA-Z0-9_\\-()]+"
+    },
+    "column_setting_default": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "default"
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "'"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "identifier"
+                  }
+                },
+                {
+                  "type": "STRING",
+                  "value": "'"
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "`"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "identifier"
+                  }
+                },
+                {
+                  "type": "STRING",
+                  "value": "`"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     "column_constraint": {
       "type": "CHOICE",

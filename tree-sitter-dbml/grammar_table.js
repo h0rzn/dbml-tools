@@ -41,6 +41,7 @@ module.exports = {
             seq(',',
               choice(
                 $.column_constraint,
+                $.column_setting_default,
                 $.relationship_definition_inline
               )
             )
@@ -51,6 +52,16 @@ module.exports = {
     ),
 
     column_type: $ => /[a-zA-Z0-9_\-()]+/,
+
+    column_setting_default: $ => seq(
+      'default',
+      ':',
+      choice(
+        seq("'", repeat($.identifier), "'"),
+        seq("`", repeat($.identifier), "`")
+      )
+
+    ),
 
     column_constraint: $ => choice(
       'primary key',

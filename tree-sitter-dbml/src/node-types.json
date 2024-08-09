@@ -46,6 +46,21 @@
     "fields": {}
   },
   {
+    "type": "column_setting_default",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "column_settings",
     "named": true,
     "fields": {},
@@ -55,6 +70,10 @@
       "types": [
         {
           "type": "column_constraint",
+          "named": true
+        },
+        {
+          "type": "column_setting_default",
           "named": true
         },
         {
@@ -454,6 +473,10 @@
     "named": false
   },
   {
+    "type": "`",
+    "named": false
+  },
+  {
     "type": "as",
     "named": true
   },
@@ -471,6 +494,10 @@
   },
   {
     "type": "database_type",
+    "named": false
+  },
+  {
+    "type": "default",
     "named": false
   },
   {
