@@ -1,10 +1,33 @@
-Table user {
-	name text123123
+Table user as u {
+	name text123123 [ref: > tabB.col, pk, ref: > tabB.col, default: 'direct aa', default: `now()`]
+	val texthjhj
 	col text
+	hallo hallo2
+	test test
+	test2 test2
+	test3 test3
+	tabB test
+}
+// test
+Table tabB {
+	col text [ref: <> user.name]
+	test3 text
 }
 
-Ref: user.col - user.col
-
-Table product {
-	id int
+Project myProject {
+	Note: 'hallo'
 }
+
+Ref: user.name > tabB.col [update: cascade, update: cascade]
+Ref shortwithname: user.name > tabB.col [update: cascade, update: cascade]
+Ref: tabB.col - u.name
+
+
+Ref {
+	user.name - tabB.col
+}
+
+Ref longwithname {
+	user.name - tabB.col
+}
+

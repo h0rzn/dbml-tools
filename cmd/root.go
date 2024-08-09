@@ -34,14 +34,15 @@ var devCmd = &cobra.Command{
 
 		// l := uint32(22)
 		// o := uint32(16)
-		l := uint32(19)
-		o := uint32(17)
+		l := uint32(11)
+		o := uint32(25)
 
-		result, err := language.Resolve(document, l, o)
+		// result, err := language.Resolve(document, l, o)
+		result, err := language.ResolveContents(document, l, o)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("\n Resolve Result:\n%+v\n", result)
+		fmt.Printf("Resolve Result: %q\n", result.Content)
 	},
 }
 
