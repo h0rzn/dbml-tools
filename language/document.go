@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/h0rzn/dbml-lsp-ts/language/textbuffer"
 	sitter "github.com/smacker/go-tree-sitter"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -16,13 +17,14 @@ import (
 var ErrOutOfBoundsFileContents = errors.New("input access parameters are out of bounds for file contents")
 
 type Document struct {
-	tree         *sitter.Tree
-	parser       *sitter.Parser
-	language     *sitter.Language
-	item         protocol.TextDocumentItem
-	fileContents []byte
-	tabWidth     int
-	parsing      bool
+	tree     *sitter.Tree
+	parser   *sitter.Parser
+	language *sitter.Language
+	// contentsTable *PieceTable
+	text     textbuffer.TextBuffer
+	item     protocol.TextDocumentItem
+	tabWidth int
+	parsing  bool
 }
 
 type DocumentChange struct {
@@ -33,9 +35,8 @@ type DocumentChange struct {
 
 func NewDocument(item protocol.TextDocumentItem) *Document {
 	return &Document{
-		language:     GetLanguage(),
-		item:         item,
-		fileContents: make([]byte, 0),
+		language: GetLanguage(),
+		item:     item,
 	}
 }
 
@@ -54,8 +55,8 @@ func (d *Document) Init() error {
 	parser.SetLanguage(d.language)
 	d.parser = parser
 
-	d.fileContents = []byte(d.item.Text)
-	tree, err := d.parse(d.fileContents)
+	d.text = textbuffer.NewPieceTable([]byte(d.item.Text))
+	tree, err := d.parse(d.text.Contents())
 	if err != nil {
 		fmt.Println("!! Init: parse err:", err.Error())
 		return err
@@ -92,7 +93,7 @@ func (d *Document) ApplyChanges(changes []DocumentChange) error {
 		return err
 	}
 
-	d.fileContents = newContents
+	// d.fileContents = newContents
 	d.tree = tree
 
 	return nil
@@ -159,30 +160,23 @@ func (d *Document) RootNode() *sitter.Node {
 	return tree.RootNode()
 }
 
+// TODO: Remove truncated return
 // ContentsRange returns file contents in bytes for [startByte:endByte].
 // If endByte overflows contents length, truncated is true and only bytes
 // until end are returned.
 func (d *Document) ContentsRange(startByte uint32, endByte uint32) (contents []byte, truncated bool) {
-	if len(d.fileContents) == 0 {
-		return make([]byte, 0), false
-	}
-	if int(endByte) >= len(d.fileContents) {
-		endByte = uint32(len(d.fileContents) - 1)
-		truncated = true
-	}
-
-	return d.fileContents[startByte:endByte], truncated
+	return d.text.ContentsRange(startByte, endByte), false
 }
 
 // Contents fetches file contents.
 func (d *Document) Contents() []byte {
-	return d.fileContents
+	return d.text.Contents()
 }
 
 // OffsetByPosition converts line and column to byte offset.
 // Returns byte offset and error if no byte offset could be found.
 func (d *Document) OffsetByPosition(line uint32, column uint32) (int, error) {
-	lines := bytes.SplitAfter(d.fileContents, []byte("\n"))
+	lines := bytes.SplitAfter(d.text.Contents(), []byte("\n"))
 	byteOffset := 0
 
 	for lineIndex := range lines {
