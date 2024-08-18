@@ -5,8 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/h0rzn/dbml-lsp-ts/language/textbuffer"
@@ -21,7 +19,8 @@ type Document struct {
 	parser   *sitter.Parser
 	language *sitter.Language
 	// contentsTable *PieceTable
-	text     textbuffer.TextBuffer
+	// text     textbuffer.TextBuffer
+	text     *textbuffer.PieceTable
 	item     protocol.TextDocumentItem
 	tabWidth int
 	parsing  bool
@@ -76,57 +75,55 @@ func (d *Document) parse(fileContents []byte) (*sitter.Tree, error) {
 	return tree, nil
 }
 
+// ApplyChanges applies all document changes to piece table and parser
+// via applyChange
 func (d *Document) ApplyChanges(changes []DocumentChange) error {
-	fmt.Println("Document Update: change count:", len(changes))
-
-	// NOTE: just reparse the whole document for now
-	// should use sitter.EditInput
-	path := d.item.URI
-	path, _ = strings.CutPrefix(path, "file://")
-	fmt.Println("uri", path)
-	newContents, err := os.ReadFile(path)
-	if err != nil {
-		return err
+	for _, change := range changes {
+		err := d.applyChange(change)
+		if err != nil {
+			return err
+		}
 	}
-	tree, err := d.parser.ParseCtx(context.Background(), nil, newContents)
-	if err != nil {
-		return err
-	}
-
-	// d.fileContents = newContents
-	d.tree = tree
-
 	return nil
 }
 
-func (d *Document) createTreeInput(changes []DocumentChange) (sitter.EditInput, error) {
-	// TODO: return if list is empty
-
-	firstChange := changes[0]
-	startPoint := firstChange.StartPoint
-	newEndPoint := firstChange.EndPoint
-
-	oldEndPoint, err := d.calculateOldEndpoint(startPoint)
+// applyChange updates piece table and and reparses changes with tree-sitter
+// based on a DocumentChange
+func (d *Document) applyChange(change DocumentChange) error {
+	offset, err := d.OffsetByPosition(change.StartPoint.Column, change.StartPoint.Row)
 	if err != nil {
-		return sitter.EditInput{}, nil
+		return err
 	}
+
+	oldEndOffset, newEndOffset := d.text.Replace(offset, change.Text)
+	// oldEndRow, oldEndColumn := d.PositionByOffset(oldEndOffset)
+	// newEndRow, newEndColumn := d.PositionByOffset(newEndOffset)
 
 	edit := sitter.EditInput{
-		// TODO: Indexes!
-		StartPoint:  startPoint,
-		OldEndPoint: oldEndPoint,
-		NewEndPoint: newEndPoint,
+		StartIndex:  uint32(offset),
+		StartPoint:  change.StartPoint,
+		OldEndIndex: uint32(oldEndOffset),
+		// OldEndPoint: sitter.Point{
+		// 	Row:    uint32(oldEndRow),
+		// 	Column: uint32(oldEndColumn),
+		// },
+		OldEndPoint: change.EndPoint,
+		NewEndIndex: uint32(newEndOffset),
+		// NewEndPoint: sitter.Point{
+		// 	Row:    uint32(newEndRow),
+		// 	Column: uint32(newEndColumn),
+		// },
+		NewEndPoint: change.EndPoint,
+	}
+	fmt.Printf("-- edit:\n%+v\n", edit)
+
+	d.tree.Edit(edit)
+	if d.tree.RootNode().HasChanges() {
+		d.tree, err = d.parser.ParseCtx(context.Background(), d.tree, d.Contents())
+		return err
 	}
 
-	return edit, nil
-}
-
-func (d *Document) calculateOldEndpoint(startPoint sitter.Point) (sitter.Point, error) {
-	oldEndpoint := startPoint
-	oldTextLength := 0
-	_ = oldTextLength
-
-	return oldEndpoint, nil
+	return nil
 }
 
 // Tree fetches the current *sitter.Tree for the document.
@@ -187,6 +184,26 @@ func (d *Document) OffsetByPosition(line uint32, column uint32) (int, error) {
 	}
 
 	return byteOffset, fmt.Errorf("failed to find node @ %d:%d", line, column)
+}
+
+// PositionByOffset translates a byte offset to line and column
+// TODO: check if this method is really needed
+func (d *Document) PositionByOffset(offset int) (line uint32, column uint32) {
+	line = 0
+	column = 0
+	text := d.text.Contents()
+	for offs, value := range text {
+		if offset == offs {
+			break
+		}
+		if value == '\n' {
+			line++
+		} else {
+			column++
+		}
+	}
+
+	return
 }
 
 type NodeAtResult struct {

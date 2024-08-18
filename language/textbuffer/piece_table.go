@@ -1,9 +1,5 @@
 package textbuffer
 
-import (
-	"fmt"
-)
-
 type Piece struct {
 	// start is start index for this piece for either []original
 	// or []add. end is start + length
@@ -112,9 +108,12 @@ func (pt *PieceTable) Delete(offset int, length int) {
 }
 
 // Replace replaces text starting with offset until len(replacement)
-func (pt *PieceTable) Replace(offset int, replacement []byte) {
+// and returns old end index (previous contents) and new end index (replacement)
+// TODO: implement whole piece replacement
+// TODO: implement multi piece replacement
+func (pt *PieceTable) Replace(offset int, replacement []byte) (oldEnd int, newEnd int) {
 	if len(replacement) == 0 || !offsetOK(offset) {
-		return
+		return 0, 0
 	}
 
 	replacementLen := len(replacement)
@@ -123,12 +122,10 @@ func (pt *PieceTable) Replace(offset int, replacement []byte) {
 	piece := pt.pieces[pieceIndex]
 
 	if piece.length-1 == replacementLen {
-		fmt.Println("replace is whole piece length")
 		panic("Replace for whole piece is not implemented")
 	}
 
 	if piece.start+piece.length <= offset+len(replacement) {
-		fmt.Println("multi piece replacement", piece.start+piece.length, offset+len(replacement))
 		panic("Replace for multiple pieces is not implemented")
 	}
 
@@ -137,9 +134,26 @@ func (pt *PieceTable) Replace(offset int, replacement []byte) {
 	leftPiece, modifiedPiece, rightPiece := pt.extractSplit(pieceEndIndex, pieceOffset, len(replacement))
 	modifiedPiece.buffer = true
 
-	// TODO: dont assume that there is just one piece
-	pt.pieces = []Piece{leftPiece, modifiedPiece, rightPiece}
+	pieces := []Piece{}
+	if leftPiece.length > 0 {
+		pieces = append(pieces, leftPiece)
+	}
+	pieces = append(pieces, modifiedPiece)
+	if rightPiece.length > 0 {
+		pieces = append(pieces, rightPiece)
+	}
+	pt.pieces = pieces
 	pt.add = append(pt.add, replacement...)
+
+	if len(replacement) == modifiedPiece.length {
+		endIndex := leftPiece.start + leftPiece.length + modifiedPiece.length
+		return endIndex, endIndex
+	}
+
+	// TODO: implement return offsets when multiple pieces are affected
+	// newEnd = modifiedPiece.start + modifiedPiece.length + (leftPiece.start + leftPiece.length)
+	// return newEnd, newEnd
+	return 0, 0
 }
 
 // splitPiece splits a piece into two pieces. right piece starts after left piece
@@ -177,7 +191,7 @@ func (pt *PieceTable) extractSplit(index int, offset int, extractLength int) (le
 	}
 
 	right = Piece{
-		start:  (left.start + left.length) + (extracted.start + extracted.length) - 1,
+		start:  (left.start + left.length) + (extracted.start + extracted.length),
 		length: piece.length - offset - extractLength,
 		buffer: piece.buffer,
 	}
@@ -247,7 +261,6 @@ func (pt *PieceTable) ContentsRange(start uint32, end uint32) []byte {
 		// exit if piece end is
 		// end of requested range
 		if currentOffset >= end {
-			fmt.Println("piece end is requested end")
 			break
 		}
 	}
@@ -259,17 +272,9 @@ func (pt *PieceTable) ContentsRange(start uint32, end uint32) []byte {
 func (pt *PieceTable) PieceText(piece Piece) []byte {
 	endIndex := piece.start + piece.length
 	if piece.buffer {
-		// TODO: investigate
-		endIndex--
-		if endIndex >= len(pt.add) {
-			panic(fmt.Sprintf("endIndex %d for add[%d] out of bounds for piece %+v\n", endIndex, len(pt.add), piece))
-		}
 		return pt.add[piece.start:endIndex]
 	}
 
-	if endIndex >= len(pt.original) {
-		panic(fmt.Sprintf("endIndex %d for original[%d] out of bounds for piece %+v\n", endIndex, len(pt.original), piece))
-	}
 	return pt.original[piece.start:endIndex]
 }
 
@@ -290,7 +295,6 @@ func (pt *PieceTable) findPieceIndex(offset int) (index int, internalOffset int)
 
 // offsetOK returns true if offset >= 0
 func offsetOK(offset int) bool {
-	// fmt.Println("offset ok?", offset >= 0)
 	return offset >= 0
 }
 
