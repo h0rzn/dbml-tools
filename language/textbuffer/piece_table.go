@@ -1,5 +1,9 @@
 package textbuffer
 
+import (
+	"fmt"
+)
+
 type Piece struct {
 	// start is start index for this piece for either []original
 	// or []add. end is start + length
@@ -23,6 +27,7 @@ type PieceTable struct {
 // NewPieceTable creates a new *PieceTable, which has one piece
 // representing the whole document
 func NewPieceTable(content []byte) *PieceTable {
+	fmt.Println("NewPieceTable: length:", len(content))
 	return &PieceTable{
 		original: content,
 		add:      []byte{},
@@ -49,28 +54,52 @@ func (pt *PieceTable) Insert(offset int, text []byte) {
 
 	index, internalOffset := pt.findPieceIndex(offset)
 	// insertion at start of piece
-	if internalOffset == 0 {
-		pt.pieces = append(pt.pieces[:index], append([]Piece{newPiece}, pt.pieces[index:]...)...)
-
-		return
-	}
+	// if internalOffset == 0 {
+	// 	originalPiece := pt.pieces[index]
+	// 	fmt.Println("Insert: offset 0", "index:", index, originalPiece.start)
+	// 	originalPiece.start += newPiece.length + 1
+	// 	originalPiece.length -= newPiece.length + 1
+	//
+	// 	updatedPieces := []Piece{newPiece, originalPiece}
+	// 	// followingPieces := pt.pieces
+	// 	// pt.pieces = append(pt.pieces, append([]Piece{newPiece, originalPiece}, pt.pieces[:index+1]...)...)
+	// 	pt.pieces = updatedPieces
+	// 	for i, piece := range pt.pieces {
+	// 		fmt.Println(i, piece)
+	// 	}
+	//
+	// 	return
+	// }
 
 	// split existing piece
 	// insert new piece
 	currentPiece := pt.pieces[index]
+	pieceSplit := []Piece{}
 	leftPiece := Piece{
 		start:  currentPiece.start,
 		length: internalOffset,
 		buffer: currentPiece.buffer,
 	}
+	fmt.Println("insert left", pt.PieceInfo(leftPiece))
+	if leftPiece.length > 0 {
+		pieceSplit = append(pieceSplit, leftPiece)
+	}
+
+	pieceSplit = append(pieceSplit, newPiece)
+
 	rightPiece := Piece{
 		start:  currentPiece.start + internalOffset,
 		length: currentPiece.length - internalOffset,
 		buffer: currentPiece.buffer,
 	}
+	fmt.Println("insert right", pt.PieceInfo(rightPiece))
+	if rightPiece.length > 0 {
+		pieceSplit = append(pieceSplit, rightPiece)
+	}
 
 	// update table pieces
-	newPieceSlice := []Piece{leftPiece, newPiece, rightPiece}
+	// newPieceSlice := []Piece{leftPiece, newPiece, rightPiece}
+	newPieceSlice := pieceSplit
 	pt.pieces = append(pt.pieces[:index], append(newPieceSlice, pt.pieces[index+1:]...)...)
 }
 
@@ -112,47 +141,69 @@ func (pt *PieceTable) Delete(offset int, length int) {
 // TODO: implement whole piece replacement
 // TODO: implement multi piece replacement
 func (pt *PieceTable) Replace(offset int, replacement []byte) (oldEnd int, newEnd int) {
+	fmt.Printf("Replace: %d %q\n", offset, string(replacement))
 	if len(replacement) == 0 || !offsetOK(offset) {
 		return 0, 0
 	}
 
 	replacementLen := len(replacement)
 	pieceIndex, pieceOffset := pt.findPieceIndex(offset)
-	pieceEndIndex, _ := pt.findPieceIndex(offset + replacementLen)
+	pieceEndIndex, pieceEndOffset := pt.findPieceIndex(offset + replacementLen)
 	piece := pt.pieces[pieceIndex]
 
 	if piece.length-1 == replacementLen {
 		panic("Replace for whole piece is not implemented")
 	}
 
-	if piece.start+piece.length <= offset+len(replacement) {
-		panic("Replace for multiple pieces is not implemented")
+	// if replace concerns > 1 pieces, relevant pieces
+	// have to be split, so that the replace text can be
+	// correctly distributed over pieces
+	if pieceIndex != pieceEndIndex {
+		// list of pieces that will be added or replaced as modified
+		updatedPieces := []Piece{}
+
+		// left range
+		replaceRangeLeft := replacement[pieceOffset : pieceOffset+piece.length]
+		updatedPieceLeft := piece
+		updatedPieceLeft.buffer = true
+		updatedPieceLeft.start = len(pt.add)
+
+		updatedPieces = append(updatedPieces, updatedPieceLeft)
+		pt.add = append(pt.add, replaceRangeLeft...)
+
+		// right range
+		pieceRight := pt.pieces[pieceIndex+1]
+		replaceRangeRight := replacement[pieceEndIndex+1 : pieceEndOffset+piece.length]
+		// if the replacement range for right piece does not cover
+		// its whole length we have to split of the range that is covered
+		if pieceRight.length != len(replaceRangeRight) {
+			rl, rr := pt.splitPiece(pieceIndex+1, pieceEndOffset)
+			rl.buffer = true
+			rl.start = len(pt.add)
+
+			updatedPieces = append(updatedPieces, rl, rr)
+		} else {
+			updatedPieceRight := pieceRight
+			updatedPieceRight.buffer = true
+			updatedPieceRight.start = len(pt.add)
+
+			updatedPieces = append(updatedPieces, updatedPieceRight)
+		}
+		pt.add = append(pt.add, replaceRangeRight...)
+
+		pt.pieces = append(pt.pieces[:pieceIndex], append(updatedPieces, pt.pieces[pieceEndIndex+1:]...)...)
+
+		// TODO: implement endpoint calculation
+
+		return 0, 0
 	}
 
-	// split piece into left, middle and right
-	// modifiedPiece will represent the replacement
-	leftPiece, modifiedPiece, rightPiece := pt.extractSplit(pieceEndIndex, pieceOffset, len(replacement))
-	modifiedPiece.buffer = true
-
-	pieces := []Piece{}
-	if leftPiece.length > 0 {
-		pieces = append(pieces, leftPiece)
-	}
-	pieces = append(pieces, modifiedPiece)
-	if rightPiece.length > 0 {
-		pieces = append(pieces, rightPiece)
-	}
-	pt.pieces = pieces
+	leftPiece, modPiece, restPiece := pt.extractSplit(pieceIndex, pieceOffset, replacementLen)
 	pt.add = append(pt.add, replacement...)
 
-	if len(replacement) == modifiedPiece.length {
-		endIndex := leftPiece.start + leftPiece.length + modifiedPiece.length
-		return endIndex, endIndex
-	}
+	updatedPieces := []Piece{leftPiece, modPiece, restPiece}
+	pt.pieces = append(pt.pieces[:pieceEndIndex], append(updatedPieces, pt.pieces[pieceEndIndex+1:]...)...)
 
-	// TODO: implement return offsets when multiple pieces are affected
-	// newEnd = modifiedPiece.start + modifiedPiece.length + (leftPiece.start + leftPiece.length)
-	// return newEnd, newEnd
 	return 0, 0
 }
 
@@ -187,15 +238,20 @@ func (pt *PieceTable) extractSplit(index int, offset int, extractLength int) (le
 	extracted = Piece{
 		start:  len(pt.add),
 		length: extractLength,
-		buffer: piece.buffer,
+		buffer: true,
 	}
 
+	// right = Piece{
+	// 	start: (left.start + left.length) + (extracted.start + extracted.length),
+	// 	// start:  (extracted.start + extractLength),
+	// 	length: piece.length - offset - extractLength,
+	// 	buffer: piece.buffer,
+	// }
 	right = Piece{
-		start:  (left.start + left.length) + (extracted.start + extracted.length),
-		length: piece.length - offset - extractLength,
+		start:  piece.start + offset + extractLength,
+		length: piece.length - extractLength - offset,
 		buffer: piece.buffer,
 	}
-
 	return left, extracted, right
 }
 
@@ -276,6 +332,21 @@ func (pt *PieceTable) PieceText(piece Piece) []byte {
 	}
 
 	return pt.original[piece.start:endIndex]
+}
+
+func (pt *PieceTable) PieceInfo(piece Piece) string {
+	return fmt.Sprintf("Piece: %+v | text: %q\n", piece, string(pt.PieceText(piece)))
+	// return fmt.Sprintf("Piece: %+v\n", piece)
+}
+
+func (pt *PieceTable) Info() {
+	fmt.Println("=== INFO ===")
+	fmt.Printf("pt.original[%d]\n", len(pt.original))
+	fmt.Printf("pt.add[%d]\n", len(pt.add))
+	for _, piece := range pt.pieces {
+		// fmt.Printf("Piece %d: %+v | [%q]\n", i, piece, string(pt.PieceText(piece)))
+		fmt.Print(pt.PieceInfo(piece))
+	}
 }
 
 // findPieceIndex finds the index and internalOffset of a piece by its offset

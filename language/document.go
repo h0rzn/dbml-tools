@@ -65,6 +65,10 @@ func (d *Document) Init() error {
 	return err
 }
 
+func (d *Document) TextBuffer() *textbuffer.PieceTable {
+	return d.text
+}
+
 // parse parses fileContents with sitter.ParseCtx and returns
 // *sitter.Tree and error.
 func (d *Document) parse(fileContents []byte) (*sitter.Tree, error) {
@@ -119,8 +123,8 @@ func (d *Document) applyChange(change DocumentChange) error {
 
 	d.tree.Edit(edit)
 	if d.tree.RootNode().HasChanges() {
-		d.tree, err = d.parser.ParseCtx(context.Background(), d.tree, d.Contents())
-		return err
+		// d.tree, err = d.parser.ParseCtx(context.Background(), d.tree, d.Contents())
+		// return err
 	}
 
 	return nil
