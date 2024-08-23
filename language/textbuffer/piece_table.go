@@ -138,10 +138,8 @@ func (pt *PieceTable) Delete(offset int, length int) {
 
 // Replace replaces text starting with offset until len(replacement)
 // and returns old end index (previous contents) and new end index (replacement)
-// TODO: implement whole piece replacement
-// TODO: implement multi piece replacement
 func (pt *PieceTable) Replace(offset int, replacement []byte) (oldEnd int, newEnd int) {
-	fmt.Printf("Replace: %d %q\n", offset, string(replacement))
+	// fmt.Printf("Replace: %d %q\n", offset, string(replacement))
 	if len(replacement) == 0 || !offsetOK(offset) {
 		return 0, 0
 	}
@@ -151,8 +149,19 @@ func (pt *PieceTable) Replace(offset int, replacement []byte) (oldEnd int, newEn
 	pieceEndIndex, pieceEndOffset := pt.findPieceIndex(offset + replacementLen)
 	piece := pt.pieces[pieceIndex]
 
-	if piece.length-1 == replacementLen {
-		panic("Replace for whole piece is not implemented")
+	// if replacement covers whole piece,
+	// just update that piece
+	if piece.length == replacementLen {
+		piece.start = len(pt.add)
+		piece.length = replacementLen
+		piece.buffer = true
+
+		pt.add = append(pt.add, replacement...)
+		pt.pieces = append(pt.pieces[:pieceIndex], append([]Piece{piece}, pt.pieces[pieceEndIndex:]...)...)
+
+		// TODO: implement endpoint calculation
+
+		return 0, 0
 	}
 
 	// if replace concerns > 1 pieces, relevant pieces
