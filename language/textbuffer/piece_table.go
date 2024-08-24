@@ -40,7 +40,7 @@ func NewPieceTable(content []byte) *PieceTable {
 // Insert inserts text at offset. if internalOffset for the found piece
 // is not 0, the piece will be split into left and right and the "insertion"-piece
 // will be inserted between them.
-func (pt *PieceTable) Insert(offset int, text []byte) {
+func (pt *PieceTable) Insert(offset int, text []byte) (oldOffset int, newOffset int) {
 	if !offsetOK(offset) {
 		return
 	}
@@ -101,15 +101,21 @@ func (pt *PieceTable) Insert(offset int, text []byte) {
 	// newPieceSlice := []Piece{leftPiece, newPiece, rightPiece}
 	newPieceSlice := pieceSplit
 	pt.pieces = append(pt.pieces[:index], append(newPieceSlice, pt.pieces[index+1:]...)...)
+
+	return offset, offset + offset
 }
 
 // Delete deletes a range of bytes with length length at offset
-func (pt *PieceTable) Delete(offset int, length int) {
-	if !offsetOK(offset) || length <= 0 {
+func (pt *PieceTable) Delete(offset int, length int) (oldEnd int, newEnd int) {
+	fmt.Printf("Delete: offset: %d length: %d\n", offset, length)
+	if !offsetOK(offset) {
+		fmt.Println("Delete: ABORT", offset, length)
 		return
 	}
 	startIndex, startOffset := pt.findPieceIndex(offset)
 	endIndex, endOffset := pt.findPieceIndex(offset + length)
+
+	fmt.Printf("Delete: %d (o: %d) - %d (o: %d)\n", startIndex, startOffset, endIndex, endOffset)
 
 	newPieces := make([]Piece, 0, len(pt.pieces))
 	newPieces = append(newPieces, pt.pieces[:startIndex]...)
@@ -134,12 +140,14 @@ func (pt *PieceTable) Delete(offset int, length int) {
 	newPieces = append(newPieces, pt.pieces[endIndex+1:]...)
 
 	pt.pieces = newPieces
+
+	return endOffset, startOffset
 }
 
 // Replace replaces text starting with offset until len(replacement)
 // and returns old end index (previous contents) and new end index (replacement)
 func (pt *PieceTable) Replace(offset int, replacement []byte) (oldEnd int, newEnd int) {
-	// fmt.Printf("Replace: %d %q\n", offset, string(replacement))
+	fmt.Printf("Replace: %d %q\n", offset, string(replacement))
 	if len(replacement) == 0 || !offsetOK(offset) {
 		return 0, 0
 	}
@@ -162,6 +170,32 @@ func (pt *PieceTable) Replace(offset int, replacement []byte) (oldEnd int, newEn
 		// TODO: implement endpoint calculation
 
 		return 0, 0
+	}
+
+	// replacements inside single piece
+	if pieceIndex == pieceEndIndex {
+		// replacement on first byte of piece
+		var updatedPieces []Piece
+		if pieceOffset == 0 {
+			leftPiece, rightPiece := pt.splitPiece(pieceIndex, offset)
+			leftPiece.start = len(pt.add)
+			leftPiece.length = replacementLen
+			leftPiece.buffer = true
+
+			updatedPieces = []Piece{leftPiece, rightPiece}
+
+			oldEnd = 0
+			newEnd = rightPiece.start + leftPiece.length
+
+		} else {
+			leftPiece, modPiece, restPiece := pt.extractSplit(pieceIndex, pieceOffset, replacementLen)
+			updatedPieces = []Piece{leftPiece, modPiece, restPiece}
+		}
+
+		pt.add = append(pt.add, replacement...)
+		pt.pieces = append(pt.pieces[:pieceEndIndex], append(updatedPieces, pt.pieces[pieceEndIndex+1:]...)...)
+
+		return
 	}
 
 	// if replace concerns > 1 pieces, relevant pieces
@@ -207,13 +241,23 @@ func (pt *PieceTable) Replace(offset int, replacement []byte) (oldEnd int, newEn
 		return 0, 0
 	}
 
-	leftPiece, modPiece, restPiece := pt.extractSplit(pieceIndex, pieceOffset, replacementLen)
-	pt.add = append(pt.add, replacement...)
+	panic("unhandled case for replace")
+}
 
-	updatedPieces := []Piece{leftPiece, modPiece, restPiece}
-	pt.pieces = append(pt.pieces[:pieceEndIndex], append(updatedPieces, pt.pieces[pieceEndIndex+1:]...)...)
+func (pt *PieceTable) Update(offset int, text []byte) (int, int) {
+	// NOTE: Insert when:
+	// piece is sourcing from pt.original
+	// and internal offset == 0
+	_, pieceOffset := pt.findPieceIndex(offset)
+	if pieceOffset == 0 {
+		fmt.Println("Update: Insert")
 
-	return 0, 0
+		return pt.Insert(offset, text)
+	}
+
+	fmt.Println("Update: Replace")
+	return pt.Replace(offset, text)
+
 }
 
 // splitPiece splits a piece into two pieces. right piece starts after left piece
@@ -283,6 +327,8 @@ func (pt *PieceTable) ContentsRange(start uint32, end uint32) []byte {
 	if start >= end {
 		return []byte{}
 	}
+
+	// fmt.Printf("ContentsRange: %d - %d\n", start, end)
 
 	result := make([]byte, 0, end-start)
 	currentOffset := uint32(0)

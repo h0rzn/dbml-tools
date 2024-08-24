@@ -5,7 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
+	"sync"
 
 	"github.com/h0rzn/dbml-lsp-ts/language/textbuffer"
 	sitter "github.com/smacker/go-tree-sitter"
@@ -16,14 +16,11 @@ var ErrOutOfBoundsFileContents = errors.New("input access parameters are out of 
 
 type Document struct {
 	tree     *sitter.Tree
+	treeLock *sync.RWMutex
 	parser   *sitter.Parser
 	language *sitter.Language
-	// contentsTable *PieceTable
-	// text     textbuffer.TextBuffer
 	text     *textbuffer.PieceTable
 	item     protocol.TextDocumentItem
-	tabWidth int
-	parsing  bool
 }
 
 type DocumentChange struct {
@@ -34,6 +31,7 @@ type DocumentChange struct {
 
 func NewDocument(item protocol.TextDocumentItem) *Document {
 	return &Document{
+		treeLock: &sync.RWMutex{},
 		language: GetLanguage(),
 		item:     item,
 	}
@@ -42,10 +40,8 @@ func NewDocument(item protocol.TextDocumentItem) *Document {
 // Init initializes the document by setting upd
 // and running the parser on the source code.
 func (d *Document) Init() error {
-	d.parsing = true
-	defer func() {
-		d.parsing = false
-	}()
+	d.treeLock.Lock()
+	defer d.treeLock.Unlock()
 
 	if d.language == nil {
 		return errors.New("failed to get language")
@@ -55,7 +51,7 @@ func (d *Document) Init() error {
 	d.parser = parser
 
 	d.text = textbuffer.NewPieceTable([]byte(d.item.Text))
-	tree, err := d.parse(d.text.Contents())
+	tree, err := d.parse(nil, d.text.Contents())
 	if err != nil {
 		fmt.Println("!! Init: parse err:", err.Error())
 		return err
@@ -71,8 +67,8 @@ func (d *Document) TextBuffer() *textbuffer.PieceTable {
 
 // parse parses fileContents with sitter.ParseCtx and returns
 // *sitter.Tree and error.
-func (d *Document) parse(fileContents []byte) (*sitter.Tree, error) {
-	tree, err := d.parser.ParseCtx(context.Background(), nil, fileContents)
+func (d *Document) parse(tree *sitter.Tree, fileContents []byte) (*sitter.Tree, error) {
+	tree, err := d.parser.ParseCtx(context.Background(), tree, fileContents)
 	if err != nil {
 		return tree, err
 	}
@@ -94,59 +90,66 @@ func (d *Document) ApplyChanges(changes []DocumentChange) error {
 // applyChange updates piece table and and reparses changes with tree-sitter
 // based on a DocumentChange
 func (d *Document) applyChange(change DocumentChange) error {
-	offset, err := d.OffsetByPosition(change.StartPoint.Column, change.StartPoint.Row)
+	var startOffset int
+	var endOffset int
+
+	var oldEndOffset int
+	var newEndOffset int
+
+	startOffset, err := d.OffsetByPosition2(change.StartPoint.Row, change.StartPoint.Column)
+	if err != nil {
+		return err
+	}
+	endOffset, err = d.OffsetByPosition2(change.EndPoint.Row, change.EndPoint.Column)
 	if err != nil {
 		return err
 	}
 
-	oldEndOffset, newEndOffset := d.text.Replace(offset, change.Text)
-	// oldEndRow, oldEndColumn := d.PositionByOffset(oldEndOffset)
-	// newEndRow, newEndColumn := d.PositionByOffset(newEndOffset)
+	byteRange, _ := d.ContentsRange(uint32(startOffset), uint32(endOffset))
+	fmt.Printf("calculated range (%d - %d): %d\n", startOffset, endOffset, len(byteRange))
+
+	// DELETE operation
+	if len(change.Text) == 0 {
+		fmt.Println("applyChange: DELETE")
+		oldEndOffset, newEndOffset = d.text.Delete(startOffset, len(byteRange))
+		startOffset = oldEndOffset
+
+	} else { // INSERT or UPDATE operation
+		fmt.Println("applyChange: INSERT or UPDATE")
+		oldEndOffset, newEndOffset = d.text.Update(startOffset, change.Text)
+		fmt.Println("insert/update", startOffset, endOffset)
+	}
 
 	edit := sitter.EditInput{
-		StartIndex:  uint32(offset),
-		StartPoint:  change.StartPoint,
+		StartIndex: uint32(startOffset),
+		StartPoint: change.StartPoint,
+
 		OldEndIndex: uint32(oldEndOffset),
-		// OldEndPoint: sitter.Point{
-		// 	Row:    uint32(oldEndRow),
-		// 	Column: uint32(oldEndColumn),
-		// },
+		// OldEndPoint: change.StartPoint,
 		OldEndPoint: change.EndPoint,
+
 		NewEndIndex: uint32(newEndOffset),
-		// NewEndPoint: sitter.Point{
-		// 	Row:    uint32(newEndRow),
-		// 	Column: uint32(newEndColumn),
-		// },
-		NewEndPoint: change.EndPoint,
+		// NewEndPoint: change.EndPoint,
+		NewEndPoint: change.StartPoint,
 	}
-	fmt.Printf("-- edit:\n%+v\n", edit)
+	fmt.Printf("Edit: %+v\n", edit)
 
+	d.treeLock.Lock()
+	defer d.treeLock.Unlock()
 	d.tree.Edit(edit)
-	if d.tree.RootNode().HasChanges() {
-		// d.tree, err = d.parser.ParseCtx(context.Background(), d.tree, d.Contents())
-		// return err
-	}
+	fmt.Printf("reparse tree...\n %q\n", string(d.Contents()))
+	d.tree, err = d.parser.ParseCtx(context.Background(), d.tree, d.Contents())
 
-	return nil
+	return err
 }
 
-// Tree fetches the current *sitter.Tree for the document.
-// If document is currently parsed the parse result is awaited.
-func (d *Document) Tree() chan *sitter.Tree {
-	out := make(chan *sitter.Tree, 1)
-
-	if d.parsing {
-		// TODO: add timeout
-		for {
-			<-time.After(100 * time.Millisecond)
-			if !d.parsing {
-				break
-			}
-		}
+func (d *Document) Reparse() error {
+	tree, err := d.parse(d.tree, d.text.Contents())
+	if err != nil {
+		return err
 	}
-	out <- d.tree
-
-	return out
+	d.tree = tree
+	return nil
 }
 
 // TreeCursor creates and returns a *sitter.TreeCursor
@@ -157,8 +160,10 @@ func (d *Document) TreeCursor() *sitter.TreeCursor {
 
 // RootNode fetches RootNode for current document.
 func (d *Document) RootNode() *sitter.Node {
-	tree := <-d.Tree()
-	return tree.RootNode()
+	d.treeLock.RLock()
+	rootNode := d.tree.RootNode()
+	d.treeLock.RUnlock()
+	return rootNode
 }
 
 // TODO: Remove truncated return
@@ -180,12 +185,40 @@ func (d *Document) OffsetByPosition(line uint32, column uint32) (int, error) {
 	lines := bytes.SplitAfter(d.text.Contents(), []byte("\n"))
 	byteOffset := 0
 
-	for lineIndex := range lines {
+	for lineIndex, currentLine := range lines {
 		if uint32(lineIndex) == line {
 			return byteOffset + int(column), nil
 		}
 		byteOffset += 1
+		_ = currentLine
+		// byteOffset += len(currentLine)
 	}
+
+	return byteOffset, fmt.Errorf("failed to find node @ %d:%d", line, column)
+}
+
+func (d *Document) OffsetByPosition2(line uint32, column uint32) (int, error) {
+	lines := bytes.SplitAfter(d.text.Contents(), []byte("\n"))
+	byteOffset := 0
+
+	for lineIndex, currentLine := range lines {
+		if uint32(lineIndex) == line {
+			return byteOffset + int(column), nil
+		}
+		byteOffset += len(currentLine)
+	}
+
+	// lineCount := uint32(0)
+	// for _, b := range d.text.Contents() {
+	// 	if b == '\n' {
+	// 		if lineCount == line {
+	// 			return byteOffset + int(column), nil
+	// 		}
+	// 		lineCount++
+	// 	}
+	// 	byteOffset++
+	//
+	// }
 
 	return byteOffset, fmt.Errorf("failed to find node @ %d:%d", line, column)
 }

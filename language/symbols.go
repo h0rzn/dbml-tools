@@ -1,6 +1,8 @@
 package language
 
 import (
+	"fmt"
+
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
@@ -49,26 +51,32 @@ func collectSymbols(document *Document, node *sitter.Node, symbols []Symbol) []S
 		var symbolType SymbolType
 		switch child.Type() {
 		case TSDProject:
+			fmt.Println("PROJECT")
 			symbolType = TableSymbol
 			nameNode = child.ChildByFieldName(TSVProjectName)
 
 		case TSDProjectProperty:
+			fmt.Println("PROJECT PROPERTY")
 			symbolType = ProjectPropertySymbol
 			nameNode = child.ChildByFieldName(TSVProjectPropertyKey)
 
 		case TSDTable:
+			fmt.Println("TABLE")
 			symbolType = TableSymbol
 			nameNode = child.ChildByFieldName(TSVTableName)
 
 		case TSDColumn:
+			fmt.Println("COLUMN")
 			symbolType = ColumnSymbol
 			nameNode = child.ChildByFieldName(TSVColumnNameValue)
 
 		case TSDRelationshipShort:
+			fmt.Println("REL SHORT")
 			symbolType = RefSymbol
 			nameNode = child.ChildByFieldName(TSVRelationshipName)
 
 		case TSDRelationshipLong:
+			fmt.Println("REL LONG")
 			symbolType = RefSymbol
 			nameNode = child.ChildByFieldName(TSVRelationshipName)
 
@@ -76,11 +84,13 @@ func collectSymbols(document *Document, node *sitter.Node, symbols []Symbol) []S
 			continue
 		}
 
+		fmt.Println("retrieve <name>")
 		var name string
 		if nameNode == nil {
 			name = "<unkown>"
 		} else {
 			name = nameNode.Content(document.Contents())
+			fmt.Printf("nameNode exists (v: %q), range: %+v\n", name, nameNode.Range())
 		}
 		symbol := Symbol{
 			Type:  symbolType,

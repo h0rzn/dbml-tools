@@ -97,12 +97,18 @@ func (s *Server) TextDocumentDidChange(context *glsp.Context, params *protocol.D
 	fmt.Println("\n [DID_CHANGE]")
 
 	changeList := params.ContentChanges
-	var changes []protocol.TextDocumentContentChangeEvent
+	// var changes []protocol.TextDocumentContentChangeEvent
 	for _, change := range changeList {
-		fmt.Printf("\t change: %+v\n", change)
 		switch v := change.(type) {
 		case protocol.TextDocumentContentChangeEvent:
-			changes = append(changes, v)
+			fmt.Printf("change range: %+v\n", v.Range)
+			// changes = append(changes, v)
+			docChange := s.state.convertEvent(v)
+			err := s.document.ApplyChanges([]language.DocumentChange{docChange})
+			if err != nil {
+				return err
+			}
+
 		case protocol.TextDocumentContentChangeEventWhole:
 			return errors.New("DidChange: whole change not implemented")
 		default:
@@ -110,14 +116,23 @@ func (s *Server) TextDocumentDidChange(context *glsp.Context, params *protocol.D
 		}
 	}
 
-	s.state.PushChange(changes...)
+	// s.state.PushChange(changes...)
 
 	return nil
 }
 
 func (s *Server) TextDocumentDidSave(context *glsp.Context, params *protocol.DidSaveTextDocumentParams) error {
-	fmt.Println("[DID_SAVE]")
-	documentChanges := s.state.Changes()
-	err := s.document.ApplyChanges(documentChanges)
-	return err
+	fmt.Println("[DID_SAVE] -- NOOP --")
+	// documentChanges := s.state.Changes()
+	// fmt.Println("-- CHANGES IN ORDER --")
+	// var builder strings.Builder
+	// for _, change := range documentChanges {
+	// 	builder.Write(change.Text)
+	// }
+	// fmt.Println(builder.String())
+	// fmt.Println("-- -- --")
+	//
+	// err := s.document.ApplyChanges(documentChanges)
+	// return err
+	return nil
 }
