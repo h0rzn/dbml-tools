@@ -18,6 +18,16 @@
           }
         ]
       },
+      "col_settings": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "column_settings",
+            "named": true
+          }
+        ]
+      },
       "col_type": {
         "multiple": false,
         "required": true,
@@ -28,16 +38,6 @@
           }
         ]
       }
-    },
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "column_settings",
-          "named": true
-        }
-      ]
     }
   },
   {
@@ -419,6 +419,10 @@
     "type": "table_name",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "\"",
+    "named": false
   },
   {
     "type": "'",

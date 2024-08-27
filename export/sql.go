@@ -2,7 +2,6 @@ package export
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/h0rzn/dbml-lsp-ts/language"
@@ -11,72 +10,159 @@ import (
 
 var ErrorIncompatibleNodeType = errors.New("incompatible node type")
 
-func GenCreateTable(node *sitter.Node, document *language.Document) (string, error) {
-	if node.Type() != "table_definition" {
-		return "", ErrorIncompatibleNodeType
+var constraintsMap = map[string]string{
+	"not null": "NOT NULL",
+}
+
+type Table struct {
+	references map[string]string
+	name       string
+	primaryKey string
+	columns    []Column
+}
+
+type Column struct {
+	name        string
+	typ         string
+	constraints []string
+}
+
+func WalkTableNode(node *sitter.Node, document *language.Document) Table {
+	cursor := document.TreeCursorByNode(node)
+	defer cursor.Close()
+
+	nameNode := cursor.CurrentNode().ChildByFieldName("table_name")
+	if nameNode == nil {
+		panic("name node is nil")
 	}
-	if node == nil {
-		return "", errors.New("genCreateTable: node is nil")
+	tableName := nameNode.Content(document.Contents())
+
+	// walk column definitions
+	var primaryKey string
+	columns := make([]Column, 0)
+	references := map[string]string{}
+	currentColumnNode := cursor.CurrentNode().ChildByFieldName("column")
+	for currentColumnNode != nil {
+		// column name
+		columnNameNode := currentColumnNode.ChildByFieldName("col_name")
+		if columnNameNode == nil {
+			panic("col name Node is nil")
+		}
+		columnName := columnNameNode.Content(document.Contents())
+
+		// column type
+		typeNode := currentColumnNode.ChildByFieldName("col_type")
+		if typeNode == nil {
+			panic("col type Node is nil")
+		}
+		columnType := typeNode.Content(document.Contents())
+
+		// column options (optional)
+		constraints := make([]string, 0)
+		settingsListNode := currentColumnNode.ChildByFieldName("col_settings")
+		if settingsListNode != nil {
+			settingsNodeIndex := 0
+			for settingsNodeIndex < int(settingsListNode.ChildCount()) {
+				currentSettingNode := settingsListNode.Child(settingsNodeIndex)
+				if currentSettingNode != nil {
+					switch currentSettingNode.Type() {
+					case "relationship_definition_inline":
+						references[columnName] = "<foreign_col_name_here>"
+					case "column_constraint":
+						constraintValue := currentSettingNode.Content(document.Contents())
+						if constraintValue == "pk" {
+							primaryKey = columnName
+							break
+						}
+						constraints = append(constraints, currentSettingNode.Content(document.Contents()))
+					// TODO: handle other setting types
+					default:
+						settingsNodeIndex++
+						continue
+					}
+				}
+				settingsNodeIndex++
+			}
+		}
+
+		columns = append(columns, Column{
+			name:        columnName,
+			typ:         columnType,
+			constraints: constraints,
+		})
+
+		currentColumnNode = currentColumnNode.NextNamedSibling()
 	}
 
+	table := Table{
+		name:       tableName,
+		columns:    columns,
+		primaryKey: primaryKey,
+		references: references,
+	}
+
+	return table
+}
+
+func CreateTableSQL(table Table) (string, error) {
 	var builder strings.Builder
 
 	// CREATE-header
 	builder.WriteString("CREATE TABLE IF NOT EXISTS ")
-	nameNode := node.ChildByFieldName("table_name")
-	if nameNode == nil {
-		return "", errors.New("nameNode is nil")
-	}
-	builder.WriteString(nameNode.Content(document.Contents()))
+	builder.WriteString(table.name)
 	builder.WriteString(" (\n")
 
 	// column definitions
-	columnDefinitions, err := genColumnDefinitions(node, document)
-	if err != nil {
-		fmt.Println(err)
-	}
-	builder.WriteString(columnDefinitions)
-	builder.WriteString(");\n")
-
-	return builder.String(), nil
-}
-
-func genColumnDefinitions(node *sitter.Node, document *language.Document) (string, error) {
-	var builder strings.Builder
-	for i := 0; i < int(node.ChildCount()); i++ {
-		child := node.Child(i)
-		if child == nil {
-			return "", errors.New("column definitions: child is nil")
-		}
-
-		if child.Type() != "column_definition" {
-			fmt.Println("continue", child.Type())
-			continue
-		}
-		nameNode := child.ChildByFieldName("col_name")
-		if nameNode == nil {
-			return "", errors.New("column name: node is nil")
-		}
-		columnName := nameNode.Content(document.Contents())
-
-		typeNode := child.ChildByFieldName("col_type")
-		if typeNode == nil {
-			return "", errors.New("column type: node is nil")
-		}
-		columnType := typeNode.Content(document.Contents())
-
-		// TODO: add column options
-
+	for i, columnDefinition := range table.columns {
 		builder.WriteString("\t")
-		builder.WriteString(columnName)
-		builder.WriteRune(' ')
-		builder.WriteString(columnType)
-		fmt.Println(i, columnName, node.ChildCount())
-		if i < int(node.ChildCount())-2 {
-			builder.WriteString(",")
+		builder.WriteString(columnDefinition.name)
+		builder.WriteString(" ")
+		builder.WriteString(columnDefinition.typ)
+
+		// column options
+		if len(columnDefinition.constraints) > 0 {
+			builder.WriteString(" ")
+			for i, constraint := range columnDefinition.constraints {
+				// only write if constraint can be translated to sql
+				if sqlValue, ok := constraintsMap[constraint]; ok {
+					builder.WriteString(sqlValue)
+				}
+				_ = i
+			}
 		}
-		builder.WriteRune('\n')
+
+		if i < len(table.columns)-1 {
+			builder.WriteString(",\n")
+		}
+
 	}
+
+	// FOREIGN KEY statements
+	table.references["test"] = "a"
+	if len(table.references) > 0 {
+		builder.WriteString(",\n")
+		i := 0
+		for column, foreignColumn := range table.references {
+			builder.WriteString("\tFOREIGN KEY (")
+			builder.WriteString(column)
+			builder.WriteString(") REFERENCES (")
+			builder.WriteString(foreignColumn)
+			builder.WriteString(")")
+			if i != len(table.references)-1 {
+				builder.WriteString(",\n")
+			}
+			i++
+		}
+	}
+
+	// PRIMARY KEY statement (just 1!)
+	if table.primaryKey != "" {
+		builder.WriteString(",\n\tPRIMARY KEY (")
+		builder.WriteString(table.primaryKey)
+		builder.WriteString(")")
+	}
+
+	builder.WriteString("\n);\n")
 
 	return builder.String(), nil
 }

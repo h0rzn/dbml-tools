@@ -16,6 +16,6 @@ module.exports = {
     '"',
   ),
 
-  _unrestricted_identifier: /[a-zA-Z0-9_-]+/,
+  // _unrestricted_identifier: /[a-zA-Z0-9_-]+/,
   _hidden_identifier: $ => /[a-zA-Z0-9_-]+/,
 };

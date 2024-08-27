@@ -25,7 +25,7 @@ module.exports = {
       field('col_type', $.column_type),
       choice(
         $._newline,
-        $.column_settings
+        field('col_settings', $.column_settings)
       )
     ),
 

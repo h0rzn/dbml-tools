@@ -158,6 +158,10 @@ func (d *Document) TreeCursor() *sitter.TreeCursor {
 	return sitter.NewTreeCursor(d.RootNode())
 }
 
+func (d *Document) TreeCursorByNode(node *sitter.Node) *sitter.TreeCursor {
+	return sitter.NewTreeCursor(node)
+}
+
 // RootNode fetches RootNode for current document.
 func (d *Document) RootNode() *sitter.Node {
 	d.treeLock.RLock()
