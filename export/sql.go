@@ -17,7 +17,7 @@ var constraintsMap = map[string]string{
 }
 
 type Table struct {
-	references map[string]string
+	references []Reference
 	name       string
 	primaryKey string
 	columns    []Column
@@ -27,6 +27,14 @@ type Column struct {
 	name        string
 	typ         string
 	constraints []string
+}
+
+// Reference is a reference (FOREIGN KEY)
+// to a different table
+type Reference struct {
+	SrcColumn string
+	RefTable  string
+	RefColumn string
 }
 
 func WalkTableNode(node *sitter.Node, document *language.Document) Table {
@@ -42,7 +50,7 @@ func WalkTableNode(node *sitter.Node, document *language.Document) Table {
 	// walk column definitions
 	var primaryKey string
 	columns := make([]Column, 0)
-	references := map[string]string{}
+	references := make([]Reference, 0)
 	currentColumnNode := cursor.CurrentNode().ChildByFieldName("column")
 	for currentColumnNode != nil {
 		// column name
@@ -69,7 +77,19 @@ func WalkTableNode(node *sitter.Node, document *language.Document) Table {
 				if currentSettingNode != nil {
 					switch currentSettingNode.Type() {
 					case "relationship_definition_inline":
-						references[columnName] = "<foreign_col_name_here>"
+						// TODO: add fields in grammar
+						if refTableNode := currentSettingNode.Child(2); refTableNode != nil {
+							// WARN: hardcoded indeces could cause problems if schema is supplied
+							refTableName := refTableNode.Child(0).Content(document.Contents())
+							refColumnName := refTableNode.Child(1).Content(document.Contents())
+
+							references = append(references, Reference{
+								SrcColumn: columnName,
+								RefTable:  refTableName,
+								RefColumn: refColumnName,
+							})
+						}
+
 					case "column_constraint":
 						constraintValue := currentSettingNode.Content(document.Contents())
 						if constraintValue == "pk" || constraintValue == "primary key" {
@@ -145,17 +165,18 @@ func CreateTableSQL(table Table) (string, error) {
 	// FOREIGN KEY statements
 	if len(table.references) > 0 {
 		builder.WriteString(",\n")
-		i := 0
-		for column, foreignColumn := range table.references {
+		for i, reference := range table.references {
 			builder.WriteString("\tFOREIGN KEY (")
-			builder.WriteString(column)
-			builder.WriteString(") REFERENCES (")
-			builder.WriteString(foreignColumn)
+			builder.WriteString(reference.SrcColumn)
+			builder.WriteString(") REFERENCES ")
+			builder.WriteString(reference.RefTable)
+			builder.WriteString("(")
+			builder.WriteString(reference.RefColumn)
+
 			builder.WriteString(")")
 			if i != len(table.references)-1 {
 				builder.WriteString(",\n")
 			}
-			i++
 		}
 	}
 
