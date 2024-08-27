@@ -11,7 +11,9 @@ import (
 var ErrorIncompatibleNodeType = errors.New("incompatible node type")
 
 var constraintsMap = map[string]string{
-	"not null": "NOT NULL",
+	"increment": "AUTO_INCREMENT",
+	"unique":    "UNIQUE",
+	"not null":  "NOT NULL",
 }
 
 type Table struct {
@@ -70,7 +72,7 @@ func WalkTableNode(node *sitter.Node, document *language.Document) Table {
 						references[columnName] = "<foreign_col_name_here>"
 					case "column_constraint":
 						constraintValue := currentSettingNode.Content(document.Contents())
-						if constraintValue == "pk" {
+						if constraintValue == "pk" || constraintValue == "primary key" {
 							primaryKey = columnName
 							break
 						}
@@ -120,14 +122,17 @@ func CreateTableSQL(table Table) (string, error) {
 		builder.WriteString(columnDefinition.typ)
 
 		// column options
-		if len(columnDefinition.constraints) > 0 {
+		constraintsLen := len(columnDefinition.constraints)
+		if constraintsLen > 0 {
 			builder.WriteString(" ")
 			for i, constraint := range columnDefinition.constraints {
 				// only write if constraint can be translated to sql
 				if sqlValue, ok := constraintsMap[constraint]; ok {
 					builder.WriteString(sqlValue)
 				}
-				_ = i
+				if i < constraintsLen-1 {
+					builder.WriteString(" ")
+				}
 			}
 		}
 
@@ -138,7 +143,6 @@ func CreateTableSQL(table Table) (string, error) {
 	}
 
 	// FOREIGN KEY statements
-	table.references["test"] = "a"
 	if len(table.references) > 0 {
 		builder.WriteString(",\n")
 		i := 0
