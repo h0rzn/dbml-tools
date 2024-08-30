@@ -10,6 +10,12 @@ module.exports = {
     '\'',
   ),
 
+  enquoted_identifier_multi: $ => seq(
+    '\'',
+    repeat($.identifier),
+    '\'',
+  ),
+
   double_enquoted_identifier: $ => seq(
     '"',
     $.identifier,

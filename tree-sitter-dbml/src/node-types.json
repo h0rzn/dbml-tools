@@ -84,12 +84,12 @@
     }
   },
   {
-    "type": "enquoted_identifier",
+    "type": "enquoted_identifier_multi",
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": true,
+      "multiple": true,
+      "required": false,
       "types": [
         {
           "type": "identifier",
@@ -173,7 +173,7 @@
         "required": true,
         "types": [
           {
-            "type": "enquoted_identifier",
+            "type": "enquoted_identifier_multi",
             "named": true
           }
         ]

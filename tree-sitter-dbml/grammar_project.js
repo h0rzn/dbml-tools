@@ -16,7 +16,7 @@ module.exports = {
       field('project_property_key', $.project_property_key),
       ':',
       $._space,
-      field('project_property_value', $.enquoted_identifier),
+      field('project_property_value', $.enquoted_identifier_multi),
       $._newline
   ),
 
