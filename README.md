@@ -27,7 +27,8 @@ Use "dbml-lsp-ts [command] --help" for more information about a command.
 ```
 
 ## Parser Coverage
-Internal parser is using tree-sitter and currently only supports few language features.
+Internal parser is using tree-sitter and currently only partly supports language features.
+For further details see [Parser-Limitations.md](./limitations.md).
 
 ## LSP Coverage
 `textDocument/definition`  
