@@ -2,7 +2,7 @@ package export
 
 import (
 	"errors"
-	"fmt"
+	"strings"
 
 	"github.com/h0rzn/dbml-lsp-ts/language"
 )
@@ -22,24 +22,36 @@ func (e *Exporter) Export() (string, error) {
 		return "", errors.New("cannot export: tree has no nodes")
 	}
 
-	nodes, err := e.document.Query("(table_definition) @td")
+	tablesSql, err := e.tablesSql()
 	if err != nil {
 		return "", err
 	}
-	for _, node := range nodes {
-		// createCommand, err := GenCreateTable(node, e.document)
-		// if err != nil {
-		// 	panic(err)
-		// }
-		// fmt.Println("---")
-		// fmt.Println(createCommand)
-		// fmt.Println("---")
-		tableNode := WalkTableNode(node, e.document)
-		fmt.Printf("*tableNode*:\n%+v\n", tableNode)
-		tableSql, _ := CreateTableSQL(tableNode)
-		fmt.Println("***")
-		fmt.Println(tableSql)
-		fmt.Println("***")
+	var tableBuilder strings.Builder
+	for _, tableSql := range tablesSql {
+		if tableSql != "" {
+			tableBuilder.WriteString(tableSql)
+			tableBuilder.WriteRune('\n')
+		}
 	}
-	return "", nil
+
+	return tableBuilder.String(), nil
+}
+
+func (e *Exporter) tablesSql() ([]string, error) {
+	var tablesSql []string
+	nodes, err := e.document.Query("(table_definition) @td")
+	if err != nil {
+		return nil, err
+	}
+
+	for _, node := range nodes {
+		tableNode := WalkTableNode(node, e.document)
+		tableSql, err := CreateTableSQL(tableNode)
+		if err != nil {
+			return nil, err
+		}
+		tablesSql = append(tablesSql, tableSql)
+	}
+	return tablesSql, nil
+
 }
