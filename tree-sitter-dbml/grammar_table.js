@@ -1,3 +1,4 @@
+
 module.exports = {
     table_definition: $ => seq(
       $.Table,
@@ -13,7 +14,10 @@ module.exports = {
       $._space,
       '{',
       $._newline,
-      field('column', repeat($.column_definition)),
+
+      field('column', repeat1($.column_definition)),
+      optional($.indexes_definition),
+
       '}'
     ),
 
@@ -60,7 +64,6 @@ module.exports = {
         seq("'", repeat($.identifier), "'"),
         seq("`", repeat($.identifier), "`")
       )
-
     ),
 
     column_constraint: $ => choice(

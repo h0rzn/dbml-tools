@@ -104,6 +104,55 @@
     "fields": {}
   },
   {
+    "type": "index_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "index_definition_single",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "index_definition_single",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "indexes_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "index_definition",
+          "named": true
+        },
+        {
+          "type": "indexes",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "project_definition",
     "named": true,
     "fields": {
@@ -371,7 +420,7 @@
     "fields": {
       "column": {
         "multiple": true,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "column_definition",
@@ -410,6 +459,10 @@
         },
         {
           "type": "as",
+          "named": true
+        },
+        {
+          "type": "indexes_definition",
           "named": true
         }
       ]
@@ -511,6 +564,10 @@
   {
     "type": "increment",
     "named": false
+  },
+  {
+    "type": "indexes",
+    "named": true
   },
   {
     "type": "no action",

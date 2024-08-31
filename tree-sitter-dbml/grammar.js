@@ -1,6 +1,9 @@
 const shared = require("./grammar_shared");
 const project = require("./grammar_project");
+
 const table = require("./grammar_table");
+const indexes_definition = require("./grammar_table_indexes.js");
+
 const relationship = require("./grammar_relationship");
 
 module.exports = grammar({
@@ -20,7 +23,10 @@ module.exports = grammar({
     comment: $ => /\/\/[^\n]*/,
 
     ...project,
+
     ...table,
+    ...indexes_definition,
+
     ...relationship,
     ...shared,
 
