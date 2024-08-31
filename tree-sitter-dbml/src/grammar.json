@@ -509,12 +509,49 @@
         {
           "type": "SYMBOL",
           "name": "index_definition_single"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "index_definition_composite"
         }
       ]
     },
     "index_definition_single": {
       "type": "SYMBOL",
       "name": "identifier"
+    },
+    "index_definition_composite": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": ","
+              },
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
     },
     "indexes": {
       "type": "TOKEN",

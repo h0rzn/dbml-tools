@@ -112,7 +112,26 @@
       "required": true,
       "types": [
         {
+          "type": "index_definition_composite",
+          "named": true
+        },
+        {
           "type": "index_definition_single",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "index_definition_composite",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
           "named": true
         }
       ]
@@ -479,6 +498,14 @@
   },
   {
     "type": "'",
+    "named": false
+  },
+  {
+    "type": "(",
+    "named": false
+  },
+  {
+    "type": ")",
     "named": false
   },
   {
