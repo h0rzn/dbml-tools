@@ -9,7 +9,11 @@
 - Settings are not supported: `Table users [headercolor: #3498DB] {`
 - Enums are not supported
 ### Index Definitions
-- not supported 
+- Only Single Field and Compositie Field indexes are supported
+- Index Settings are supported but limited to one setting per index
+- Notes are not supported
+- Expressions are not supported ```(`id*2`)```
+
 
 ## Column
 - Notes are not supported 

@@ -11,9 +11,12 @@ module.exports = {
     '}'
   ),
 
-  index_definition: $ => choice(
-    $.index_definition_single,
-    $.index_definition_composite
+  index_definition: $ => seq(
+    choice(
+      $.index_definition_single,
+      $.index_definition_composite
+    ),
+    optional($.index_setting)
   ),
 
   index_definition_single: $ => $.identifier,
@@ -28,6 +31,19 @@ module.exports = {
       ),
     ),
     ')'
+  ),
+
+  index_setting: $ => seq(
+    '[',
+    $.index_settings,
+    ']'
+  ),
+
+  index_settings: $ => choice(
+    'pk',
+    'unique',
+    seq('name', ':', $._space, $.enquoted_identifier),
+    seq('type', ':', $.identifier),
   ),
 
   indexes: $ => token('indexes')
