@@ -1,9 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
-	"github.com/h0rzn/dbml-lsp-ts/language"
 	"github.com/spf13/cobra"
 )
 
@@ -11,39 +8,6 @@ var rootCmd = &cobra.Command{
 	Use:   "dbml-lsp-ts",
 	Short: "A dbml language server based on tree-sitter based on tree-sitter",
 	Long:  "",
-}
-
-var devCmd = &cobra.Command{
-	Use:   "dev cmd",
-	Short: "",
-	Long:  "",
-	Run: func(cmd *cobra.Command, args []string) {
-		path := "./test.dbml"
-
-		documentItem, err := createDocumentItem(path)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		document := language.NewDocument(documentItem)
-		err = document.Init()
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		// l := uint32(22)
-		// o := uint32(16)
-		l := uint32(11)
-		o := uint32(25)
-
-		// result, err := language.Resolve(document, l, o)
-		result, err := language.ResolveContents(document, l, o)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Printf("Resolve Result: %q\n", result.Content)
-	},
 }
 
 func Execute() error {
@@ -55,6 +19,7 @@ func init() {
 
 	parseCmd.Flags().BoolVarP(&ErrorsOnly, "errorOnly", "e", false, "Only show errors as output")
 	parseCmd.Flags().BoolVarP(&RawOutput, "raw", "r", false, "Raw output")
+	parseCmd.Flags().BoolVarP(&FieldNames, "fieldNames", "f", false, "Show field names")
 	rootCmd.AddCommand(parseCmd)
 
 	rootCmd.AddCommand(queryCmd)

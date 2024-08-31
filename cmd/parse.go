@@ -9,6 +9,7 @@ import (
 
 var ErrorsOnly bool
 var RawOutput bool
+var FieldNames bool
 
 var parseCmd = &cobra.Command{
 	Use:   "parse",
@@ -33,9 +34,11 @@ var parseCmd = &cobra.Command{
 
 		errorOnly, _ := cmd.Flags().GetBool("errorOnly")
 		rawOutput, _ := cmd.Flags().GetBool("raw")
+		fieldNames, _ := cmd.Flags().GetBool("fieldNames")
 		printOpts := language.PrintTreeOpts{
 			ErrorsOnly: errorOnly,
 			Raw:        rawOutput,
+			FieldNames: fieldNames,
 		}
 
 		language.PrintTree(document.RootNode(), printOpts)
