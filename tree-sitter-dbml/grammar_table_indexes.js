@@ -16,7 +16,7 @@ module.exports = {
       $.index_definition_single,
       $.index_definition_composite
     ),
-    optional($.index_setting)
+    optional(field('index_settings', $.index_settings))
   ),
 
   index_definition_single: $ => field('index_column', $.index_column),
@@ -35,13 +35,13 @@ module.exports = {
 
   index_column: $ => $.identifier,
 
-  index_setting: $ => seq(
+  index_settings: $ => seq(
     '[',
-    $.index_settings,
+    $.index_setting,
     ']'
   ),
 
-  index_settings: $ => choice(
+  index_setting: $ => choice(
     'pk',
     'unique',
     seq('name', ':', $._space, $.enquoted_identifier),

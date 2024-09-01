@@ -136,9 +136,20 @@
   {
     "type": "index_definition",
     "named": true,
-    "fields": {},
+    "fields": {
+      "index_settings": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "index_settings",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
@@ -147,10 +158,6 @@
         },
         {
           "type": "index_definition_single",
-          "named": true
-        },
-        {
-          "type": "index_setting",
           "named": true
         }
       ]
@@ -194,10 +201,14 @@
     "fields": {},
     "children": {
       "multiple": false,
-      "required": true,
+      "required": false,
       "types": [
         {
-          "type": "index_settings",
+          "type": "enquoted_identifier",
+          "named": true
+        },
+        {
+          "type": "identifier",
           "named": true
         }
       ]
@@ -209,14 +220,10 @@
     "fields": {},
     "children": {
       "multiple": false,
-      "required": false,
+      "required": true,
       "types": [
         {
-          "type": "enquoted_identifier",
-          "named": true
-        },
-        {
-          "type": "identifier",
+          "type": "index_setting",
           "named": true
         }
       ]

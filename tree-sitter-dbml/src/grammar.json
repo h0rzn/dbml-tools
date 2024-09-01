@@ -527,8 +527,12 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "index_setting"
+              "type": "FIELD",
+              "name": "index_settings",
+              "content": {
+                "type": "SYMBOL",
+                "name": "index_settings"
+              }
             },
             {
               "type": "BLANK"
@@ -590,7 +594,7 @@
       "type": "SYMBOL",
       "name": "identifier"
     },
-    "index_setting": {
+    "index_settings": {
       "type": "SEQ",
       "members": [
         {
@@ -599,7 +603,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "index_settings"
+          "name": "index_setting"
         },
         {
           "type": "STRING",
@@ -607,7 +611,7 @@
         }
       ]
     },
-    "index_settings": {
+    "index_setting": {
       "type": "CHOICE",
       "members": [
         {

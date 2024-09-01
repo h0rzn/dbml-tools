@@ -11,9 +11,9 @@
 #define ALIAS_COUNT 0
 #define TOKEN_COUNT 48
 #define EXTERNAL_TOKEN_COUNT 0
-#define FIELD_COUNT 15
+#define FIELD_COUNT 16
 #define MAX_ALIAS_SEQUENCE_LENGTH 13
-#define PRODUCTION_ID_COUNT 18
+#define PRODUCTION_ID_COUNT 19
 
 enum ts_symbol_identifiers {
   sym_comment = 1,
@@ -81,8 +81,8 @@ enum ts_symbol_identifiers {
   sym_index_definition_single = 63,
   sym_index_definition_composite = 64,
   sym_index_column = 65,
-  sym_index_setting = 66,
-  sym_index_settings = 67,
+  sym_index_settings = 66,
+  sym_index_setting = 67,
   sym_relationship_definition_short = 68,
   sym_relationship_definition_inline = 69,
   sym_relationship_definition_long = 70,
@@ -173,8 +173,8 @@ static const char * const ts_symbol_names[] = {
   [sym_index_definition_single] = "index_definition_single",
   [sym_index_definition_composite] = "index_definition_composite",
   [sym_index_column] = "index_column",
-  [sym_index_setting] = "index_setting",
   [sym_index_settings] = "index_settings",
+  [sym_index_setting] = "index_setting",
   [sym_relationship_definition_short] = "relationship_definition_short",
   [sym_relationship_definition_inline] = "relationship_definition_inline",
   [sym_relationship_definition_long] = "relationship_definition_long",
@@ -265,8 +265,8 @@ static const TSSymbol ts_symbol_map[] = {
   [sym_index_definition_single] = sym_index_definition_single,
   [sym_index_definition_composite] = sym_index_definition_composite,
   [sym_index_column] = sym_index_column,
-  [sym_index_setting] = sym_index_setting,
   [sym_index_settings] = sym_index_settings,
+  [sym_index_setting] = sym_index_setting,
   [sym_relationship_definition_short] = sym_relationship_definition_short,
   [sym_relationship_definition_inline] = sym_relationship_definition_inline,
   [sym_relationship_definition_long] = sym_relationship_definition_long,
@@ -555,11 +555,11 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = true,
     .named = true,
   },
-  [sym_index_setting] = {
+  [sym_index_settings] = {
     .visible = true,
     .named = true,
   },
-  [sym_index_settings] = {
+  [sym_index_setting] = {
     .visible = true,
     .named = true,
   },
@@ -656,15 +656,16 @@ enum ts_field_identifiers {
   field_column = 4,
   field_column_name = 5,
   field_index_column = 6,
-  field_indexes = 7,
-  field_project_name = 8,
-  field_project_property = 9,
-  field_project_property_key = 10,
-  field_project_property_value = 11,
-  field_relationship_name = 12,
-  field_table_alias = 13,
-  field_table_alias_name = 14,
-  field_table_name = 15,
+  field_index_settings = 7,
+  field_indexes = 8,
+  field_project_name = 9,
+  field_project_property = 10,
+  field_project_property_key = 11,
+  field_project_property_value = 12,
+  field_relationship_name = 13,
+  field_table_alias = 14,
+  field_table_alias_name = 15,
+  field_table_name = 16,
 };
 
 static const char * const ts_field_names[] = {
@@ -675,6 +676,7 @@ static const char * const ts_field_names[] = {
   [field_column] = "column",
   [field_column_name] = "column_name",
   [field_index_column] = "index_column",
+  [field_index_settings] = "index_settings",
   [field_indexes] = "indexes",
   [field_project_name] = "project_name",
   [field_project_property] = "project_property",
@@ -702,8 +704,9 @@ static const TSFieldMapSlice ts_field_map_slices[PRODUCTION_ID_COUNT] = {
   [13] = {.index = 22, .length = 1},
   [14] = {.index = 23, .length = 4},
   [15] = {.index = 27, .length = 1},
-  [16] = {.index = 28, .length = 2},
-  [17] = {.index = 30, .length = 2},
+  [16] = {.index = 28, .length = 1},
+  [17] = {.index = 29, .length = 2},
+  [18] = {.index = 31, .length = 2},
 };
 
 static const TSFieldMapEntry ts_field_map_entries[] = {
@@ -749,11 +752,13 @@ static const TSFieldMapEntry ts_field_map_entries[] = {
     {field_table_alias_name, 5},
     {field_table_name, 2},
   [27] =
-    {field_index_column, 1},
+    {field_index_settings, 1},
   [28] =
     {field_index_column, 1},
+  [29] =
+    {field_index_column, 1},
     {field_index_column, 2, .inherited = true},
-  [30] =
+  [31] =
     {field_index_column, 0, .inherited = true},
     {field_index_column, 1, .inherited = true},
 };
@@ -2202,7 +2207,7 @@ static const uint16_t ts_small_parse_table[] = {
     ACTIONS(103), 1,
       anon_sym_type,
     STATE(149), 1,
-      sym_index_settings,
+      sym_index_setting,
     ACTIONS(99), 2,
       anon_sym_pk,
       anon_sym_unique,
@@ -2534,7 +2539,7 @@ static const uint16_t ts_small_parse_table[] = {
     ACTIONS(172), 1,
       sym__newline,
     STATE(137), 1,
-      sym_index_setting,
+      sym_index_settings,
   [828] = 3,
     ACTIONS(174), 1,
       anon_sym_COMMA,
@@ -3256,8 +3261,8 @@ static const TSParseActionEntry ts_parse_actions[] = {
   [179] = {.entry = {.count = 1, .reusable = true}}, SHIFT(64),
   [181] = {.entry = {.count = 1, .reusable = true}}, SHIFT(128),
   [183] = {.entry = {.count = 1, .reusable = true}}, SHIFT(141),
-  [185] = {.entry = {.count = 2, .reusable = true}}, REDUCE(aux_sym_index_definition_composite_repeat1, 2, 0, 17), SHIFT_REPEAT(83),
-  [188] = {.entry = {.count = 1, .reusable = true}}, REDUCE(aux_sym_index_definition_composite_repeat1, 2, 0, 17),
+  [185] = {.entry = {.count = 2, .reusable = true}}, REDUCE(aux_sym_index_definition_composite_repeat1, 2, 0, 18), SHIFT_REPEAT(83),
+  [188] = {.entry = {.count = 1, .reusable = true}}, REDUCE(aux_sym_index_definition_composite_repeat1, 2, 0, 18),
   [190] = {.entry = {.count = 1, .reusable = true}}, SHIFT(32),
   [192] = {.entry = {.count = 1, .reusable = true}}, SHIFT(119),
   [194] = {.entry = {.count = 1, .reusable = false}}, SHIFT(6),
@@ -3279,12 +3284,12 @@ static const TSParseActionEntry ts_parse_actions[] = {
   [227] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_relationship_definition_inline, 4, 0, 0),
   [229] = {.entry = {.count = 1, .reusable = true}}, SHIFT(51),
   [231] = {.entry = {.count = 1, .reusable = true}}, SHIFT(53),
-  [233] = {.entry = {.count = 1, .reusable = false}}, REDUCE(sym_index_definition_composite, 3, 0, 15),
-  [235] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_definition_composite, 3, 0, 15),
-  [237] = {.entry = {.count = 1, .reusable = true}}, REDUCE(aux_sym_index_definition_composite_repeat1, 2, 0, 15),
+  [233] = {.entry = {.count = 1, .reusable = false}}, REDUCE(sym_index_definition_composite, 3, 0, 16),
+  [235] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_definition_composite, 3, 0, 16),
+  [237] = {.entry = {.count = 1, .reusable = true}}, REDUCE(aux_sym_index_definition_composite_repeat1, 2, 0, 16),
   [239] = {.entry = {.count = 1, .reusable = true}}, SHIFT(55),
-  [241] = {.entry = {.count = 1, .reusable = false}}, REDUCE(sym_index_definition_composite, 4, 0, 16),
-  [243] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_definition_composite, 4, 0, 16),
+  [241] = {.entry = {.count = 1, .reusable = false}}, REDUCE(sym_index_definition_composite, 4, 0, 17),
+  [243] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_definition_composite, 4, 0, 17),
   [245] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_column_setting_default, 4, 0, 0),
   [247] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_column_constraint, 1, 0, 0),
   [249] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_relationship_setting_definition, 4, 0, 0),
@@ -3324,7 +3329,7 @@ static const TSParseActionEntry ts_parse_actions[] = {
   [317] = {.entry = {.count = 1, .reusable = true}}, SHIFT(42),
   [319] = {.entry = {.count = 1, .reusable = true}}, SHIFT(23),
   [321] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_project_name, 1, 0, 0),
-  [323] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_definition, 2, 0, 0),
+  [323] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_definition, 2, 0, 15),
   [325] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_indexes_definition, 6, 0, 0),
   [327] = {.entry = {.count = 1, .reusable = true}}, SHIFT(122),
   [329] = {.entry = {.count = 1, .reusable = true}}, SHIFT(164),
@@ -3333,7 +3338,7 @@ static const TSParseActionEntry ts_parse_actions[] = {
   [335] = {.entry = {.count = 1, .reusable = true}}, SHIFT(8),
   [337] = {.entry = {.count = 1, .reusable = true}}, SHIFT(61),
   [339] = {.entry = {.count = 1, .reusable = true}}, SHIFT(38),
-  [341] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_settings, 1, 0, 0),
+  [341] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_setting, 1, 0, 0),
   [343] = {.entry = {.count = 1, .reusable = true}}, SHIFT(155),
   [345] = {.entry = {.count = 1, .reusable = true}}, SHIFT(96),
   [347] = {.entry = {.count = 1, .reusable = true}}, SHIFT(157),
@@ -3344,15 +3349,15 @@ static const TSParseActionEntry ts_parse_actions[] = {
   [357] = {.entry = {.count = 1, .reusable = true}}, SHIFT(113),
   [359] = {.entry = {.count = 1, .reusable = true}}, SHIFT(100),
   [361] = {.entry = {.count = 1, .reusable = true}}, SHIFT(47),
-  [363] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_setting, 3, 0, 0),
+  [363] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_settings, 3, 0, 0),
   [365] = {.entry = {.count = 1, .reusable = true}}, SHIFT(41),
   [367] = {.entry = {.count = 1, .reusable = true}}, SHIFT(153),
   [369] = {.entry = {.count = 1, .reusable = true}}, SHIFT(77),
   [371] = {.entry = {.count = 1, .reusable = true}}, SHIFT(93),
-  [373] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_settings, 3, 0, 0),
+  [373] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_setting, 3, 0, 0),
   [375] = {.entry = {.count = 1, .reusable = true}}, SHIFT(29),
   [377] = {.entry = {.count = 1, .reusable = true}}, SHIFT(156),
-  [379] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_settings, 4, 0, 0),
+  [379] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_index_setting, 4, 0, 0),
   [381] = {.entry = {.count = 1, .reusable = true}}, SHIFT(167),
   [383] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_enquoted_identifier, 3, 0, 0),
   [385] = {.entry = {.count = 1, .reusable = true}},  ACCEPT_INPUT(),
