@@ -161,6 +161,12 @@ func WalkTableNode(node *sitter.Node, document *language.Document) Table {
 					continue
 				}
 
+				// index settings
+				// indexSettingsNode := indexDefNode.ChildByFieldName("index_settings")
+				// if indexSettingsNode != nil {
+				//
+				// }
+
 				indexDefinition := Index{
 					table:   tableName,
 					columns: indexColumns,

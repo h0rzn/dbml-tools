@@ -1,4 +1,6 @@
 build:
+	./gen.sh 
+	./compile_static.sh 
 	go build
 
 agent:

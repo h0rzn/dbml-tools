@@ -11,6 +11,7 @@
 ### Index Definitions
 - Only Single Field and Compositie Field indexes are supported
 - Index Settings are supported but limited to one setting per index
+  - not supported by sql Exporter!
 - Notes are not supported
 - Expressions are not supported ```(`id*2`)```
 
