@@ -19,19 +19,21 @@ module.exports = {
     optional($.index_setting)
   ),
 
-  index_definition_single: $ => $.identifier,
+  index_definition_single: $ => field('index_column', $.index_column),
 
   index_definition_composite: $ => seq(
     '(',
-    $.identifier,
+    field('index_column', $.index_column),
     repeat(
       seq(
         ',',
-        $.identifier
+        field('index_column', $.index_column),
       ),
     ),
     ')'
   ),
+
+  index_column: $ => $.identifier,
 
   index_setting: $ => seq(
     '[',

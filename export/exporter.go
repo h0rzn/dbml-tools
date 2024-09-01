@@ -22,36 +22,51 @@ func (e *Exporter) Export() (string, error) {
 		return "", errors.New("cannot export: tree has no nodes")
 	}
 
-	tablesSql, err := e.tablesSql()
+	tablesSql, indexesSql, err := e.tablesSql()
 	if err != nil {
 		return "", err
 	}
-	var tableBuilder strings.Builder
+
+	var builder strings.Builder
 	for _, tableSql := range tablesSql {
 		if tableSql != "" {
-			tableBuilder.WriteString(tableSql)
-			tableBuilder.WriteRune('\n')
+			builder.WriteString(tableSql)
+			builder.WriteRune('\n')
 		}
 	}
 
-	return tableBuilder.String(), nil
+	for _, indexSql := range indexesSql {
+		if indexSql != "" {
+			builder.WriteString(indexSql)
+			builder.WriteRune('\n')
+		}
+	}
+	return builder.String(), nil
 }
 
-func (e *Exporter) tablesSql() ([]string, error) {
-	var tablesSql []string
+func (e *Exporter) tablesSql() (tablesSql []string, indexesSql []string, err error) {
+	tablesSql = make([]string, 0)
+	indexesSql = make([]string, 0)
+
 	nodes, err := e.document.Query("(table_definition) @td")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	for _, node := range nodes {
 		tableNode := WalkTableNode(node, e.document)
 		tableSql, err := CreateTableSQL(tableNode)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		tablesSql = append(tablesSql, tableSql)
+
+		indexSql, err := CreateIndexesSQL(tableNode.indexes)
+		if err != nil {
+			return nil, nil, err
+		}
+		indexesSql = append(indexesSql, indexSql...)
 	}
-	return tablesSql, nil
+	return tablesSql, indexesSql, nil
 
 }

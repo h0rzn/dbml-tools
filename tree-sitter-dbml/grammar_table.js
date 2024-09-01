@@ -16,7 +16,7 @@ module.exports = {
       $._newline,
 
       field('column', repeat1($.column_definition)),
-      optional($.indexes_definition),
+      field('indexes', optional($.indexes_definition)),
 
       '}'
     ),
