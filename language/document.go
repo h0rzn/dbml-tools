@@ -12,8 +12,6 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-var ErrOutOfBoundsFileContents = errors.New("input access parameters are out of bounds for file contents")
-
 type Document struct {
 	tree     *sitter.Tree
 	treeLock *sync.RWMutex
@@ -68,11 +66,8 @@ func (d *Document) TextBuffer() *textbuffer.PieceTable {
 // parse parses fileContents with sitter.ParseCtx and returns
 // *sitter.Tree and error.
 func (d *Document) parse(tree *sitter.Tree, fileContents []byte) (*sitter.Tree, error) {
-	tree, err := d.parser.ParseCtx(context.Background(), tree, fileContents)
-	if err != nil {
-		return tree, err
-	}
-	return tree, nil
+	return d.parser.ParseCtx(context.Background(), tree, fileContents)
+
 }
 
 // ApplyChanges applies all document changes to piece table and parser
@@ -105,7 +100,7 @@ func (d *Document) applyChange(change DocumentChange) error {
 		return err
 	}
 
-	byteRange, _ := d.ContentsRange(uint32(startOffset), uint32(endOffset))
+	byteRange := d.ContentsRange(uint32(startOffset), uint32(endOffset))
 	fmt.Printf("calculated range (%d - %d): %d\n", startOffset, endOffset, len(byteRange))
 
 	// DELETE operation
@@ -143,21 +138,14 @@ func (d *Document) applyChange(change DocumentChange) error {
 	return err
 }
 
-func (d *Document) Reparse() error {
-	tree, err := d.parse(d.tree, d.text.Contents())
-	if err != nil {
-		return err
-	}
-	d.tree = tree
-	return nil
-}
-
 // TreeCursor creates and returns a *sitter.TreeCursor
 // based on root node.
 func (d *Document) TreeCursor() *sitter.TreeCursor {
 	return sitter.NewTreeCursor(d.RootNode())
 }
 
+// TreeCursorByNode creates and returns a *sitter.TreeCursor
+// with cursor on specified node
 func (d *Document) TreeCursorByNode(node *sitter.Node) *sitter.TreeCursor {
 	return sitter.NewTreeCursor(node)
 }
@@ -170,12 +158,10 @@ func (d *Document) RootNode() *sitter.Node {
 	return rootNode
 }
 
-// TODO: Remove truncated return
 // ContentsRange returns file contents in bytes for [startByte:endByte].
-// If endByte overflows contents length, truncated is true and only bytes
-// until end are returned.
-func (d *Document) ContentsRange(startByte uint32, endByte uint32) (contents []byte, truncated bool) {
-	return d.text.ContentsRange(startByte, endByte), false
+// Range parameter validation is handled by the underlying textbuffer.
+func (d *Document) ContentsRange(startByte uint32, endByte uint32) []byte {
+	return d.text.ContentsRange(startByte, endByte)
 }
 
 // Contents fetches file contents.
