@@ -1,3 +1,9 @@
+generate:
+	./gen.sh
+
+static:
+	./compile_static.sh
+
 build:
 	./gen.sh 
 	./compile_static.sh 
