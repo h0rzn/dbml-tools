@@ -4,6 +4,8 @@
 dbml-lsp-ts is a language server with additional tooling
 for [dbml](https://dbml.dbdiagram.io/home), based on 
 [Tree-Sitter](https://tree-sitter.github.io/tree-sitter/).  
+This tooling does not run any semantic analysis on the source
+code. 
 
 ```
 A dbml language server based on tree-sitter based on tree-sitter

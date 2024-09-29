@@ -2,13 +2,12 @@ package language
 
 import (
 	"errors"
-	"fmt"
 
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
 var ErrDefinitionMissingDestination = errors.New("failed to find match")
-var ErrResolveUnsupportedNoteType = errors.New("failed to resolve: unsupported node type")
+var ErrResolveUnsupportedNodeType = errors.New("failed to resolve: unsupported node type")
 
 const tableLocateIncludeAliases = true
 
@@ -38,8 +37,7 @@ func Resolve(document *Document, line uint32, offset uint32) (destinationNode *s
 		}
 		return result, nil
 	default:
-		fmt.Println("unsupported node type", result.Node.Type())
-		return nil, ErrResolveUnsupportedNoteType
+		return nil, ErrResolveUnsupportedNodeType
 	}
 }
 
@@ -62,7 +60,7 @@ func ResolveContents(document *Document, line uint32, column uint32) (ResolvedCo
 		return resolveResult, err
 	}
 
-	content, _ := document.ContentsRange(result.StartByte(), result.EndByte())
+	content := document.ContentsRange(result.StartByte(), result.EndByte())
 	resolveResult.Content = string(content)
 	resolveResult.Resolved = true
 

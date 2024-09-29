@@ -65,7 +65,7 @@ func printValidated(document *Document, errNodes []*ErrorNode) {
 	for i, errNode := range errNodes {
 		if errNode.ContextNode != nil {
 			writeHeader(&builder, i, errNode.ErrorNode, true)
-			contents, _ := document.ContentsRange(errNode.ContextNode.StartByte(), errNode.ContextNode.EndByte())
+			contents := document.ContentsRange(errNode.ContextNode.StartByte(), errNode.ContextNode.EndByte())
 			errRelStart := errNode.ErrorNode.StartByte() - errNode.ContextNode.StartByte()
 			errRelEnd := errNode.ErrorNode.EndByte() - errNode.ContextNode.StartByte()
 			builder.WriteString(CGREY)
