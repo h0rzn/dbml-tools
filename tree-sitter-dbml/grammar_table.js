@@ -1,4 +1,3 @@
-
 module.exports = {
     table_definition: $ => seq(
       $.Table,
@@ -24,14 +23,31 @@ module.exports = {
     table_name: $ => $.identifier,
 
     column_definition: $ => seq(
-      field('col_name', $.identifier),
+      field('col_name', $.column_name),
       $._space,
-      field('col_type', $.column_type),
+      field('col_type', $._column_type),
       choice(
         $._newline,
         field('col_settings', $.column_settings)
       )
     ),
+
+    column_name: $ => $._identifier2,
+
+    _column_type: $ => choice(
+      $.column_type_basic,
+      $.column_type_ref,
+    ),
+
+    column_type_basic: $ => $._identifier2,
+
+    column_type_ref: $ => seq(
+      field('column_ref_type_left', $.column_type_ref_item),
+      $._dot,
+      field('column_ref_type_right', $.column_type_ref_item),
+    ),
+
+    column_type_ref_item: $ => $._identifier2,
 
     column_settings: $ => seq(
       seq(
@@ -55,7 +71,6 @@ module.exports = {
       )
     ),
 
-    column_type: $ => /[a-zA-Z0-9_\-()]+/,
 
     column_setting_default: $ => seq(
       'default',
@@ -74,6 +89,8 @@ module.exports = {
       'unique',
       'increment'
     ),
+
+    _identifier2: $ => /[a-zA-Z0-9_\-()]+/,
 
     // TODO: add keyed constraints: default: xxx, note: 'xxx'
 

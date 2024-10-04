@@ -5,6 +5,7 @@ const table = require("./grammar_table");
 const indexes_definition = require("./grammar_table_indexes.js");
 
 const relationship = require("./grammar_relationship");
+const enums = require("./grammar_enum.js");
 
 module.exports = grammar({
   name: "dbml",
@@ -15,6 +16,7 @@ module.exports = grammar({
     _definition: $ => choice(
       $.project_definition,
       $.table_definition,
+      $.enum_definition,
       $.relationship_definition_short,
       $.relationship_definition_long,
       $.comment
@@ -26,6 +28,8 @@ module.exports = grammar({
 
     ...table,
     ...indexes_definition,
+
+    ...enums,
 
     ...relationship,
     ...shared,

@@ -1,0 +1,24 @@
+================
+Enum with fields
+================
+
+enum MyEnum {
+	fieldA
+	fieldB
+	fieldC
+}
+
+---
+
+(source_file (enum_definition (enum) enum_name: (identifier) (enum_field enum_field_name: (identifier)) (enum_field enum_field_name: (identifier)) (enum_field enum_field_name: (identifier))))
+
+======================
+Enum empty with linebr
+======================
+
+enum EmptyEnumLBR {
+}
+
+---
+
+(source_file (enum_definition (enum) enum_name: (identifier)))

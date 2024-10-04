@@ -18,27 +18,31 @@ const tableLocateIncludeAliases = true
 // Returns the destinationNode and error.
 func Resolve(document *Document, line uint32, offset uint32) (destinationNode *sitter.Node, err error) {
 	result, err := document.NodeAt(line, offset)
+	// TODO: check if this error is handled up the chain
 	if err != nil {
 		return nil, err
 	}
 
+	if result.Node == nil {
+		// failed to find source node.
+		// this error does not really fit here but it works for now
+		return nil, ErrResolveUnsupportedNodeType
+	}
+
+	var resolvedNode *sitter.Node
+	var resolveErr error
 	switch result.Node.Type() {
 	case TSVColumnName:
-		result, err := resolveColumn(document, result)
-		if err != nil {
-			return nil, err
-		}
-		return result, nil
-
+		resolvedNode, resolveErr = resolveColumn(document, result)
 	case TSVTableName:
-		result, err := resolveTable(document, result, tableLocateIncludeAliases)
-		if err != nil {
-			return nil, err
-		}
-		return result, nil
+		resolvedNode, resolveErr = resolveTable(document, result, tableLocateIncludeAliases)
+	case "column_type_ref_item":
+		resolvedNode, resolveErr = resolveEnum(document, result)
 	default:
 		return nil, ErrResolveUnsupportedNodeType
 	}
+
+	return resolvedNode, resolveErr
 }
 
 type ResolvedContents struct {
@@ -71,39 +75,78 @@ func ResolveContents(document *Document, line uint32, column uint32) (ResolvedCo
 // If param includeAliases is true table aliases will also be considered.
 // Returns resolved table node and error.
 func resolveTable(document *Document, result *NodeAtResult, includeAliases bool) (*sitter.Node, error) {
-	if result.Parent.Type() == TSDRelationshipSide {
-		// find destination node by table and column name
-		resultParentNode := result.Parent.Child(0)
-		resultParentValue := resultParentNode.Content(document.Contents())
-		// column
-		dstTableNode, err := tableByName(document, resultParentValue, includeAliases)
-		if err != nil {
-			return nil, err
-		}
-
-		return dstTableNode, nil
+	if result.Parent.Type() != TSDRelationshipSide {
+		return nil, ErrResolveUnsupportedNodeType
 	}
-	return nil, errors.New("locateTable: unsupported parent type")
+	// find destination node by table and column name
+	resultParentNode := result.Parent.Child(0)
+	resultParentValue := resultParentNode.Content(document.Contents())
+	// column
+	dstTableNode, err := tableByName(document, resultParentValue, includeAliases)
+	if err != nil {
+		return nil, err
+	}
+
+	return dstTableNode, nil
 }
 
 // resolveColumn resolves a column based on NodeAtResult for a document.
 // Returns resolved column node and error.
 func resolveColumn(document *Document, result *NodeAtResult) (*sitter.Node, error) {
-	if result.Parent.Type() == TSDRelationshipSide {
-		// find destination node by table and column name
-		resultParentNode := result.Parent.Child(0)
-		resultParentValue := resultParentNode.Content(document.Contents())
-		// column
-		resultNodeValue := result.Node.Content(document.Contents())
-		dstTableNode, err := columnByValues(document, resultParentValue, resultNodeValue)
-		if err != nil {
-			return nil, err
-		}
-
-		return dstTableNode, nil
+	if result.Parent.Type() != TSDRelationshipSide {
+		return nil, ErrResolveUnsupportedNodeType
+	}
+	// find destination node by table and column name
+	resultParentNode := result.Parent.Child(0)
+	resultParentValue := resultParentNode.Content(document.Contents())
+	// column
+	resultNodeValue := result.Node.Content(document.Contents())
+	dstTableNode, err := columnByValues(document, resultParentValue, resultNodeValue)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, errors.New("locateColumn: unsupported parent type")
+	return dstTableNode, nil
+}
+
+func resolveEnum(document *Document, result *NodeAtResult) (*sitter.Node, error) {
+	if result.Parent.Type() != "column_type_ref" {
+
+		return nil, errors.New("locateEnum: unsupported parent type")
+	}
+	// parentNameNode := result.Parent.Child(0)
+	// parentNameNodeValue := parentNameNode.Content(document.Contents())
+	// fmt.Println("[resolveEnum] parent name node:", parentNameNode, "parent name node value", parentNameNodeValue)
+
+	// find enum field by enum name + field name
+	// TODO: rename
+	fieldName := result.Node.Content(document.Contents())
+	// fmt.Println("[resolveEnum] field name:", fieldName)
+
+	query := `
+			(enum_definition) @enum		
+		`
+
+	enumNodes, err := document.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, enumNode := range enumNodes {
+		enumNameNode := enumNode.ChildByFieldName("enum_name")
+		if enumNameNode == nil {
+			continue
+		}
+		enumName := enumNameNode.Content(document.Contents())
+
+		if enumName == fieldName {
+			return enumNode, nil
+		}
+
+	}
+
+	return nil, ErrDefinitionMissingDestination
+
 }
 
 // columnByValues finds a column node by table name and column name, by matching

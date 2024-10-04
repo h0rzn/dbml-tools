@@ -28,6 +28,12 @@ const TSDRelationshipSide string = "relationship_definition_side"
 const TSVRelationshipName string = "relationship_name"
 const TSDRelationshipLong string = "relationship_definition_long"
 
+// Enums
+const TSDEnum string = "enum_definition"
+const TSVEnumName string = "enum_name"
+const TSDEnumField string = "enum_field"
+const TSVEnumFieldName string = "enum_field_name"
+
 func isField(input string, target string) bool {
 	return input == string(target)
 }

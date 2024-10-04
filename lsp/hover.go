@@ -15,7 +15,7 @@ func (s *Server) TextDocumentHover(context *glsp.Context, params *protocol.Hover
 	result, err := language.ResolveContents(s.document, line, column)
 	if err != nil {
 		// Dont error if node type is not supported
-		if errors.Is(err, language.ErrResolveUnsupportedNodeType) {
+		if errors.Is(err, language.ErrResolveUnsupportedNodeType) || errors.Is(err, language.ErrDefinitionMissingDestination) {
 			return nil, nil
 		}
 

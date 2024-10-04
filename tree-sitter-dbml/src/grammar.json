@@ -21,6 +21,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "enum_definition"
+        },
+        {
+          "type": "SYMBOL",
           "name": "relationship_definition_short"
         },
         {
@@ -251,7 +255,7 @@
           "name": "col_name",
           "content": {
             "type": "SYMBOL",
-            "name": "identifier"
+            "name": "column_name"
           }
         },
         {
@@ -263,7 +267,7 @@
           "name": "col_type",
           "content": {
             "type": "SYMBOL",
-            "name": "column_type"
+            "name": "_column_type"
           }
         },
         {
@@ -284,6 +288,60 @@
           ]
         }
       ]
+    },
+    "column_name": {
+      "type": "FIELD",
+      "name": "column_name",
+      "content": {
+        "type": "SYMBOL",
+        "name": "_hidden_identifier"
+      }
+    },
+    "_column_type": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "column_type_basic"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "column_type_ref"
+        }
+      ]
+    },
+    "column_type_basic": {
+      "type": "SYMBOL",
+      "name": "_identifier2"
+    },
+    "column_type_ref": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "column_ref_type_left",
+          "content": {
+            "type": "SYMBOL",
+            "name": "column_type_ref_item"
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_dot"
+        },
+        {
+          "type": "FIELD",
+          "name": "column_ref_type_right",
+          "content": {
+            "type": "SYMBOL",
+            "name": "column_type_ref_item"
+          }
+        }
+      ]
+    },
+    "column_type_ref_item": {
+      "type": "SYMBOL",
+      "name": "_identifier2"
     },
     "column_settings": {
       "type": "SEQ",
@@ -352,10 +410,6 @@
           ]
         }
       ]
-    },
-    "column_type": {
-      "type": "PATTERN",
-      "value": "[a-zA-Z0-9_\\-()]+"
     },
     "column_setting_default": {
       "type": "SEQ",
@@ -443,6 +497,10 @@
           "value": "increment"
         }
       ]
+    },
+    "_identifier2": {
+      "type": "PATTERN",
+      "value": "[a-zA-Z0-9_\\-()]+"
     },
     "table_alias": {
       "type": "FIELD",
@@ -667,6 +725,91 @@
       "content": {
         "type": "STRING",
         "value": "indexes"
+      }
+    },
+    "enum_definition": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "enum"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_space"
+        },
+        {
+          "type": "FIELD",
+          "name": "enum_name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "enum_name"
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_space"
+        },
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_newline"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "enum_field"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_newline"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "enum_field": {
+      "type": "FIELD",
+      "name": "enum_field",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "enum_field_name",
+            "content": {
+              "type": "SYMBOL",
+              "name": "identifier"
+            }
+          },
+          {
+            "type": "SYMBOL",
+            "name": "double_enquoted_identifier"
+          }
+        ]
+      }
+    },
+    "enum_name": {
+      "type": "SYMBOL",
+      "name": "identifier"
+    },
+    "enum": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "enum"
       }
     },
     "relationship_definition_short": {
@@ -981,14 +1124,6 @@
           "value": "<>"
         }
       ]
-    },
-    "column_name": {
-      "type": "FIELD",
-      "name": "column_name",
-      "content": {
-        "type": "SYMBOL",
-        "name": "_hidden_identifier"
-      }
     },
     "Ref": {
       "type": "TOKEN",

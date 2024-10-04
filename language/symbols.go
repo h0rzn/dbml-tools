@@ -1,8 +1,6 @@
 package language
 
 import (
-	"fmt"
-
 	sitter "github.com/smacker/go-tree-sitter"
 )
 
@@ -13,6 +11,7 @@ const ProjectPropertySymbol SymbolType = 7
 const TableSymbol SymbolType = 23
 const ColumnSymbol SymbolType = 8
 const RefSymbol SymbolType = 25
+const EnumSymbol SymbolType = 10
 
 type Symbol struct {
 	Name  string
@@ -51,46 +50,54 @@ func collectSymbols(document *Document, node *sitter.Node, symbols []Symbol) []S
 		var symbolType SymbolType
 		switch child.Type() {
 		case TSDProject:
-			fmt.Println("PROJECT")
+			// fmt.Println("PROJECT")
 			symbolType = TableSymbol
 			nameNode = child.ChildByFieldName(TSVProjectName)
 
 		case TSDProjectProperty:
-			fmt.Println("PROJECT PROPERTY")
+			// fmt.Println("PROJECT PROPERTY")
 			symbolType = ProjectPropertySymbol
 			nameNode = child.ChildByFieldName(TSVProjectPropertyKey)
 
 		case TSDTable:
-			fmt.Println("TABLE")
+			// fmt.Println("TABLE")
 			symbolType = TableSymbol
 			nameNode = child.ChildByFieldName(TSVTableName)
 
 		case TSDColumn:
-			fmt.Println("COLUMN")
+			// fmt.Println("COLUMN")
 			symbolType = ColumnSymbol
 			nameNode = child.ChildByFieldName(TSVColumnNameValue)
 
 		case TSDRelationshipShort:
-			fmt.Println("REL SHORT")
+			// fmt.Println("REL SHORT")
 			symbolType = RefSymbol
 			nameNode = child.ChildByFieldName(TSVRelationshipName)
 
 		case TSDRelationshipLong:
-			fmt.Println("REL LONG")
+			// fmt.Println("REL LONG")
 			symbolType = RefSymbol
 			nameNode = child.ChildByFieldName(TSVRelationshipName)
+
+		case TSDEnum:
+			symbolType = EnumSymbol
+			nameNode = child.ChildByFieldName(TSVEnumName)
+
+		case TSDEnumField:
+			symbolType = EnumSymbol
+			nameNode = child.ChildByFieldName(TSVEnumFieldName)
 
 		default:
 			continue
 		}
 
-		fmt.Println("retrieve <name>")
+		// fmt.Println("retrieve <name>")
 		var name string
 		if nameNode == nil {
 			name = "<unkown>"
 		} else {
 			name = nameNode.Content(document.Contents())
-			fmt.Printf("nameNode exists (v: %q), range: %+v\n", name, nameNode.Range())
+			// fmt.Printf("nameNode exists (v: %q), range: %+v\n", name, nameNode.Range())
 		}
 		symbol := Symbol{
 			Type:  symbolType,
