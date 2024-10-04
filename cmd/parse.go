@@ -73,7 +73,7 @@ var queryCmd = &cobra.Command{
 			// nodeRange := node.Range().StartByte
 			fmt.Printf("[%02d]\n", nodeIndex)
 			fmt.Printf("Expression:\n\t%q\n", node.String())
-			contents, _ := document.ContentsRange(node.StartByte(), node.EndByte())
+			contents := document.ContentsRange(node.StartByte(), node.EndByte())
 			fmt.Printf("Result:\n\t%q\n", contents)
 		}
 
