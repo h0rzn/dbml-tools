@@ -1,0 +1,9 @@
+====================
+Relationship short A
+====================
+
+Ref: tableA.colA - tableB.colB
+
+---
+(source_file (relationship_definition_short (Ref) (relationship_definition_side (table_name) (column_name)) (relationship_symbol) (relationship_definition_side (table_name) (column_name))))
+
