@@ -1,0 +1,5 @@
+cmd/dev.go
+dbml-lsp-ts
+dev.log
+*.dbml
+
