@@ -27,7 +27,7 @@
 - Cross-schema relationships are not supported
 
 ## Enum
-- not supported
+- Schemas are not supported
 
 ## TableGroup
 - not supported

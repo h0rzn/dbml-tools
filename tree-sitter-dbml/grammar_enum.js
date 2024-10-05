@@ -8,7 +8,7 @@ module.exports = {
 
     $._newline,
     repeat(
-      seq($.enum_field, $._newline)
+      seq($.enum_field, optional($.field_note_standalone), $._newline)
     ),
 
     '}'

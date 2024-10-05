@@ -24,4 +24,13 @@ module.exports = {
 
   // _unrestricted_identifier: /[a-zA-Z0-9_-]+/,
   _hidden_identifier: $ => /[a-zA-Z0-9_-]+/,
+
+  field_note_standalone: $ => seq(
+    '[',
+    'note',
+    ':',
+    $._space,
+    $.enquoted_identifier_multi,
+    ']'
+  )
 };

@@ -10,7 +10,7 @@ enum MyEnum {
 
 ---
 
-(source_file (enum_definition (enum) enum_name: (identifier) (enum_field enum_field_name: (identifier)) (enum_field enum_field_name: (identifier)) (enum_field enum_field_name: (identifier))))
+(source_file (enum_definition (enum) enum_name: (enum_name (identifier)) (enum_field enum_field_name: (identifier)) (enum_field enum_field_name: (identifier)) (enum_field enum_field_name: (identifier))))
 
 ======================
 Enum empty with linebr
@@ -21,4 +21,32 @@ enum EmptyEnumLBR {
 
 ---
 
-(source_file (enum_definition (enum) enum_name: (identifier)))
+(source_file (enum_definition (enum) enum_name: (enum_name (identifier))))
+
+========================
+Enum with enquoted fields
+========================
+
+enum MyEnum {
+	"enquotedFieldA"
+	"enquotedFieldb"
+}
+
+---
+
+(source_file (enum_definition (enum) enum_name: (enum_name (identifier)) (enum_field enum_field: (double_enquoted_identifier (identifier))) (enum_field enum_field: (double_enquoted_identifier (identifier)))))
+
+===============
+Enum with notes
+===============
+
+enum EnumWithFieldNotes {
+	a [note: 'Note for field a']
+	"b" [note: 'Note for field b']
+}
+
+---
+
+(source_file (enum_definition (enum) enum_name: (enum_name (identifier)) (enum_field enum_field_name: (identifier)) (field_note_standalone (enquoted_identifier_multi (identifier) (identifier) (identifier) (identifier))) (enum_field enum_field: (double_enquoted_identifier (identifier))) (field_note_standalone (enquoted_identifier_multi (identifier) (identifier) (identifier) (identifier)))))
+
+
