@@ -7,7 +7,6 @@
 - Schemas are not supported
 - Notes are not supported 
 - Settings are not supported: `Table users [headercolor: #3498DB] {`
-- Enums are not supported
 ### Index Definitions
 - Only Single Field and Compositie Field indexes are supported
 - Index Settings are supported but limited to one setting per index
@@ -15,9 +14,8 @@
 - Notes are not supported
 - Expressions are not supported ```(`id*2`)```
 
-
 ## Column
-- Notes are not supported 
+- Multi line notes are not supported 
 - explicit column types are not supported: `id “bigint unsigned” [pk]`
 - Expression-Defaults are not supported 
 

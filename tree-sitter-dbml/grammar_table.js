@@ -54,6 +54,8 @@ module.exports = {
         '[',
         choice(
           $.column_constraint,
+          $.column_setting_default,
+          $.column_setting_note,
           $.relationship_definition_inline
         ),
         optional(
@@ -62,7 +64,8 @@ module.exports = {
               choice(
                 $.column_constraint,
                 $.column_setting_default,
-                $.relationship_definition_inline
+                $.column_setting_note,
+                $.relationship_definition_inline,
               )
             )
           )
@@ -79,6 +82,12 @@ module.exports = {
         seq("'", repeat($.identifier), "'"),
         seq("`", repeat($.identifier), "`")
       )
+    ),
+
+    column_setting_note: $ => seq(
+      'note',
+      ':',
+      $.enquoted_identifier_multi
     ),
 
     column_constraint: $ => choice(

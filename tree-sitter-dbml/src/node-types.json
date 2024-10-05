@@ -65,6 +65,21 @@
     }
   },
   {
+    "type": "column_setting_note",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "enquoted_identifier_multi",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "column_settings",
     "named": true,
     "fields": {},
@@ -78,6 +93,10 @@
         },
         {
           "type": "column_setting_default",
+          "named": true
+        },
+        {
+          "type": "column_setting_note",
           "named": true
         },
         {
