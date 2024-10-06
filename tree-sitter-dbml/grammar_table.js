@@ -21,7 +21,7 @@ module.exports = {
       '}'
     ),
 
-    table_name: $ => $.identifier,
+    table_name: $ => $.ident_basic,
 
     column_definition: $ => seq(
       field('col_name', $.column_name),
@@ -33,14 +33,14 @@ module.exports = {
       )
     ),
 
-    column_name: $ => $._identifier2,
+    column_name: $ => $.ident_basic,
 
     _column_type: $ => choice(
       $.column_type_basic,
       $.column_type_ref,
     ),
 
-    column_type_basic: $ => $._identifier2,
+    column_type_basic: $ => $._ident_basic,
 
     column_type_ref: $ => seq(
       field('column_ref_type_left', $.column_type_ref_item),
@@ -48,7 +48,7 @@ module.exports = {
       field('column_ref_type_right', $.column_type_ref_item),
     ),
 
-    column_type_ref_item: $ => $._identifier2,
+    column_type_ref_item: $ => $._ident_basic,
 
     column_settings: $ => seq(
       seq(
@@ -56,7 +56,6 @@ module.exports = {
         choice(
           $.column_constraint,
           $.column_setting_default,
-          // $.column_setting_note,
           $.note_setting,
           $.relationship_definition_inline
         ),
@@ -66,7 +65,6 @@ module.exports = {
               choice(
                 $.column_constraint,
                 $.column_setting_default,
-                // $.column_setting_note,
                 $.note_setting,
                 $.relationship_definition_inline,
               )
@@ -82,16 +80,10 @@ module.exports = {
       'default',
       ':',
       choice(
-        seq("'", repeat($.identifier), "'"),
-        seq("`", repeat($.identifier), "`")
+        seq("'", repeat($.ident_basic), "'"),
+        seq("`", repeat($.ident_basic), "`")
       )
     ),
-
-    // column_setting_note: $ => seq(
-    //   'note',
-    //   ':',
-    //   $.enquoted_identifier_multi
-    // ),
 
     column_constraint: $ => choice(
       'primary key',
@@ -102,11 +94,9 @@ module.exports = {
       'increment'
     ),
 
-    _identifier2: $ => /[a-zA-Z0-9_\-()]+/,
-
     // TODO: add keyed constraints: default: xxx, note: 'xxx'
 
-    table_alias: $ => field('table_alias', $._hidden_identifier),
+    table_alias: $ => field('table_alias', $._ident_basic),
     //
     // Keywords
     //

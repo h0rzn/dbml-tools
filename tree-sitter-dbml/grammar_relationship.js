@@ -4,7 +4,7 @@ module.exports = {
       optional(
         seq(
           $._space,
-          field('relationship_name', $.identifier)
+          field('relationship_name', $.ident_basic)
         )
       ),
       ':',
@@ -39,7 +39,7 @@ module.exports = {
       optional(
         seq(
           $._space,
-          field('relationship_name', $.identifier)
+          field('relationship_name', $.ident_basic)
         )
       ),
       $._space,
@@ -86,8 +86,8 @@ module.exports = {
       '<>'
     ),
 
-    column_name: $ => field('column_name', $._hidden_identifier),
-    table_name: $ => field('table_name', $._hidden_identifier),
+    column_name: $ => field('column_name', $._ident_basic),
+    table_name: $ => field('table_name', $._ident_basic),
 
     Ref: $ => token('Ref'),
 };

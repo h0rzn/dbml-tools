@@ -33,7 +33,7 @@ module.exports = {
     ')'
   ),
 
-  index_column: $ => $.identifier,
+  index_column: $ => $.ident_basic,
 
   index_settings: $ => seq(
     '[',
@@ -45,7 +45,7 @@ module.exports = {
     'pk',
     'unique',
     seq('name', ':', $._space, $.enquoted_identifier),
-    seq('type', ':', $.identifier),
+    seq('type', ':', $.ident_basic),
   ),
 
   indexes: $ => token('indexes')

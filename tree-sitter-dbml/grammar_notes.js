@@ -48,19 +48,7 @@ module.exports = {
 
   // note_value_mulitline is the complete node
   // content, spanning mulitiple lines
-  // note_value_mutliline: $ => repeat1($._note_line),
-
-  note_value_mutliline: $ => repeat1(choice(
-      /[^\n]+/,  // Matches any non-newline character
-      '\n'       // Matches newline (empty lines)
-  )),
-
-  // _note_line is a single line in a block comment
-  // it also captures newlines
-  // _note_line: $ => choice(
-  //     /[^\n]+/,  // Matches any non-newline character
-  //     '\n'       // Matches newline (empty lines)
-  // ),
+  note_value_mutliline: $ => repeat1($.ident_any_with_nl),
 
   Note: $ => token('Note'),
   note: $ => token('note')

@@ -79,7 +79,7 @@
             "type": "REPEAT",
             "content": {
               "type": "SYMBOL",
-              "name": "project_property_definition2"
+              "name": "project_property_definition"
             }
           }
         },
@@ -91,42 +91,9 @@
     },
     "project_name": {
       "type": "SYMBOL",
-      "name": "identifier"
+      "name": "ident_basic"
     },
     "project_property_definition": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "FIELD",
-          "name": "project_property_key",
-          "content": {
-            "type": "SYMBOL",
-            "name": "project_property_key"
-          }
-        },
-        {
-          "type": "STRING",
-          "value": ":"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_space"
-        },
-        {
-          "type": "FIELD",
-          "name": "project_property_value",
-          "content": {
-            "type": "SYMBOL",
-            "name": "enquoted_identifier_multi"
-          }
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_newline"
-        }
-      ]
-    },
-    "project_property_definition2": {
       "type": "CHOICE",
       "members": [
         {
@@ -162,19 +129,6 @@
               "name": "enquoted_identifier_multi"
             }
           ]
-        }
-      ]
-    },
-    "project_property_key": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "Note"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "database_type"
         }
       ]
     },
@@ -314,7 +268,7 @@
       "name": "table_name",
       "content": {
         "type": "SYMBOL",
-        "name": "_hidden_identifier"
+        "name": "_ident_basic"
       }
     },
     "column_definition": {
@@ -364,7 +318,7 @@
       "name": "column_name",
       "content": {
         "type": "SYMBOL",
-        "name": "_hidden_identifier"
+        "name": "_ident_basic"
       }
     },
     "_column_type": {
@@ -382,7 +336,7 @@
     },
     "column_type_basic": {
       "type": "SYMBOL",
-      "name": "_identifier2"
+      "name": "_ident_basic"
     },
     "column_type_ref": {
       "type": "SEQ",
@@ -411,7 +365,7 @@
     },
     "column_type_ref_item": {
       "type": "SYMBOL",
-      "name": "_identifier2"
+      "name": "_ident_basic"
     },
     "column_settings": {
       "type": "SEQ",
@@ -518,7 +472,7 @@
                   "type": "REPEAT",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "identifier"
+                    "name": "ident_basic"
                   }
                 },
                 {
@@ -538,7 +492,7 @@
                   "type": "REPEAT",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "identifier"
+                    "name": "ident_basic"
                   }
                 },
                 {
@@ -580,16 +534,12 @@
         }
       ]
     },
-    "_identifier2": {
-      "type": "PATTERN",
-      "value": "[a-zA-Z0-9_\\-()]+"
-    },
     "table_alias": {
       "type": "FIELD",
       "name": "table_alias",
       "content": {
         "type": "SYMBOL",
-        "name": "_hidden_identifier"
+        "name": "_ident_basic"
       }
     },
     "Table": {
@@ -732,7 +682,7 @@
     },
     "index_column": {
       "type": "SYMBOL",
-      "name": "identifier"
+      "name": "ident_basic"
     },
     "index_settings": {
       "type": "SEQ",
@@ -796,7 +746,7 @@
             },
             {
               "type": "SYMBOL",
-              "name": "identifier"
+              "name": "ident_basic"
             }
           ]
         }
@@ -885,7 +835,7 @@
             "name": "enum_field_name",
             "content": {
               "type": "SYMBOL",
-              "name": "identifier"
+              "name": "ident_basic"
             }
           },
           {
@@ -897,7 +847,7 @@
     },
     "enum_name": {
       "type": "SYMBOL",
-      "name": "identifier"
+      "name": "ident_basic"
     },
     "enum": {
       "type": "TOKEN",
@@ -928,7 +878,7 @@
                   "name": "relationship_name",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "identifier"
+                    "name": "ident_basic"
                   }
                 }
               ]
@@ -1056,7 +1006,7 @@
                   "name": "relationship_name",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "identifier"
+                    "name": "ident_basic"
                   }
                 }
               ]
@@ -1226,9 +1176,34 @@
         "value": "Ref"
       }
     },
-    "identifier": {
+    "ident_basic": {
       "type": "PATTERN",
       "value": "[a-zA-Z0-9_-]+"
+    },
+    "_ident_basic": {
+      "type": "PATTERN",
+      "value": "[a-zA-Z0-9_-]+"
+    },
+    "ident_inside": {
+      "type": "PATTERN",
+      "value": "[^'\\n]+"
+    },
+    "_identifier2": {
+      "type": "PATTERN",
+      "value": "[a-zA-Z0-9_\\-()]+"
+    },
+    "ident_any_with_nl": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "[^\\n]+"
+        },
+        {
+          "type": "STRING",
+          "value": "\n"
+        }
+      ]
     },
     "_newline": {
       "type": "STRING",
@@ -1251,7 +1226,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "identifier"
+          "name": "ident_basic"
         },
         {
           "type": "STRING",
@@ -1270,7 +1245,7 @@
           "type": "REPEAT",
           "content": {
             "type": "SYMBOL",
-            "name": "identifier"
+            "name": "ident_basic"
           }
         },
         {
@@ -1305,21 +1280,13 @@
         },
         {
           "type": "SYMBOL",
-          "name": "identifier"
+          "name": "ident_basic"
         },
         {
           "type": "STRING",
           "value": "\""
         }
       ]
-    },
-    "_hidden_identifier": {
-      "type": "PATTERN",
-      "value": "[a-zA-Z0-9_-]+"
-    },
-    "ident_inside": {
-      "type": "PATTERN",
-      "value": "[^'\\n]+"
     },
     "note_setting_standalone": {
       "type": "SEQ",
@@ -1443,17 +1410,8 @@
     "note_value_mutliline": {
       "type": "REPEAT1",
       "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "PATTERN",
-            "value": "[^\\n]+"
-          },
-          {
-            "type": "STRING",
-            "value": "\n"
-          }
-        ]
+        "type": "SYMBOL",
+        "name": "ident_any_with_nl"
       }
     },
     "Note": {

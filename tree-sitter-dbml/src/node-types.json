@@ -58,7 +58,7 @@
       "required": false,
       "types": [
         {
-          "type": "identifier",
+          "type": "ident_basic",
           "named": true
         }
       ]
@@ -136,7 +136,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "ident_basic",
           "named": true
         }
       ]
@@ -151,7 +151,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "ident_basic",
           "named": true
         }
       ]
@@ -166,7 +166,7 @@
       "required": false,
       "types": [
         {
-          "type": "identifier",
+          "type": "ident_basic",
           "named": true
         }
       ]
@@ -240,7 +240,7 @@
         "required": false,
         "types": [
           {
-            "type": "identifier",
+            "type": "ident_basic",
             "named": true
           }
         ]
@@ -256,14 +256,19 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "ident_basic",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "identifier",
+    "type": "ident_any_with_nl",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "ident_basic",
     "named": true,
     "fields": {}
   },
@@ -276,7 +281,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "ident_basic",
           "named": true
         }
       ]
@@ -357,7 +362,7 @@
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "ident_basic",
           "named": true
         }
       ]
@@ -473,7 +478,17 @@
   {
     "type": "note_value_mutliline",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "ident_any_with_nl",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "project_definition",
@@ -494,7 +509,7 @@
         "required": false,
         "types": [
           {
-            "type": "project_property_definition2",
+            "type": "project_property_definition",
             "named": true
           }
         ]
@@ -520,14 +535,14 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "ident_basic",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "project_property_definition2",
+    "type": "project_property_definition",
     "named": true,
     "fields": {},
     "children": {
@@ -548,25 +563,6 @@
         },
         {
           "type": "note_standalone_multiline",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "project_property_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "Note",
-          "named": true
-        },
-        {
-          "type": "database_type",
           "named": true
         }
       ]
@@ -605,7 +601,7 @@
         "required": false,
         "types": [
           {
-            "type": "identifier",
+            "type": "ident_basic",
             "named": true
           }
         ]
@@ -639,7 +635,7 @@
         "required": false,
         "types": [
           {
-            "type": "identifier",
+            "type": "ident_basic",
             "named": true
           }
         ]

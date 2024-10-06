@@ -16,12 +16,12 @@ module.exports = {
 
   enum_field: $ => field('enum_field',
     choice(
-      field('enum_field_name', $.identifier),
+      field('enum_field_name', $.ident_basic),
       $.double_enquoted_identifier
     )
   ),
 
-  enum_name: $ => $.identifier,
+  enum_name: $ => $.ident_basic,
 
   enum: $ => token('enum')
 

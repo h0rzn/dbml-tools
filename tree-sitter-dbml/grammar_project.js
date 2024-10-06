@@ -6,21 +6,13 @@ module.exports = {
     $._space,
     '{',
     $._newline,
-    field('project_property', repeat($.project_property_definition2)),
+    field('project_property', repeat($.project_property_definition)),
     '}'
   ),
 
-  project_name: $ => $.identifier,
+  project_name: $ => $.ident_basic,
 
-  project_property_definition: $ => seq(
-      field('project_property_key', $.project_property_key),
-      ':',
-      $._space,
-      field('project_property_value', $.enquoted_identifier_multi),
-      $._newline
-  ),
-
-  project_property_definition2: $ => choice(
+  project_property_definition: $ => choice(
     seq(
       $.Note,
       ':',
@@ -31,12 +23,6 @@ module.exports = {
       ':',
       $.enquoted_identifier_multi
     ),
-  ),
-
-  // TODO: use grammar_notes.js for 'note' implementation
-  project_property_key: $ => choice(
-    $.Note,
-    $.database_type
   ),
 
   //
