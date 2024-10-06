@@ -7,6 +7,8 @@ const indexes_definition = require("./grammar_table_indexes.js");
 const relationship = require("./grammar_relationship");
 const enums = require("./grammar_enum.js");
 
+const notes = require("./grammar_notes.js");
+
 module.exports = grammar({
   name: "dbml",
 
@@ -33,6 +35,8 @@ module.exports = grammar({
 
     ...relationship,
     ...shared,
+
+    ...notes,
 
 
 	},

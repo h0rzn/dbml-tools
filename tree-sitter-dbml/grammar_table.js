@@ -14,8 +14,9 @@ module.exports = {
       '{',
       $._newline,
 
-      field('column', repeat1($.column_definition)),
-      field('indexes', optional($.indexes_definition)),
+      optional(field('column', repeat1($.column_definition))),
+      optional(field('indexes', $.indexes_definition)),
+      optional(field('note', $.note_standalone)),
 
       '}'
     ),
@@ -55,7 +56,8 @@ module.exports = {
         choice(
           $.column_constraint,
           $.column_setting_default,
-          $.column_setting_note,
+          // $.column_setting_note,
+          $.note_setting,
           $.relationship_definition_inline
         ),
         optional(
@@ -64,7 +66,8 @@ module.exports = {
               choice(
                 $.column_constraint,
                 $.column_setting_default,
-                $.column_setting_note,
+                // $.column_setting_note,
+                $.note_setting,
                 $.relationship_definition_inline,
               )
             )
@@ -84,11 +87,11 @@ module.exports = {
       )
     ),
 
-    column_setting_note: $ => seq(
-      'note',
-      ':',
-      $.enquoted_identifier_multi
-    ),
+    // column_setting_note: $ => seq(
+    //   'note',
+    //   ':',
+    //   $.enquoted_identifier_multi
+    // ),
 
     column_constraint: $ => choice(
       'primary key',

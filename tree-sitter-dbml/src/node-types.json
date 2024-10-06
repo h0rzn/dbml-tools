@@ -65,21 +65,6 @@
     }
   },
   {
-    "type": "column_setting_note",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "enquoted_identifier_multi",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "column_settings",
     "named": true,
     "fields": {},
@@ -96,7 +81,7 @@
           "named": true
         },
         {
-          "type": "column_setting_note",
+          "type": "note_setting",
           "named": true
         },
         {
@@ -188,6 +173,21 @@
     }
   },
   {
+    "type": "enquoted_identifier_multi2",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "ident_inside",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "enum_definition",
     "named": true,
     "fields": {
@@ -215,7 +215,7 @@
           "named": true
         },
         {
-          "type": "field_note_standalone",
+          "type": "note_setting_standalone",
           "named": true
         }
       ]
@@ -257,21 +257,6 @@
       "types": [
         {
           "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "field_note_standalone",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "enquoted_identifier_multi",
           "named": true
         }
       ]
@@ -413,6 +398,84 @@
     }
   },
   {
+    "type": "note",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "note_setting",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "enquoted_identifier_multi2",
+          "named": true
+        },
+        {
+          "type": "note",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "note_setting_standalone",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "enquoted_identifier_multi",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "note_standalone",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "Note",
+          "named": true
+        },
+        {
+          "type": "enquoted_identifier_multi",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "note_standalone_multiline",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "note_value_mutliline",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "note_value_mutliline",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "project_definition",
     "named": true,
     "fields": {
@@ -431,7 +494,7 @@
         "required": false,
         "types": [
           {
-            "type": "project_property_definition",
+            "type": "project_property_definition2",
             "named": true
           }
         ]
@@ -464,35 +527,50 @@
     }
   },
   {
-    "type": "project_property_definition",
+    "type": "project_property_definition2",
     "named": true,
-    "fields": {
-      "project_property_key": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "project_property_key",
-            "named": true
-          }
-        ]
-      },
-      "project_property_value": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "enquoted_identifier_multi",
-            "named": true
-          }
-        ]
-      }
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "Note",
+          "named": true
+        },
+        {
+          "type": "database_type",
+          "named": true
+        },
+        {
+          "type": "enquoted_identifier_multi",
+          "named": true
+        },
+        {
+          "type": "note_standalone_multiline",
+          "named": true
+        }
+      ]
     }
   },
   {
     "type": "project_property_key",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "Note",
+          "named": true
+        },
+        {
+          "type": "database_type",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "relationship_action",
@@ -684,7 +762,7 @@
     "fields": {
       "column": {
         "multiple": true,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "column_definition",
@@ -698,6 +776,16 @@
         "types": [
           {
             "type": "indexes_definition",
+            "named": true
+          }
+        ]
+      },
+      "note": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "note_standalone",
             "named": true
           }
         ]
@@ -744,11 +832,19 @@
     "fields": {}
   },
   {
+    "type": "\n",
+    "named": false
+  },
+  {
     "type": "\"",
     "named": false
   },
   {
     "type": "'",
+    "named": false
+  },
+  {
+    "type": "'''",
     "named": false
   },
   {
@@ -785,7 +881,7 @@
   },
   {
     "type": "Note",
-    "named": false
+    "named": true
   },
   {
     "type": "Project",
@@ -825,7 +921,7 @@
   },
   {
     "type": "database_type",
-    "named": false
+    "named": true
   },
   {
     "type": "default",
@@ -837,6 +933,10 @@
   },
   {
     "type": "enum",
+    "named": true
+  },
+  {
+    "type": "ident_inside",
     "named": true
   },
   {

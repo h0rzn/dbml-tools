@@ -32,3 +32,4 @@
 
 ## Misc
 - Only top level comments `//` are supported
+- Sticky top level notes are not supported

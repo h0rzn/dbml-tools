@@ -79,7 +79,7 @@
             "type": "REPEAT",
             "content": {
               "type": "SYMBOL",
-              "name": "project_property_definition"
+              "name": "project_property_definition2"
             }
           }
         },
@@ -126,16 +126,55 @@
         }
       ]
     },
+    "project_property_definition2": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "Note"
+            },
+            {
+              "type": "STRING",
+              "value": ":"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "note_standalone_multiline"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "database_type"
+            },
+            {
+              "type": "STRING",
+              "value": ":"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "enquoted_identifier_multi"
+            }
+          ]
+        }
+      ]
+    },
     "project_property_key": {
       "type": "CHOICE",
       "members": [
         {
-          "type": "STRING",
-          "value": "database_type"
+          "type": "SYMBOL",
+          "name": "Note"
         },
         {
-          "type": "STRING",
-          "value": "Note"
+          "type": "SYMBOL",
+          "name": "database_type"
         }
       ]
     },
@@ -144,6 +183,13 @@
       "content": {
         "type": "STRING",
         "value": "Project"
+      }
+    },
+    "database_type": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "database_type"
       }
     },
     "table_definition": {
@@ -207,31 +253,55 @@
           "name": "_newline"
         },
         {
-          "type": "FIELD",
-          "name": "column",
-          "content": {
-            "type": "REPEAT1",
-            "content": {
-              "type": "SYMBOL",
-              "name": "column_definition"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "column",
+              "content": {
+                "type": "REPEAT1",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "column_definition"
+                }
+              }
+            },
+            {
+              "type": "BLANK"
             }
-          }
+          ]
         },
         {
-          "type": "FIELD",
-          "name": "indexes",
-          "content": {
-            "type": "CHOICE",
-            "members": [
-              {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "indexes",
+              "content": {
                 "type": "SYMBOL",
                 "name": "indexes_definition"
-              },
-              {
-                "type": "BLANK"
               }
-            ]
-          }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "note",
+              "content": {
+                "type": "SYMBOL",
+                "name": "note_standalone"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         },
         {
           "type": "STRING",
@@ -366,7 +436,7 @@
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "column_setting_note"
+                  "name": "note_setting"
                 },
                 {
                   "type": "SYMBOL",
@@ -399,7 +469,7 @@
                           },
                           {
                             "type": "SYMBOL",
-                            "name": "column_setting_note"
+                            "name": "note_setting"
                           },
                           {
                             "type": "SYMBOL",
@@ -478,23 +548,6 @@
               ]
             }
           ]
-        }
-      ]
-    },
-    "column_setting_note": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "note"
-        },
-        {
-          "type": "STRING",
-          "value": ":"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "enquoted_identifier_multi"
         }
       ]
     },
@@ -801,7 +854,7 @@
                 "members": [
                   {
                     "type": "SYMBOL",
-                    "name": "field_note_standalone"
+                    "name": "note_setting_standalone"
                   },
                   {
                     "type": "BLANK"
@@ -1226,6 +1279,23 @@
         }
       ]
     },
+    "enquoted_identifier_multi2": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "'"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "ident_inside"
+        },
+        {
+          "type": "STRING",
+          "value": "'"
+        }
+      ]
+    },
     "double_enquoted_identifier": {
       "type": "SEQ",
       "members": [
@@ -1247,7 +1317,11 @@
       "type": "PATTERN",
       "value": "[a-zA-Z0-9_-]+"
     },
-    "field_note_standalone": {
+    "ident_inside": {
+      "type": "PATTERN",
+      "value": "[^'\\n]+"
+    },
+    "note_setting_standalone": {
       "type": "SEQ",
       "members": [
         {
@@ -1275,6 +1349,126 @@
           "value": "]"
         }
       ]
+    },
+    "note_setting": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "note"
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "enquoted_identifier_multi2"
+        }
+      ]
+    },
+    "note_standalone": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "Note"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": ":"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "enquoted_identifier_multi"
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_space"
+                },
+                {
+                  "type": "STRING",
+                  "value": "{"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_newline"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "enquoted_identifier_multi"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_newline"
+                },
+                {
+                  "type": "STRING",
+                  "value": "}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "note_standalone_multiline": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "'''"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "note_value_mutliline"
+        },
+        {
+          "type": "STRING",
+          "value": "'''"
+        }
+      ]
+    },
+    "note_value_mutliline": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "PATTERN",
+            "value": "[^\\n]+"
+          },
+          {
+            "type": "STRING",
+            "value": "\n"
+          }
+        ]
+      }
+    },
+    "Note": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "Note"
+      }
+    },
+    "note": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "note"
+      }
     }
   },
   "extras": [

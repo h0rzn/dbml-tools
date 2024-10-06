@@ -16,21 +16,21 @@ module.exports = {
     '\'',
   ),
 
+  enquoted_identifier_multi2: $ => seq(
+    '\'',
+    $.ident_inside,
+    '\'',
+  ),
+
   double_enquoted_identifier: $ => seq(
     '"',
     $.identifier,
     '"',
   ),
 
-  // _unrestricted_identifier: /[a-zA-Z0-9_-]+/,
   _hidden_identifier: $ => /[a-zA-Z0-9_-]+/,
 
-  field_note_standalone: $ => seq(
-    '[',
-    'note',
-    ':',
-    $._space,
-    $.enquoted_identifier_multi,
-    ']'
-  )
+  // ident_all: $ => /.+/,
+
+  ident_inside: $ => /[^'\n]+/,
 };
